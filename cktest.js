@@ -1,5 +1,8 @@
+import CKClient from 'CryptoKittiesClient.js';
+
 var example;
 
+var owner_wallet_address = "0xa1bad56f5f6b3df2ae75118981657e686b424f63";
 var cryptokitties_contract_address = "0x06012c8cf97BEaD5deAe237070F9587f8E7A266d";
 
 var kitty_abi = 
@@ -7,8 +10,90 @@ var kitty_abi =
 
 var ck_contract = eth.contract(kitty_abi).at(cryptokitties_contract_address);
 
-var api_call = "https://api.cryptokitties.co/kitties?offset=60&limit=64&owner_wallet_address=0xa1bad56f5f6b3df2ae75118981657e686b424f63&sorting=cheap&orderBy=current_price&orderDirection=asc";
+var api_call = "https://api.cryptokitties.co/kitties?offset=60&limit=64&owner_wallet_address=" + owner_wallet_address + "&sorting=cheap&orderBy=current_price&orderDirection=asc";
 
-var api_call_single_kitten = "https://api.cryptokitties.co/kitties/515000";
+var kittenID = 1;
 
+var api_call_single_kitten = "https://api.cryptokitties.co/kitties/";
+
+var count = ck_contract.balanceOf(owner_wallet_address);
+
+var amountOfCalls = int(count/20);
+
+var i = 0;
+var o = {};
+
+o['kitten_ids'] = [];
+o['kitten_strings'] = [];
+
+var cats = [];
+
+function Cat(id, generation, attributeList) {
+	this.id = id;
+	this.generation = generation;
+	this.attributeList = attributeList;
+}
+
+function BreedingPair(id1, id2){
+	this.id1 = id1;
+	this.id2 = id2;
+}
+
+var breedingPairs = []
+
+for(; i < count;) {
+	kittens_result = CKClient.getUserKitties(owner_wallet_address,20,i*20);
+	i++;
+	kittyCount = 0;
+	for( var kitten in kittens_result["kitties"]){
+		o['kitten_ids'].push(kitten['id']);
+	}
+
+}
+
+for (var kittenID in o['kitten_ids']){
+	kitten = CKClient.getKitten(kittenID);
+	o['kitten_strings'].push(kitten);
+}
+
+for (var kitten_string in o['kitten_objects']){
+	cats.push(new Cat(kitten_string["id"],kitten_string["generation"],kitten_string["enhanced_cattributes"]));
+	o[kitten_string["generation"]].push(new Cat(kitten_string["id"],kitten_string["generation"],kitten_string["enhanced_cattributes"]));
+}	
+
+function remove(array, element){
+	return array.filter(e => e.id !== element);
+}
+
+for (var cat in cats){
+	var potentialPartners = o[cat.generation];
+	var potentialPartners = remove(potentialPartners, cat.id);
+
+	var tries = 0;
+	var maxTries = 5;
+	while (!matchOrTimeOut){
+
+		var potentialPartner = potentialPartners[Math.floor(Math.random()*potentialPartners.length)];
+		bothReady = ck_contract.isReadyToBreed(cat.id) && ck_contract.isReadyToBreed(potentialPartner.id);
+		if (ck_contract.canBreedWith(cat.id,potentialPartner.id) && bothReady){
+			breedingPairs.push(new BreedingPair(cat.id,potentialPartner.id));
+			matchOrTimeOut = true;
+			o[cat.generation] = remove(o[cat.generation], potentialPartner.id);
+			o[cat.generation] = remove(o[cat.generation], cat.id);
+		}
+		tries++;
+		if (tries > maxTries ){
+
+			matchOrTimeOut = true;
+
+		}
+
+	}
+
+
+}
+
+for (var bp in breedingPairs){
+	ck_contract.breedWithAuto(bp.id1, bp.id2, {value: web3.toWei(0.001, ether) });
+}
 
