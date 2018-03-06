@@ -1,0 +1,26 @@
+{
+  "name": "autokitty",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cktest.js",
+  "scripts": {
+    "test": "getKitten"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ckclient": "file:ckclient",
+    "request": "^2.34.0",
+    "request-promise": "^4.2.2",
+    "web3": "^1.0.0-beta.30"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EirikUlversoy/autokitty.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EirikUlversoy/autokitty/issues"
+  },
+  "homepage": "https://github.com/EirikUlversoy/autokitty#readme"
+}
