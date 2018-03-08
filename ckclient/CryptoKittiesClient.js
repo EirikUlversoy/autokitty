@@ -11,7 +11,9 @@ function CryptokittiesClient(opts = {}){
       method: method,
       uri: self.opts.url + url,
       headers: {
-        "Authorization": self.credentials.jwt
+        //"Authorization": self.credentials.jwt
+        "Authorization": "",
+        "User-Agent": "Request-Promise"
       },
       json: true
     };
@@ -41,21 +43,25 @@ function CryptokittiesClient(opts = {}){
 */
   self.getKitten = function(id) {
     let o = self.skeleton(`kitties/${id}`);
+    console.log("sent single kitten request");
+    console.log(o);
     return request(o);
   }
   self.getMyProfile = function(){
     let o = self.skeleton(`me`);
     return request(o);
   }
-  self.getUserKitties = function(address, limit, offset=0) {
+  self.getUserKitties = function(owner_wallet_address, limit, offset=0) {
     let o = self.skeleton(`kitties`);
+    console.log("sent kittens request");
     o.qs = {
-      limit,
       offset,
-      owner_wallet_address: address
+      limit,
+      owner_wallet_address
     };
-    return request(o).then(d=>d.kitties);
+    console.log(o);
+    return request(o).then(d => d.kitties);
   }
   return self;
 }
-module.exports = ckclient;
+module.exports = CryptokittiesClient;

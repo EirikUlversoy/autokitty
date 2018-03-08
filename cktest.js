@@ -1,4 +1,4 @@
-var CKClient = require("CryptokittiesClient");
+var CKClient = require("ckclient");
 var net = require('net');
 var Web3 = require("Web3");
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
@@ -16,7 +16,6 @@ var kitty_abi =
 
 //Linking to the contract itself
 var ck_contract = new web3.eth.Contract(kitty_abi,cryptokitties_contract_address);
-
 //Owned cats API call template for illustration
 var api_call = "https://api.cryptokitties.co/kitties?offset=60&limit=64&owner_wallet_address=" + owner_wallet_address + "&sorting=cheap&orderBy=current_price&orderDirection=asc";
 
@@ -25,8 +24,12 @@ var kittenID = 1;
 //Single cat API call template for illustration
 var api_call_single_kitten = "https://api.cryptokitties.co/kitties/";
 
+function countHandler(counter){
+	console.log(counter);
+}
 //Should state the number of cats in the address. Read only function, should not make a transaction
-var count = ck_contract.methods.balanceOf(owner_wallet_address).call();
+var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
+console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
 var amountOfCalls = 2;
 console.log(amountOfCalls);
@@ -39,7 +42,7 @@ var o = {};
 //List of ids and strings in the dictionary
 o['kitten_ids'] = [];
 o['kitten_strings'] = [];
-
+o['kittens'] = []
 //List of cats
 var cats = [];
 
@@ -56,51 +59,63 @@ function BreedingPair(id1, id2){
 	this.id2 = id2;
 }
 
+var callsMade = 0;
+var callsHandled = 0;
+function handleKittens(kittens){
+	/*for( var kitten in kittens["kitties"]){
+		//console.log(kitten);
+		o['kitten_ids'].push(kitten);
+		kittyCount++;
+	}*/
+	for (var kitten in kittens){
+		//CKClient().getKitten(kitten.id).then(handleKitten);
+		console.log(kitten);
+		callsMade++;
+	}
+	console.log(kittens);
+}
+
+function handleKitten(kitten){
+	console.log(kitten);
+	cats.push(kitten);
+	callsHandled++;
+
+}
+
+function noKittensToHandle(kittens){
+	console.log("got no kittens :( ");
+}
+
+
 //List of breeding pairs
 var breedingPairs = []
 var kittyCount = 0;
 //Block for calling the API. TODO: Can separate this into a function
 for(; i < amountOfCalls;) {
-	kittens_result = CKClient.getUserKitties(owner_wallet_address,20,i*20);
-	console.log(kittens_result);
+	console.log(CKClient());
+
+	CKClient().getUserKitties(owner_wallet_address,64,i*20).then(handleKittens,noKittensToHandle);
+
 	i++;
-	for( var kitten in kittens_result["kitties"]){
-		o['kitten_ids'].push(kitten['id']);
-		kittyCount++;
-	}
 
 }
-
+/*
+for (; i < 5;) {
+	CKClient().getKitten(5000+i).then(handleKitten);
+	i++;
+}*/
 //Test output
+
 console.log('Kitten count: %d', kittyCount);
-
-
-//For every kittenID, make a separate API-call to the single kitten function.
-//Push the kittens into the kitten_strings list
-for (var kittenID in o['kitten_ids']){
-	kitten = CKClient.getKitten(kittenID);
-	o['kitten_strings'].push(kitten);
-}
-
 //amount of generations
 var generations = 20
 
-//Translating kitten_strings into kitten objects, this could be done directly in a previous step depending on
-//what looks more understandable
-//Using just cattributes for now, as enhanced cattributes deal with gene details such as recessive and dominant, 
-//which is not require for a simple breeder
-for (var kitten_string in o['kitten_objects']){
-	cats.push(new Cat(kitten_string["id"],kitten_string["generation"],kitten_string["enhanced_cattributes"]));
-	o[kitten_string["generation"]].push(new Cat(kitten_string["id"],kitten_string["generation"],kitten_string["cattributes"]));
 
-}	
+
 
 //logging how many cats there are of each generation
-var i = 0;
-for(; i < generations;){
-	console.log('Kitten generation: %d , count: %d', i, o[i].length);
-	i++;
-}
+
+
 
 //console.log('Kitten generation: %d , count: %d', generation, count);
 
@@ -111,36 +126,53 @@ function remove(array, element){
 });
 }
 
+
 //function for finding and adding breeding pairs 
-for (var cat in cats){
-	var potentialPartners = o[cat.generation];
-	var potentialPartners = remove(potentialPartners, cat.id);
+function findBreedingPairs(cats){
+	for (var cat in cats){
+		var potentialPartners = o[cat["generation"]];
+		var potentialPartners = remove(potentialPartners, cat["id"]);
 
-	var tries = 0;
-	var maxTries = 5;
-	while (!matchOrTimeOut){
+		var tries = 0;
+		var maxTries = 5;
+		while (!matchOrTimeOut){
 
-		var potentialPartner = potentialPartners[Math.floor(Math.random()*potentialPartners.length)];
-		bothReady = ck_contract.isReadyToBreed(cat.id) && ck_contract.isReadyToBreed(potentialPartner.id);
-		if (ck_contract.canBreedWith(cat.id,potentialPartner.id) && bothReady){
-			breedingPairs.push(new BreedingPair(cat.id,potentialPartner.id));
-			matchOrTimeOut = true;
-			o[cat.generation] = remove(o[cat.generation], potentialPartner.id);
-			o[cat.generation] = remove(o[cat.generation], cat.id);
+			var potentialPartner = potentialPartners[Math.floor(Math.random()*potentialPartners.length)];
+			bothReady = ck_contract.isReadyToBreed(cat.id) && ck_contract.isReadyToBreed(potentialPartner.id);
+			if (ck_contract.canBreedWith(cat.id,potentialPartner.id) && bothReady){
+				breedingPairs.push(new BreedingPair(cat.id,potentialPartner.id));
+				matchOrTimeOut = true;
+				o[cat.generation] = remove(o[cat.generation], potentialPartner.id);
+				o[cat.generation] = remove(o[cat.generation], cat.id);
+			}
+			tries++;
+			if (tries > maxTries ){
+
+				matchOrTimeOut = true;
+
+			}
+
 		}
-		tries++;
-		if (tries > maxTries ){
 
-			matchOrTimeOut = true;
-
-		}
 
 	}
-
-
 }
-console.log('Kitten breeding pairs found: %d', breedingPairs.length);
 
+
+
+if(callsHandled == callsMade && callsMade != 0){
+	for (var kitten in cats){
+		if(!o[kitten['generation']]){
+			o[kitten['generation']] = [];
+		}
+
+		o[kitten["generation"]].push(kitten);
+
+	}	
+	findBreedingPairs(cats);
+	console.log('Kitten breeding pairs found: %d', breedingPairs.length);
+	
+}
 
 /*
 for (var bp in breedingPairs){
