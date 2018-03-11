@@ -11,9 +11,8 @@ function CryptokittiesClient(opts = {}){
       method: method,
       uri: self.opts.url + url,
       headers: {
-        //"Authorization": self.credentials.jwt
-        "Authorization": "",
-        "User-Agent": "Request-Promise"
+        //"Authorization": "",//self.credentials.jwt
+        //"Authorization": "",
       },
       json: true
     };
@@ -55,9 +54,9 @@ function CryptokittiesClient(opts = {}){
     let o = self.skeleton(`kitties`);
     console.log("sent kittens request");
     o.qs = {
+      owner_wallet_address,
       offset,
-      limit,
-      owner_wallet_address
+      limit
     };
     console.log(o);
     return request(o).then(d => d.kitties);
