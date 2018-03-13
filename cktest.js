@@ -1,6 +1,7 @@
 var CKClient = require("ckclient")();
 var net = require('net');
 var Web3 = require("Web3");
+var fs = require("fs");
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 //Address of the wallet containing the cats, can be set in the console afterwards
@@ -32,13 +33,19 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 200;
+var amountOfCalls = 400;
 console.log(amountOfCalls);
 
 var i = 0;
 
 //Dictionary
 var o = {};
+
+function sleeper(ms) {
+  return function(x) {
+    return new Promise(resolve => setTimeout(() => resolve(x), ms));
+  };
+}
 
 //List of ids and strings in the dictionary
 o['kitten_ids'] = [];
@@ -71,7 +78,26 @@ function handleKittens(kittens){
 	return Promise.all(promiseArray);
 }
 
-function handleKitten(kitten){
+
+function handleKittensWithContract(kittens){
+	var promiseArray = [];
+	for (kitten in kittens){
+		//id = kittens[kitten].id;
+		console.log(kittens[kitten].id);
+		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten].id).call().then(doWork.bind(null, kittens[kitten].id));
+	}
+
+	return Promise.all(promiseArray);
+}
+
+function doWork(id, kitten){
+	kitten.id = id;
+	cats.push(kitten);
+
+}
+function handleKitten(id,kitten){
+	kitten.id = id;
+	console.log(id);
 	cats.push(kitten);
 	return kitten;
 
@@ -81,29 +107,56 @@ function noKittensToHandle(kittens){
 	console.log("got no kittens :( ");
 }
 
-function mainFunction (calls){
-	console.log("is in main");
-	var merged = [].concat.apply([], calls);
+function saveKittenIds(kittens){
+	fs.writeFile('kittens.txt', kittens, (err) => {
+  	if (err) throw err;
+  	console.log('It\'s saved!');
+});}
 
+
+function refreshCats(){
+
+}
+function breedingLoop(){
+	var filteredCatList = [];
+
+	o = {};
 	for (var kitten in cats){
+
 		if(!o[cats[kitten].generation]){
 			o[cats[kitten].generation] = [];
 		}
-
-		o[cats[kitten].generation].push(cats[kitten]);
+		if(cats[kitten].generation <= generations_breeding_upper_limit){
+			o[cats[kitten].generation].push(cats[kitten]);
+			filteredCatList.push(cats[kitten]);
+		}
 
 	}
 
-	var catsToBeAuctioned = findAuctionItems(cats);
-	//findBreedingPairs(cats);
+	//var catsToBeAuctioned = findAuctionItems(cats);
+	findBreedingPairs(filteredCatList);
 	console.log('Kitten breeding pairs found: %d', breedingPairs.length);
-	console.log("Auctionable items found: %d", catsToBeAuctioned.length);
+	//console.log("Auctionable items found: %d", catsToBeAuctioned.length);
 	console.log(breedingPairs);
 	console.log(web3.eth.defaultAccount);
 	for (var bp in breedingPairs){
 		//ck_contract.methods.breedWithAuto(breedingPairs[bp].id1, breedingPairs[bp].id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether") });
 	}
 	console.log("done");
+}
+var generations_breeding_upper_limit = 1;
+function mainFunction (calls){
+	console.log("is in main");
+
+	var merged = [].concat.apply([], calls);
+	
+	z = 0;
+	limit = 20;
+	for(; z < limit;){
+		setTimeout(breedingLoop, z*2000000);
+		z++;
+
+	}
 	
 }
 
@@ -111,11 +164,18 @@ function mainFunction (calls){
 var breedingPairs = [];
 var kittyCount = 0;
 //Block for calling the API. TODO: Can separate this into a function
+
+function x(i){
+	return new Promise(function(resolve, reject){
+	setTimeout(resolve, 1000*i, CKClient.getUserKitties(owner_wallet_address,64,i*20));
+})
+}
+
 function loopGetUserKitties(err, res){
 	var promiseArray = []
 	for(; i < amountOfCalls;) {
-
-		promiseArray[i] = CKClient.getUserKitties(owner_wallet_address,64,i*20).then(handleKittens,noKittensToHandle);
+		promiseArray[i] = x(i).then(handleKittensWithContract,noKittensToHandle); 
+		//promiseArray[i] = CKClient.getUserKitties(owner_wallet_address,64,i*20).then(handleKittensWithContract,noKittensToHandle);
 		i++;
 	}
 
@@ -152,6 +212,7 @@ function remove(array, element){
 function triggerTransaction(id, id2){
 	if(ck_contract.methods.isReadyToBreed(id) && ck_contract.methods.isReadyToBreed(id2)){
 		if(ck_contract.methods.canBreedWith(id,id2)){
+			console.log("Would have made transaction here!");
 			ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether") });
 		}
 	}
@@ -213,33 +274,36 @@ function findBreedingPairs(cats){
 		var tries = 0;
 		var maxTries = 30;
 		matchOrTimeOut = false;
-		while (!matchOrTimeOut){
+		if(cat){
+			while (!matchOrTimeOut){
 
-			var potentialPartner = potentialPartners[Math.floor(Math.random()*potentialPartners.length)];
-			bothReady = ck_contract.methods.isReadyToBreed(cat.id) && ck_contract.methods.isReadyToBreed(potentialPartner.id);
-			if (ck_contract.methods.canBreedWith(cat.id,potentialPartner.id) && bothReady){
+				var potentialPartner = potentialPartners[Math.floor(Math.random()*potentialPartners.length)];
+				bothReady = ck_contract.methods.isReadyToBreed(cat.id) && ck_contract.methods.isReadyToBreed(potentialPartner.id);
+				if (ck_contract.methods.canBreedWith(cat.id,potentialPartner.id) && bothReady && (cat.id != potentialPartner.id)){
 
 
-				if(!listOfUsedCats.includes(cat.id) && !listOfUsedCats.includes(potentialPartner.id)){
-					breedingPairs.push(new BreedingPair(cat.id,potentialPartner.id));
-					listOfUsedCats.push(cat.id);
-					listOfUsedCats.push(potentialPartner.id);
-					matchOrTimeOut = true;
-					setTimeout(triggerTransaction,5000*count, cat.id, potentialPartner.id);
+					if(!listOfUsedCats.includes(cat.id) && !listOfUsedCats.includes(potentialPartner.id)){
+						breedingPairs.push(new BreedingPair(cat.id,potentialPartner.id));
+						listOfUsedCats.push(cat.id);
+						listOfUsedCats.push(potentialPartner.id);
+						matchOrTimeOut = true;
+						setTimeout(triggerTransaction,5000*count, cat.id, potentialPartner.id);
 
-					o[cat.generation] = remove(o[cat.generation], potentialPartner.id);
-					o[cat.generation] = remove(o[cat.generation], cat.id);
+						o[cat.generation] = remove(o[cat.generation], potentialPartner.id);
+						o[cat.generation] = remove(o[cat.generation], cat.id);
+					}
+					
 				}
-				
-			}
-			tries++;
-			if (tries > maxTries ){
+				tries++;
+				if (tries > maxTries ){
 
-				matchOrTimeOut = true;
+					matchOrTimeOut = true;
 
-			}
+				}
 
+			}	
 		}
+
 
 
 	}
