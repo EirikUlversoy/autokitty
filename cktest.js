@@ -2,6 +2,7 @@ var CKClient = require("ckclient")();
 var net = require('net');
 var Web3 = require("Web3");
 var fs = require("fs");
+var Promise = require("bluebird");
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 //Address of the wallet containing the cats, can be set in the console afterwards
@@ -33,7 +34,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 400;
+var amountOfCalls = 20;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -47,10 +48,6 @@ function sleeper(ms) {
   };
 }
 
-//List of ids and strings in the dictionary
-o['kitten_ids'] = [];
-o['kitten_strings'] = [];
-o['kittens'] = []
 //List of cats
 var cats = [];
 
@@ -72,7 +69,6 @@ var callsHandled = 0;
 function handleKittens(kittens){
 	var promiseArray = []
 	for (kitten in kittens){
-		//console.log(kittens[kitten]);
 		promiseArray[kitten] = CKClient.getKitten(kittens[kitten].id).then(handleKitten);
 	}
 	return Promise.all(promiseArray);
@@ -82,8 +78,6 @@ function handleKittens(kittens){
 function handleKittensWithContract(kittens){
 	var promiseArray = [];
 	for (kitten in kittens){
-		//id = kittens[kitten].id;
-		console.log(kittens[kitten].id);
 		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten].id).call().then(doWork.bind(null, kittens[kitten].id));
 	}
 
@@ -108,6 +102,10 @@ function noKittensToHandle(kittens){
 }
 
 function saveKittenIds(kittens){
+	output = [];
+	for (var kitten in kittens){
+		output.push(kitten.toString());
+	}
 	fs.writeFile('kittens.txt', kittens, (err) => {
   	if (err) throw err;
   	console.log('It\'s saved!');
@@ -150,6 +148,8 @@ function mainFunction (calls){
 
 	var merged = [].concat.apply([], calls);
 	
+	saveKittenIds(cats);
+
 	z = 0;
 	limit = 20;
 	for(; z < limit;){
@@ -165,21 +165,18 @@ var breedingPairs = [];
 var kittyCount = 0;
 //Block for calling the API. TODO: Can separate this into a function
 
-function x(i){
-	return new Promise(function(resolve, reject){
-	setTimeout(resolve, 1000*i, CKClient.getUserKitties(owner_wallet_address,64,i*20));
-})
+function fetch(id){
+	console.log("Fetching " + id);
+	return Promise.delay(2000, id).then(CKClient.getUserKitties(owner_wallet_address,64,id*20)
+		.then(handleKittensWithContract, noKittensToHandle));
 }
-
 function loopGetUserKitties(err, res){
 	var promiseArray = []
-	for(; i < amountOfCalls;) {
-		promiseArray[i] = x(i).then(handleKittensWithContract,noKittensToHandle); 
-		//promiseArray[i] = CKClient.getUserKitties(owner_wallet_address,64,i*20).then(handleKittensWithContract,noKittensToHandle);
-		i++;
+	array = new Array();
+	for (i = 0; i < amountOfCalls; i++) {
+    	array[i] = i;
 	}
-
-	return Promise.all(promiseArray);
+	return Promise.map(array, fetch, {concurrency: 3});
 }
 
 /*
@@ -213,7 +210,7 @@ function triggerTransaction(id, id2){
 	if(ck_contract.methods.isReadyToBreed(id) && ck_contract.methods.isReadyToBreed(id2)){
 		if(ck_contract.methods.canBreedWith(id,id2)){
 			console.log("Would have made transaction here!");
-			ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether") });
+			//ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether") });
 		}
 	}
 
