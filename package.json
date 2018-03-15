@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bs58": "^4.0.1",
     "ckclient": "file:ckclient",
     "request": "^2.34.0",
     "request-promise": "^4.2.2",
