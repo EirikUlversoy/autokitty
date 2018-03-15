@@ -12,37 +12,22 @@ function targetSingleTrait(trait, kittens, cb){
 	}
 }
 
-//Filtering cats to begin with to avoid breeding cats with low utility
-function findSuitableCats(traits, kittens, cb){
-	var found = 0
+
+//Suitable cats should have one of the needed traits
+function findSuitableCats(traits, kittens){
 	var suitableCats = [];
 	for(var cat in kittens){
+		cat = kittens[cat];
 		found = 0;
 		for(trait in traits){
 			if(_.contains(cat.cattributes, trait) && found == 0){
 				suitableCats.push(cat);
-				found = 1;
 			}
 		}
 	}
-	cb(suitableCats);
+	return suitableCats;
 }
 
-//Main targeting function. Should add all cats that fits any trait to a list,
-//and add the filled trait to a separate list
-function targeting(traits, kittens, cb){
-	var filled_traits = []
-	
-	targetingCallback(trait){
-		if(trait){
-			filled_traits.push(trait);
-		};
-	}
-	for (trait in traits){
-		targetSingleTrait(trait, kittens, targetingCallback);
-
-	}
-}
 
 //Should be used to increase generation bounds between suitable cats when enabled
 //Should be disabled by default.
