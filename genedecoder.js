@@ -30,7 +30,9 @@ var totalSampleBits = "";
 var arrayOfFiveBitStrings = [];
 
 for(var number in sampleNumber){
+	//sampleBits = toBinaryString(sampleNumber.charAt(number));
 	sampleBits = toBinaryString(sampleNumber.charAt(number));
+
 	//console.log(sampleBits);
 	arrayOfFiveBitStrings.push(sampleBits);	
 }
