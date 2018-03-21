@@ -23,8 +23,11 @@ function toBinaryString(n) {
 
         return output;
     }
-var sampleNumber = "626778644471294720163847069335675480640660629103859177928213713027245229";
 
+
+var sampleNumber = "511233256255868092540028846824444252128936084013668958617105773928416751";
+
+var sampleID = 553355;
 var totalSampleBits = "";
 
 var arrayOfFiveBitStrings = [];
