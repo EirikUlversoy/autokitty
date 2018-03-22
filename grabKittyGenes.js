@@ -53,23 +53,16 @@ function fiveBitToInteger(fiveBits){
 
 	return integerForm;
 }
-function readKitten(kitten){
-	console.log("in readkitten");
-	console.log(kitten);
-	var hexGenes = web3.utils.toHex(kitten.genes).replace("0x","");
+
+function translateGenesToKAI(genes){
+	var hexGenes = web3.utils.toHex(genes).replace("0x","");
 	var binaryString = hexToBinary(hexGenes);
-	console.log(binaryString);
-	console.log(binaryString.length)
+
 	var numberSequence = [];
-	var binaryFivers = []
 	for (var x = 0; x<binaryString.length/5; x++){
 		var nextInteger = fiveBitToInteger(binaryString.substring(x*5,(x+1)*5));
 		numberSequence.push(nextInteger);
-		binaryFivers.push(binaryString.substring(x*5,(x+1)*5));
-
 	}
-
-	console.log(numberSequence);
 
 	var bs58Alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 	var KAISequence = []
@@ -78,10 +71,13 @@ function readKitten(kitten){
 		_number = numberSequence[number];
 		KAISequence.push(bs58Alphabet[_number]);
 	}
+	KAISequence = KAISequence.join("");
+	console.log("Translated:\n " + hexGenes + " to the KAI sequence:\n " + KAISequence);
+	return KAISequence;
 
-	console.log(KAISequence);
-
-	var geneGroupNames = {};
+}
+function outputCattributes(KaiGroups){
+		var geneGroupNames = {};
 	geneGroupNames[0] = "Unknown";
 	geneGroupNames[1] = "Unknown";
 	geneGroupNames[2] = "Unknown";
@@ -260,10 +256,23 @@ function readKitten(kitten){
 	mouthGeneNames["Yokel"] = "q";
 	mouthGeneNames["Neckbeard"] = "s";
 
+	var geneNames = {};
 	geneNames[0] = "3rd Recessive";
 	geneNames[1] = "2nd Recessive";
 	geneNames[2] = "1st Recessive";
 	geneNames[3] = "Dominant";
+}
+function readKitten(kitten){
+
+	var KAISequence = translateGenesToKAI(kitten.genes);
+
+	var KaiGroups = [];
+	for(var x = 0; x<KAISequence.length/4; x++){
+		var nextGroup = KAISequence.substring(x*4,(x+1)*4);
+		KaiGroups.push(nextGroup);
+	}
+	console.log("Kaisequence in groups is: " + KaiGroups);
+
 
 	var genePercentages = {};
 
