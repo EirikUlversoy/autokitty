@@ -299,7 +299,7 @@ function outputGroupAttribute(group, groupDictionary){
 		dominant = groupDictionary[group[3]]
 	}
 
-	return recessiveA + " " + recessiveB + " " + recessiveC + " " + dominant;
+	return "Recessive genes: " + "\n" + recessiveA + "\n" + recessiveB + "\n" + recessiveC + "\nDominant genes: " + dominant + "\n";
 
 }
 function outputCattributes(KaiGroups){
@@ -334,9 +334,9 @@ function outputCattributes(KaiGroups){
 }
 function readKitten(kitten){
 	var testKaiSequence = "9ac9558524a2f4fad8185144f97c17513483441qdgdagegg";
-	//var KAISequence = translateGenesToKAI(kitten.genes);
+	var KAISequence = translateGenesToKAI(kitten.genes);
 
-	KAISequence = testKaiSequence;
+	//KAISequence = testKaiSequence;
 	var KaiGroups = [];
 	for(var x = 0; x<KAISequence.length/4; x++){
 		var nextGroup = KAISequence.substring(x*4,(x+1)*4);
@@ -357,8 +357,8 @@ function readKitten(kitten){
 
 //var kitten = ck_contract.methods.getKitty(sampleId).call().then(readKitten);
 
-readKitten("");
-//processer().then(readKitten);
+//readKitten("");
+processer().then(readKitten);
 //processer().then(readKitten);
 
 //processer().then(readKitten);

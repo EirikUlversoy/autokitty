@@ -3,8 +3,11 @@ var net = require('net');
 var Web3 = require("Web3");
 var fs = require("fs");
 var Promise = require("bluebird");
+var AdvancedBreeder = require('./advKittenBreedingFunctions');
+
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
+var api_calls_on = false;
 //Address of the wallet containing the cats, can be set in the console afterwards
 //or provided as a start parameter
 var owner_wallet_address = "0x68b42e44079d1d0a4a037e8c6ecd62c48967e69f";
@@ -34,7 +37,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 20;
+var amountOfCalls = 265;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -84,6 +87,15 @@ function handleKittensWithContract(kittens){
 	return Promise.all(promiseArray);
 }
 
+function handleKittensWithID(kittens){
+	var promiseArray = [];
+
+	for(kitten in kittens){
+		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten]).call().then(doWork.bind(null,kittens[kitten]));
+	}
+	return Promise.all(promiseArray);
+}
+
 function doWork(id, kitten){
 	kitten.id = id;
 	cats.push(kitten);
@@ -104,9 +116,9 @@ function noKittensToHandle(kittens){
 function saveKittenIds(kittens){
 	output = [];
 	for (var kitten in kittens){
-		output.push(kitten.toString());
+		output.push(kittens[kitten].id);
 	}
-	fs.writeFile('kittens.txt', kittens, (err) => {
+	fs.writeFile('kittens.txt', output, (err) => {
   	if (err) throw err;
   	console.log('It\'s saved!');
 });}
@@ -146,9 +158,9 @@ var generations_breeding_upper_limit = 1;
 function mainFunction (calls){
 	console.log("is in main");
 
-	var merged = [].concat.apply([], calls);
-	
-	saveKittenIds(cats);
+	if(api_calls_on){
+		saveKittenIds(cats);
+	}
 
 	z = 0;
 	limit = 20;
@@ -167,7 +179,7 @@ var kittyCount = 0;
 
 function fetch(id){
 	console.log("Fetching " + id);
-	return Promise.delay(2000, id).then(CKClient.getUserKitties(owner_wallet_address,64,id*20)
+	return Promise.delay(6000, id).then(CKClient.getUserKitties(owner_wallet_address,64,id*20)
 		.then(handleKittensWithContract, noKittensToHandle));
 }
 function loopGetUserKitties(err, res){
@@ -176,17 +188,29 @@ function loopGetUserKitties(err, res){
 	for (i = 0; i < amountOfCalls; i++) {
     	array[i] = i;
 	}
-	return Promise.map(array, fetch, {concurrency: 3});
+	return Promise.map(array, fetch, {concurrency: 2});
 }
 
+function loopGetUserKittesNAPI(err, res){
+	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens.txt', 'utf8');
+	var splitText = text.split(",");
+	console.log(splitText);
+	return splitText;
+}
 /*
 for (; i < 5;) {
 	CKClient().getKitten(5000+i).then(handleKitten);
 	i++;
 }*/
 //Test output
-loopGetUserKitties().then(mainFunction);
-console.log('Kitten count: %d', kittyCount);
+if(api_calls_on){
+	loopGetUserKitties().then(mainFunction);
+} else {
+	var kittens = loopGetUserKittesNAPI();
+	handleKittensWithID(kittens).then(mainFunction);
+	//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
+}
+//console.log('Kitten count: %d', kittyCount);
 //amount of generations
 var generations = 20
 
