@@ -4,7 +4,7 @@ var Web3 = require("Web3");
 var fs = require("fs");
 var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
-var GeneDecoder = require("GeneDecoder");
+var GeneDecoder = require("genedecoder")();
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 var api_calls_on = false;
@@ -110,6 +110,7 @@ Promise.settleVal = function(rejectVal, promises) {
 
 function doWork(id, kitten){
 	kitten.id = id;
+	kitten.chanceOfTrait = {};
 	if(kitten){
 		cats.push(kitten);
 	}
@@ -177,12 +178,13 @@ function mainFunction (calls){
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
+	console.log(GeneDecoder);
 	for(var cat in cats){
 		GeneDecoder.readKitten(cats[cat]);
 	}
-	findAuctionItems(cats);
+	//findAuctionItems(cats);
 
-	//breedingLoop();
+	breedingLoop();
 
 }
 
@@ -268,7 +270,7 @@ if(api_calls_on){
 
 function helper(){
 	var kittens = loopGetUserKittesNAPI();
-	var kittenArrays = chunkify(kittens,50,false);
+	var kittenArrays = chunkify(kittens,100,false);
 	var promiseArrayStack = [];
 	for(var kittenArray in kittenArrays){
 		promiseArrayStack[kittenArray] = handleKittensWithID(kittenArrays[kittenArray]);
@@ -405,7 +407,7 @@ function findBreedingPairs(cats){
 						listOfUsedCats.push(cat.id);
 						listOfUsedCats.push(potentialPartner.id);
 						matchOrTimeOut = true;
-						setTimeout(readyToBreedCheckA,3000*count, cat.id, potentialPartner.id);
+						setTimeout(readyToBreedCheckA,100*count, cat.id, potentialPartner.id);
 						//readyToBreedCheckA(cat.id,potentialPartner.id);
 						o[cat.generation] = remove(o[cat.generation], potentialPartner.id);
 						o[cat.generation] = remove(o[cat.generation], cat.id);
