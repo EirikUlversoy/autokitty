@@ -93,8 +93,8 @@ function handleKittensWithID(kittens){
 	for(kitten in kittens){
 		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten]).call().then(doWork.bind(null,kittens[kitten]));
 	}
-	return Promise.all(promiseArray);
-	//return Promise.settleVal(null,promiseArray);
+	//return Promise.all(promiseArray);
+	return Promise.settleVal(null,promiseArray);
 }
 
 Promise.settleVal = function(rejectVal, promises) {
@@ -103,7 +103,18 @@ Promise.settleVal = function(rejectVal, promises) {
         return Promise.resolve(p).catch(function(err) {
             // instead of rejection, just return the rejectVal (often null or 0 or "" or {})
             console.log(err);
-            return rejectVal;
+        	return Promise.resolve(p).catch(function(err) {
+        		return Promise.resolve(p).catch(function(err) {
+        			return Promise.resolve(p).catch(function(err) {
+        				    return Promise.resolve(p).catch(function(err) {
+        						return rejectVal;
+        		});
+        		});
+        		});
+
+        	});
+
+            //return rejectVal;
         });
     }));
 };
@@ -111,7 +122,7 @@ Promise.settleVal = function(rejectVal, promises) {
 function doWork(id, kitten){
 	kitten.id = id;
 	kitten.chanceOfTrait = {};
-	if(kitten){
+	if(kitten.genes){
 		cats.push(kitten);
 	}
 	return kitten;
@@ -175,12 +186,14 @@ function breedingLoop(){
 var generations_breeding_upper_limit = 5;
 function mainFunction (calls){
 	console.log("is in main");
+	//console.log(calls);
+	//cats = calls;
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
 	console.log(GeneDecoder);
 	for(var cat in cats){
-		GeneDecoder.readKitten(cats[cat]);
+		//GeneDecoder.readKitten(cats[cat]);
 	}
 	//findAuctionItems(cats);
 
@@ -259,25 +272,27 @@ function chunkify(a, n, balanced) {
     return out;
 }
 
+function helper(){
+	var kittens = loopGetUserKittesNAPI();
+	//var kittenArrays = chunkify(kittens,100,false);
+	var promiseArrayStack = [];
+	//for(var kittenArray in kittenArrays){
+	promiseArrayStack[0] = handleKittensWithID(kittens);
+	//return handleKittensWithID(kittens).then(mainFunction);
+	//}
+	return Promise.all(promiseArrayStack);
+}
+
 //Test output
 if(api_calls_on){
 	loopGetUserKitties().then(mainFunction);
 } else {
-	helper().then(mainFunction);
+		helper().then(mainFunction);
 
 	//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
 }
 
-function helper(){
-	var kittens = loopGetUserKittesNAPI();
-	var kittenArrays = chunkify(kittens,100,false);
-	var promiseArrayStack = [];
-	for(var kittenArray in kittenArrays){
-		promiseArrayStack[kittenArray] = handleKittensWithID(kittenArrays[kittenArray]);
-	//handleKittensWithID(kittens).then(mainFunction);
-	}
-	return Promise.settleVal(null,promiseArrayStack);
-}
+
 //console.log('Kitten count: %d', kittyCount);
 //amount of generations
 var generations = 20
@@ -319,7 +334,7 @@ function canBreedWithCheck(id, id2, bIsReady){
 
 function triggerTransactionOnly(id, id2, canBreed){
 	if(canBreed){
-		ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether") });
+		ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"),gasPrice: web3.utils.toWei("0.000000007", "ether") });
 	} else {
 		console.log("Breed with each other fail");
 	}
