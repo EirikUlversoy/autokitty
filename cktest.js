@@ -4,7 +4,7 @@ var Web3 = require("Web3");
 var fs = require("fs");
 var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
-
+var GeneDecoder = require("GeneDecoder");
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 var api_calls_on = false;
@@ -37,7 +37,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 265;
+var amountOfCalls = 500;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -94,11 +94,26 @@ function handleKittensWithID(kittens){
 		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten]).call().then(doWork.bind(null,kittens[kitten]));
 	}
 	return Promise.all(promiseArray);
+	//return Promise.settleVal(null,promiseArray);
 }
+
+Promise.settleVal = function(rejectVal, promises) {
+    return Promise.all(promises.map(function(p) {
+        // make sure any values or foreign promises are wrapped in a promise
+        return Promise.resolve(p).catch(function(err) {
+            // instead of rejection, just return the rejectVal (often null or 0 or "" or {})
+            console.log(err);
+            return rejectVal;
+        });
+    }));
+};
 
 function doWork(id, kitten){
 	kitten.id = id;
-	cats.push(kitten);
+	if(kitten){
+		cats.push(kitten);
+	}
+	return kitten;
 
 }
 function handleKitten(id,kitten){
@@ -129,7 +144,9 @@ function refreshCats(){
 }
 function breedingLoop(){
 	var filteredCatList = [];
-
+	//cats = [];
+	//var kittens = loopGetUserKittesNAPI();
+	//handleKittensWithID(kittens);
 	o = {};
 	for (var kitten in cats){
 
@@ -154,22 +171,19 @@ function breedingLoop(){
 	}
 	console.log("done");
 }
-var generations_breeding_upper_limit = 1;
+var generations_breeding_upper_limit = 5;
 function mainFunction (calls){
 	console.log("is in main");
-
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
-
-	z = 0;
-	limit = 20;
-	for(; z < limit;){
-		setTimeout(breedingLoop, z*2000000);
-		z++;
-
+	for(var cat in cats){
+		GeneDecoder.readKitten(cats[cat]);
 	}
-	
+	findAuctionItems(cats);
+
+	//breedingLoop();
+
 }
 
 //List of breeding pairs
@@ -202,13 +216,65 @@ for (; i < 5;) {
 	CKClient().getKitten(5000+i).then(handleKitten);
 	i++;
 }*/
+
+function chunkify(a, n, balanced) {
+    
+    if (n < 2)
+        return [a];
+
+    var len = a.length,
+            out = [],
+            i = 0,
+            size;
+
+    if (len % n === 0) {
+        size = Math.floor(len / n);
+        while (i < len) {
+            out.push(a.slice(i, i += size));
+        }
+    }
+
+    else if (balanced) {
+        while (i < len) {
+            size = Math.ceil((len - i) / n--);
+            out.push(a.slice(i, i += size));
+        }
+    }
+
+    else {
+
+        n--;
+        size = Math.floor(len / n);
+        if (len % size === 0)
+            size--;
+        while (i < size * n) {
+            out.push(a.slice(i, i += size));
+        }
+        out.push(a.slice(size * n));
+
+    }
+
+    return out;
+}
+
 //Test output
 if(api_calls_on){
 	loopGetUserKitties().then(mainFunction);
 } else {
-	var kittens = loopGetUserKittesNAPI();
-	handleKittensWithID(kittens).then(mainFunction);
+	helper().then(mainFunction);
+
 	//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
+}
+
+function helper(){
+	var kittens = loopGetUserKittesNAPI();
+	var kittenArrays = chunkify(kittens,50,false);
+	var promiseArrayStack = [];
+	for(var kittenArray in kittenArrays){
+		promiseArrayStack[kittenArray] = handleKittensWithID(kittenArrays[kittenArray]);
+	//handleKittensWithID(kittens).then(mainFunction);
+	}
+	return Promise.settleVal(null,promiseArrayStack);
 }
 //console.log('Kitten count: %d', kittyCount);
 //amount of generations
@@ -230,15 +296,42 @@ function remove(array, element){
 });
 }
 
+function readyToBreedCheckA(id, id2){
+	ck_contract.methods.isReadyToBreed(id).call().then(z => readyToBreedCheckB(id, id2, z));
+}
+
+function readyToBreedCheckB(id, id2, aIsReady){
+	if(aIsReady){
+		ck_contract.methods.isReadyToBreed(id2).call().then(z => canBreedWithCheck(id, id2, z));
+	} else {
+		console.log("A not ready");
+	}
+}
+function canBreedWithCheck(id, id2, bIsReady){
+	if(bIsReady){
+		ck_contract.methods.canBreedWith(id,id2).call().then(z => triggerTransactionOnly(id,id2,z));
+	} else {
+		console.log("B not ready");
+	}
+}
+
+function triggerTransactionOnly(id, id2, canBreed){
+	if(canBreed){
+		ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether") });
+	} else {
+		console.log("Breed with each other fail");
+	}
+}
 function triggerTransaction(id, id2){
 	if(ck_contract.methods.isReadyToBreed(id) && ck_contract.methods.isReadyToBreed(id2)){
 		if(ck_contract.methods.canBreedWith(id,id2)){
-			console.log("Would have made transaction here!");
-			//ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether") });
+			//console.log("Would have made transaction here!");
+			ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"), gasPrice: web3.utils.toWei("0.000000015", "ether") });
 		}
 	}
 
 }
+
 function check(id){
 	ck_contract.methods.isPregnant(id).call().then(z => secondCheck(id,z));
 
@@ -261,7 +354,7 @@ function triggerAuction(id, address){
 		console.log(address);
 
 	} else {
-		ck_contract.methods.createSaleAuction(id,web3.utils.toWei("0.3", "ether"),web3.utils.toWei("0.05", "ether"), 604800).send({from: web3.eth.defaultAccount, gas: 900000});
+		ck_contract.methods.createSaleAuction(id,web3.utils.toWei("0.049", "ether"),web3.utils.toWei("0.01", "ether"), 3048000).send({from: web3.eth.defaultAccount, gas: 900000, gasPrice: web3.utils.toWei("0.000000015", "ether")});
 		console.log("created auction for cat: %d", id);
 	}
 		
@@ -271,21 +364,23 @@ function triggerAuction(id, address){
 }
 //function for finding and adding breeding pairs
 
-function findAuctionItems(cats){
+function findAuctionItems(cats_current){
 	var highGenCats = []
-	for (var cat in cats){
+	for (var cat in cats_current){
 		count = cat;
-		cat = cats[cat];
-		if(cat.generation >= 5){
+		cat = cats_current[cat];
+		if(cat.generation >= 4){
 			highGenCats.push(cat.id);
-			setTimeout(check, 1000*count, cat.id);
+			setTimeout(check, 2000*count, cat.id);
 		}
 
 	}
+	console.log("Found " + highGenCats.length + " possible auctions!");
 	return highGenCats;
 }
 function findBreedingPairs(cats){
-	var listOfUsedCats = []
+	var listOfUsedCats = [];
+	
 	for (var cat in cats){
 		count = cat;
 		cat = cats[cat];
@@ -293,13 +388,15 @@ function findBreedingPairs(cats){
 		var potentialPartners = remove(potentialPartners, cat.id);
 
 		var tries = 0;
-		var maxTries = 30;
+		var maxTries = 100;
 		matchOrTimeOut = false;
 		if(cat){
 			while (!matchOrTimeOut){
 
 				var potentialPartner = potentialPartners[Math.floor(Math.random()*potentialPartners.length)];
-				bothReady = ck_contract.methods.isReadyToBreed(cat.id) && ck_contract.methods.isReadyToBreed(potentialPartner.id);
+				//bothReady = ck_contract.methods.isReadyToBreed(cat.id) && ck_contract.methods.isReadyToBreed(potentialPartner.id);
+				bothReady = cat.isReady && potentialPartner.isReady
+				//bothNotPregnant = !ck_contract.methods.isPregnant(cat.id) && !ck_contract.methods.isPregnant(potentialPartner.id);
 				if (ck_contract.methods.canBreedWith(cat.id,potentialPartner.id) && bothReady && (cat.id != potentialPartner.id)){
 
 
@@ -308,8 +405,8 @@ function findBreedingPairs(cats){
 						listOfUsedCats.push(cat.id);
 						listOfUsedCats.push(potentialPartner.id);
 						matchOrTimeOut = true;
-						setTimeout(triggerTransaction,5000*count, cat.id, potentialPartner.id);
-
+						setTimeout(readyToBreedCheckA,3000*count, cat.id, potentialPartner.id);
+						//readyToBreedCheckA(cat.id,potentialPartner.id);
 						o[cat.generation] = remove(o[cat.generation], potentialPartner.id);
 						o[cat.generation] = remove(o[cat.generation], cat.id);
 					}
@@ -317,7 +414,6 @@ function findBreedingPairs(cats){
 				}
 				tries++;
 				if (tries > maxTries ){
-
 					matchOrTimeOut = true;
 
 				}
@@ -328,6 +424,7 @@ function findBreedingPairs(cats){
 
 
 	}
+
 }
 
 

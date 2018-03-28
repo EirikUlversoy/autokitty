@@ -4,17 +4,7 @@ var bs58 = require('bs58');
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Promise = require("bluebird");
 var hexToBinary = require('hex-to-binary');
-var geneGroupNames = {};
-var bodyGeneNames = {};
-var patternGeneNames = {};
-var colorEyesGeneNames = {};
-var eyesGeneNames = {};
-var colorPrimaryGeneNames = {};
-var colorSecondaryGeneNames = {};
-var colorTertiaryGeneNames = {};
-var wildGeneNames = {};
-var mouthGeneNames = {};
-var geneNames = {};
+
 
 function GeneDecoder(){
 	function setup(){
@@ -190,6 +180,17 @@ function GeneDecoder(){
 		geneNames[2] = "1st Recessive";
 		geneNames[3] = "Dominant";
 	}
+	var geneGroupNames = {};
+	var bodyGeneNames = {};
+	var patternGeneNames = {};
+	var colorEyesGeneNames = {};
+	var eyesGeneNames = {};
+	var colorPrimaryGeneNames = {};
+	var colorSecondaryGeneNames = {};
+	var colorTertiaryGeneNames = {};
+	var wildGeneNames = {};
+	var mouthGeneNames = {};
+	var geneNames = {};
 
 	setup();
 	var cryptokitties_contract_address = "0x06012c8cf97BEaD5deAe237070F9587f8E7A266d";
@@ -254,7 +255,7 @@ function GeneDecoder(){
 
 	}
 
-	function outputGroupAttribute(group, groupDictionary){
+	self.outputGroupAttribute = function(group, groupDictionary){
 		var recessiveA = "unknown";
 		var recessiveB = "unknown";
 		var recessiveC = "unknown";
@@ -286,7 +287,7 @@ function GeneDecoder(){
 
 	}
 
-	function outputCattributes(KaiGroups){
+	self.outputCattributes = function(KaiGroups){
 		for (var group in KaiGroups){
 			console.log("Now looking at the " + geneGroupNames[group]);
 			if(group == 0){
@@ -317,7 +318,7 @@ function GeneDecoder(){
 		}	
 	}
 
-	function traitChance(kitten, trait, groupNumber, KaiGroups){
+	self.traitChance = function(kitten, trait, groupNumber, KaiGroups){
 		var nameLookup = {};
 		nameLookup[0] = {};
 		nameLookup[1] = {};
@@ -357,4 +358,7 @@ function GeneDecoder(){
 
 
 	}
+	return self;
 }
+
+module.exports = GeneDecoder;

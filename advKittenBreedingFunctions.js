@@ -22,7 +22,7 @@ function AdvancedBreeder(){
 			cat = kittens[cat];
 			found = 0;
 			for(trait in traits){
-				if(_.contains(cat.cattributes, trait) && found == 0){
+				if(_.contains(cat.enhanced_cattributes, trait) && found == 0){
 					suitableCats.push(cat);
 				}
 			}
