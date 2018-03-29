@@ -178,7 +178,7 @@ function breedingLoop(){
 	}
 
 	//var catsToBeAuctioned = findAuctionItems(cats);
-	var testTargetedTraits = ["Elk","Cymric","Emerald","Tigerpunk"];
+	var testTargetedTraits = ["Cymric"];
 	var targetedTraits = [];
 	targetedTraits = testTargetedTraits;
 	findBreedingPairs(filteredCatList,targetedTraits);
@@ -191,7 +191,7 @@ function breedingLoop(){
 	}
 	console.log("done");
 }
-var generations_breeding_upper_limit = 5;
+var generations_breeding_upper_limit = 6;
 function mainFunction (calls){
 	console.log("is in main");
 	//console.log(calls);
@@ -354,9 +354,9 @@ function canBreedWithCheck(id, id2, address){
 
 function triggerTransactionOnly(id, id2, canBreed){
 	if(canBreed){
-		ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"),gasPrice: web3.utils.toWei("0.000000007", "ether") });
+		//ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"),gasPrice: web3.utils.toWei("0.000000007", "ether") });
 		console.log("Breeding: " + id +" and " + id2 + " together!");
-		//console.log("Would have made transaction here");
+		console.log("(((would have)))");
 	} else {
 		console.log("Breed with each other fail");
 	}
@@ -404,6 +404,13 @@ function triggerAuction(id, address){
 }
 //function for finding and adding breeding pairs
 
+function isEmptyObject( obj ) {
+    for ( var name in obj ) {
+        return false;
+    }
+    return true;
+}
+
 function findAuctionItems(cats_current){
 	var highGenCats = []
 	for (var cat in cats_current){
@@ -420,9 +427,18 @@ function findAuctionItems(cats_current){
 }
 function findBreedingPairs(cats, targetedTraits){
 	var listOfUsedCats = [];
+	var newCats = [];
+	console.log("Looking at " + cats.length + " total cats!");
+	/*
 	for(var cat in cats){
 		//GeneDecoder.readKitten(cats[cat],targetedTraits);
-	}
+		var newKitten = GeneDecoder.simpleFilter(cats[cat],targetedTraits);
+		if(!isEmptyObject(newKitten.chanceOfTrait)){
+			newCats.push(newKitten);
+		}
+	}*/
+	//console.log("Found " + newCats.length + " filtered cats!");
+	//cats = newCats;
 	for (var cat in cats){
 		count = cat;
 		cat = cats[cat];
