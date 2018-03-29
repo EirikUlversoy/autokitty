@@ -93,8 +93,12 @@ function handleKittensWithID(kittens){
 	for(kitten in kittens){
 		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten]).call().then(doWork.bind(null,kittens[kitten]));
 	}
-	//return Promise.all(promiseArray);
-	return Promise.settleVal(null,promiseArray);
+	return Promise.all(promiseArray).catch(function(err){
+		var result = promiseArray.filter(z => z.id);
+		console.log("Had " + result.length + " pending promises!");
+		return promiseArray;
+	});
+	//return Promise.settleVal(null,promiseArray);
 }
 function testFunction(p,count){
 	if(count <= 200){
@@ -111,7 +115,6 @@ Promise.settleVal = function(rejectVal, promises) {
         // make sure any values or foreign promises are wrapped in a promise
         return Promise.resolve(p).catch(function(err) {
             // instead of rejection, just return the rejectVal (often null or 0 or "" or {})
-            console.log(err);
         	return testFunction(p,0);
 
             //return rejectVal;
@@ -123,7 +126,9 @@ function doWork(id, kitten){
 	kitten.id = id;
 	kitten.chanceOfTrait = {};
 	if(kitten.genes){
-		cats.push(kitten);
+		if(!cats.includes(kitten)){
+			cats.push(kitten);
+		}
 	}
 	return kitten;
 
@@ -179,8 +184,8 @@ function breedingLoop(){
 	findBreedingPairs(filteredCatList,targetedTraits);
 	console.log('Kitten breeding pairs found: %d', breedingPairs.length);
 	//console.log("Auctionable items found: %d", catsToBeAuctioned.length);
-	console.log(breedingPairs);
-	console.log(web3.eth.defaultAccount);
+	//console.log(breedingPairs);
+	console.log("Using account: " + web3.eth.defaultAccount);
 	for (var bp in breedingPairs){
 		//ck_contract.methods.breedWithAuto(breedingPairs[bp].id1, breedingPairs[bp].id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether") });
 	}
@@ -224,7 +229,6 @@ function loopGetUserKitties(err, res){
 function loopGetUserKittesNAPI(err, res){
 	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens.txt', 'utf8');
 	var splitText = text.split(",");
-	console.log(splitText);
 	return splitText;
 }
 /*
@@ -275,12 +279,12 @@ function chunkify(a, n, balanced) {
 
 function helper(){
 	var kittens = loopGetUserKittesNAPI();
-	//var kittenArrays = chunkify(kittens,100,false);
+	var kittenArrays = chunkify(kittens,1000,true);
 	var promiseArrayStack = [];
-	//for(var kittenArray in kittenArrays){
-	promiseArrayStack[0] = handleKittensWithID(kittens);
+	for(var kittenArray in kittenArrays){
+		promiseArrayStack[kittenArray] = handleKittensWithID(kittenArrays[kittenArray]);
 	//return handleKittensWithID(kittens).then(mainFunction);
-	//}
+	}
 	return Promise.all(promiseArrayStack);
 }
 
@@ -351,6 +355,8 @@ function canBreedWithCheck(id, id2, address){
 function triggerTransactionOnly(id, id2, canBreed){
 	if(canBreed){
 		ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"),gasPrice: web3.utils.toWei("0.000000007", "ether") });
+		console.log("Breeding: " + id +" and " + id2 + " together!");
+		//console.log("Would have made transaction here");
 	} else {
 		console.log("Breed with each other fail");
 	}
@@ -387,7 +393,8 @@ function triggerAuction(id, address){
 		console.log(address);
 
 	} else {
-		ck_contract.methods.createSaleAuction(id,web3.utils.toWei("0.049", "ether"),web3.utils.toWei("0.01", "ether"), 3048000).send({from: web3.eth.defaultAccount, gas: 900000, gasPrice: web3.utils.toWei("0.000000015", "ether")});
+		//ck_contract.methods.createSaleAuction(id,web3.utils.toWei("0.049", "ether"),web3.utils.toWei("0.01", "ether"), 3048000).send({from: web3.eth.defaultAccount, gas: 900000, gasPrice: web3.utils.toWei("0.000000015", "ether")});
+		console.log("(((would have)))");
 		console.log("created auction for cat: %d", id);
 	}
 		
@@ -440,7 +447,7 @@ function findBreedingPairs(cats, targetedTraits){
 						listOfUsedCats.push(cat.id);
 						listOfUsedCats.push(potentialPartner.id);
 						matchOrTimeOut = true;
-						setTimeout(readyToBreedCheckA,100*count, cat.id, potentialPartner.id);
+						setTimeout(readyToBreedCheckA,150*count, cat.id, potentialPartner.id);
 						//readyToBreedCheckA(cat.id,potentialPartner.id);
 						o[cat.generation] = remove(o[cat.generation], potentialPartner.id);
 						o[cat.generation] = remove(o[cat.generation], cat.id);

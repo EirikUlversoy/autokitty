@@ -15,7 +15,7 @@
     "hex-to-binary": "^1.0.1",
     "request": "^2.34.0",
     "request-promise": "^4.2.2",
-    "web3": "^1.0.0-beta.30"
+    "web3": "^1.0.0-beta.33"
   },
   "devDependencies": {},
   "repository": {
