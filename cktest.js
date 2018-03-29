@@ -178,7 +178,7 @@ function breedingLoop(){
 	}
 
 	//var catsToBeAuctioned = findAuctionItems(cats);
-	var testTargetedTraits = ["Cymric"];
+	var testTargetedTraits = ["Cyan"];
 	var targetedTraits = [];
 	targetedTraits = testTargetedTraits;
 	findBreedingPairs(filteredCatList,targetedTraits);
@@ -279,7 +279,7 @@ function chunkify(a, n, balanced) {
 
 function helper(){
 	var kittens = loopGetUserKittesNAPI();
-	var kittenArrays = chunkify(kittens,1000,true);
+	var kittenArrays = chunkify(kittens,10,false);
 	var promiseArrayStack = [];
 	for(var kittenArray in kittenArrays){
 		promiseArrayStack[kittenArray] = handleKittensWithID(kittenArrays[kittenArray]);
@@ -354,9 +354,9 @@ function canBreedWithCheck(id, id2, address){
 
 function triggerTransactionOnly(id, id2, canBreed){
 	if(canBreed){
-		//ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"),gasPrice: web3.utils.toWei("0.000000007", "ether") });
+		ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"),gasPrice: web3.utils.toWei("0.000000007", "ether") });
 		console.log("Breeding: " + id +" and " + id2 + " together!");
-		console.log("(((would have)))");
+		//console.log("(((would have)))");
 	} else {
 		console.log("Breed with each other fail");
 	}
@@ -425,20 +425,36 @@ function findAuctionItems(cats_current){
 	console.log("Found " + highGenCats.length + " possible auctions!");
 	return highGenCats;
 }
-function findBreedingPairs(cats, targetedTraits){
-	var listOfUsedCats = [];
-	var newCats = [];
-	console.log("Looking at " + cats.length + " total cats!");
-	/*
+
+function pairHitsAll(cat_one,cat_two){
+	//pseudo: if cat pair has all needed traits in combination => breed
+}
+function findBreedingPairsTargeted(cats,targetedTraits){
+	var traitLists = {}
+
+	for(var trait in targetedTraits){
+		traitLists[targetedTraits[trait]] = [];
+	}
+
 	for(var cat in cats){
 		//GeneDecoder.readKitten(cats[cat],targetedTraits);
 		var newKitten = GeneDecoder.simpleFilter(cats[cat],targetedTraits);
 		if(!isEmptyObject(newKitten.chanceOfTrait)){
 			newCats.push(newKitten);
+
 		}
-	}*/
-	//console.log("Found " + newCats.length + " filtered cats!");
-	//cats = newCats;
+	}
+	console.log("Found " + newCats.length + " filtered cats!");
+	cats = newCats;
+
+
+}
+function findBreedingPairs(cats, targetedTraits){
+	var listOfUsedCats = [];
+	var newCats = [];
+	console.log("Looking at " + cats.length + " total cats!");
+	
+	
 	for (var cat in cats){
 		count = cat;
 		cat = cats[cat];
