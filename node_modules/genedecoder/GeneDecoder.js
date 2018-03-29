@@ -360,7 +360,7 @@ function GeneDecoder(){
 
 		return kitten;
 	}
-	self.readKitten = function (kitten){
+	self.readKitten = function (kitten, targetedTraits){
 		var testKaiSequence = "9ac9558524a2f4fad8185144f97c17513483441qdgdagegg";
 		var KAISequence = self.translateGenesToKai(kitten.genes);
 
@@ -373,6 +373,10 @@ function GeneDecoder(){
 		console.log("Kaisequence in groups is: " + KaiGroups);
 
 		self.outputCattributes(KaiGroups);
+
+		for(var trait in targetedTraits){
+			
+		}
 
 
 

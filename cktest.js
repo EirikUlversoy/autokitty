@@ -96,23 +96,23 @@ function handleKittensWithID(kittens){
 	//return Promise.all(promiseArray);
 	return Promise.settleVal(null,promiseArray);
 }
+function testFunction(p,count){
+	if(count <= 200){
+		return Promise.resolve(p).catch(function(err){
+			return testFunction(p,count+1);
+		})
+	} else {
+		return null;
+	}
 
+}
 Promise.settleVal = function(rejectVal, promises) {
     return Promise.all(promises.map(function(p) {
         // make sure any values or foreign promises are wrapped in a promise
         return Promise.resolve(p).catch(function(err) {
             // instead of rejection, just return the rejectVal (often null or 0 or "" or {})
             console.log(err);
-        	return Promise.resolve(p).catch(function(err) {
-        		return Promise.resolve(p).catch(function(err) {
-        			return Promise.resolve(p).catch(function(err) {
-        				    return Promise.resolve(p).catch(function(err) {
-        						return rejectVal;
-        		});
-        		});
-        		});
-
-        	});
+        	return testFunction(p,0);
 
             //return rejectVal;
         });
@@ -173,7 +173,10 @@ function breedingLoop(){
 	}
 
 	//var catsToBeAuctioned = findAuctionItems(cats);
-	findBreedingPairs(filteredCatList);
+	var testTargetedTraits = ["Elk","Cymric","Emerald","Tigerpunk"];
+	var targetedTraits = [];
+	targetedTraits = testTargetedTraits;
+	findBreedingPairs(filteredCatList,targetedTraits);
 	console.log('Kitten breeding pairs found: %d', breedingPairs.length);
 	//console.log("Auctionable items found: %d", catsToBeAuctioned.length);
 	console.log(breedingPairs);
@@ -192,9 +195,7 @@ function mainFunction (calls){
 		saveKittenIds(cats);
 	}
 	console.log(GeneDecoder);
-	for(var cat in cats){
-		//GeneDecoder.readKitten(cats[cat]);
-	}
+
 	//findAuctionItems(cats);
 
 	breedingLoop();
@@ -208,7 +209,7 @@ var kittyCount = 0;
 
 function fetch(id){
 	console.log("Fetching " + id);
-	return Promise.delay(6000, id).then(CKClient.getUserKitties(owner_wallet_address,64,id*20)
+	return Promise.delay(3000, id).then(CKClient.getUserKitties(owner_wallet_address,64,id*20)
 		.then(handleKittensWithContract, noKittensToHandle));
 }
 function loopGetUserKitties(err, res){
@@ -319,16 +320,31 @@ function readyToBreedCheckA(id, id2){
 
 function readyToBreedCheckB(id, id2, aIsReady){
 	if(aIsReady){
-		ck_contract.methods.isReadyToBreed(id2).call().then(z => canBreedWithCheck(id, id2, z));
+		ck_contract.methods.isReadyToBreed(id2).call().then(z => notOnAuctionCheckA(id, id2, z));
 	} else {
 		console.log("A not ready");
 	}
 }
-function canBreedWithCheck(id, id2, bIsReady){
+
+function notOnAuctionCheckA(id, id2, bIsReady){
 	if(bIsReady){
-		ck_contract.methods.canBreedWith(id,id2).call().then(z => triggerTransactionOnly(id,id2,z));
+		ck_contract.methods.ownerOf(id).call().then(z => notOnAuctionCheckB(id, id2, z));
 	} else {
 		console.log("B not ready");
+	}
+}
+function notOnAuctionCheckB(id, id2, address){
+	if(address != upper_wallet_address){
+		console.log("For sale, cannot breed");
+	} else {
+		ck_contract.methods.ownerOf(id2).call().then(z => canBreedWithCheck(id,id2,z));
+	}
+}
+function canBreedWithCheck(id, id2, address){
+	if(address != upper_wallet_address){
+		console.log("for sale, cannot breed");
+	} else {
+		ck_contract.methods.canBreedWith(id,id2).call().then(z => triggerTransactionOnly(id,id2,z));		
 	}
 }
 
@@ -386,7 +402,7 @@ function findAuctionItems(cats_current){
 	for (var cat in cats_current){
 		count = cat;
 		cat = cats_current[cat];
-		if(cat.generation >= 4){
+		if(cat.generation >= 5){
 			highGenCats.push(cat.id);
 			setTimeout(check, 2000*count, cat.id);
 		}
@@ -395,9 +411,11 @@ function findAuctionItems(cats_current){
 	console.log("Found " + highGenCats.length + " possible auctions!");
 	return highGenCats;
 }
-function findBreedingPairs(cats){
+function findBreedingPairs(cats, targetedTraits){
 	var listOfUsedCats = [];
-	
+	for(var cat in cats){
+		//GeneDecoder.readKitten(cats[cat],targetedTraits);
+	}
 	for (var cat in cats){
 		count = cat;
 		cat = cats[cat];
