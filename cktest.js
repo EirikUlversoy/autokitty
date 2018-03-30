@@ -6,6 +6,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
+var promiseLimit = require('promise-limit')
 
 var api_calls_on = false;
 //Address of the wallet containing the cats, can be set in the console afterwards
@@ -37,19 +38,13 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 500;
+var amountOfCalls = 750;
 console.log(amountOfCalls);
 
 var i = 0;
 
 //Dictionary
 var o = {};
-
-function sleeper(ms) {
-  return function(x) {
-    return new Promise(resolve => setTimeout(() => resolve(x), ms));
-  };
-}
 
 //List of cats
 var cats = [];
@@ -78,14 +73,6 @@ function handleKittens(kittens){
 }
 
 
-function handleKittensWithContract(kittens){
-	var promiseArray = [];
-	for (kitten in kittens){
-		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten].id).call().then(doWork.bind(null, kittens[kitten].id));
-	}
-
-	return Promise.all(promiseArray);
-}
 
 function handleKittensWithID(kittens){
 	var promiseArray = [];
@@ -186,9 +173,6 @@ function breedingLoop(){
 	//console.log("Auctionable items found: %d", catsToBeAuctioned.length);
 	//console.log(breedingPairs);
 	console.log("Using account: " + web3.eth.defaultAccount);
-	for (var bp in breedingPairs){
-		//ck_contract.methods.breedWithAuto(breedingPairs[bp].id1, breedingPairs[bp].id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether") });
-	}
 	console.log("done");
 }
 var generations_breeding_upper_limit = 6;
@@ -224,6 +208,52 @@ function loopGetUserKitties(err, res){
     	array[i] = i;
 	}
 	return Promise.map(array, fetch, {concurrency: 2});
+}
+
+function doFilterWork(id,address){
+	if(address == upper_wallet_address){
+		allFilteredCatIDs.push(id);
+		console.log("Found owned cat!")
+
+	}
+
+}
+function filterAllOwnedCatsFromBlockchain(){
+
+}
+function job (name) {
+  var text = `job ${name}`
+  console.log('started', text)
+ 
+  return new Promise(function (resolve) {
+    setTimeout(() => {
+      console.log('       ', text, 'finished')
+      resolve(text)
+    }, 100)
+  })
+}
+function grabAllOwnedCatsFromBlockchain(){
+
+	var promiseArray = [];
+	for(var i = 0; i < 700000; i++){
+		promiseArray[i] = ck_contract.methods.ownerOf(i).call().then(doFilterWork.bind(null,i));
+
+	}
+	console.log("done adding promises?");
+	var limit = promiseLimit(1000);
+
+	return Promise.all(promiseArray.map((name) => {
+  		return limit(() => job(name))
+	}))
+	/*
+	return Promise.all(promiseArray).catch(function(err){
+		{
+			console.log(err);
+		}});*/
+	
+
+ 
+ 
 }
 
 function loopGetUserKittesNAPI(err, res){
@@ -276,10 +306,14 @@ function chunkify(a, n, balanced) {
 
     return out;
 }
-
+var allFilteredCatIDs = [];
 function helper(){
-	var kittens = loopGetUserKittesNAPI();
-	var kittenArrays = chunkify(kittens,10,false);
+	//var kittens = loopGetUserKittesNAPI();
+	
+	//var kittens = grabAllOwnedCatsFromBlockchain();
+	var kittens = allFilteredCatIDs;
+	console.log(allFilteredCatIDs.length + " cats owned by own address");
+	var kittenArrays = chunkify(kittens,1,false);
 	var promiseArrayStack = [];
 	for(var kittenArray in kittenArrays){
 		promiseArrayStack[kittenArray] = handleKittensWithID(kittenArrays[kittenArray]);
@@ -292,24 +326,10 @@ function helper(){
 if(api_calls_on){
 	loopGetUserKitties().then(mainFunction);
 } else {
-		helper().then(mainFunction);
+	helper().then(mainFunction);
 
 	//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
 }
-
-
-//console.log('Kitten count: %d', kittyCount);
-//amount of generations
-var generations = 20
-
-
-
-
-//logging how many cats there are of each generation
-
-
-
-//console.log('Kitten generation: %d , count: %d', generation, count);
 
 //function to remove element from array
 function remove(array, element){
@@ -354,33 +374,21 @@ function canBreedWithCheck(id, id2, address){
 
 function triggerTransactionOnly(id, id2, canBreed){
 	if(canBreed){
-		ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"),gasPrice: web3.utils.toWei("0.000000007", "ether") });
+		//ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"),gasPrice: web3.utils.toWei("0.000000007", "ether") });
 		console.log("Breeding: " + id +" and " + id2 + " together!");
-		//console.log("(((would have)))");
+		console.log("(((would have)))");
 	} else {
 		console.log("Breed with each other fail");
 	}
 }
-function triggerTransaction(id, id2){
-	if(ck_contract.methods.isReadyToBreed(id) && ck_contract.methods.isReadyToBreed(id2)){
-		if(ck_contract.methods.canBreedWith(id,id2)){
-			//console.log("Would have made transaction here!");
-			ck_contract.methods.breedWithAuto(id, id2).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.008", "ether"), gasPrice: web3.utils.toWei("0.000000015", "ether") });
-		}
-	}
-
-}
 
 function check(id){
 	ck_contract.methods.isPregnant(id).call().then(z => secondCheck(id,z));
-
-	//triggerAuction(id);
 }
 
 function secondCheck(id, pregnant){
 	if(!pregnant){
 		ck_contract.methods.ownerOf(id).call().then(z => triggerAuction(id, z));
-
 	} else {
 		console.log("Pregnant cat!");
 	}
@@ -398,11 +406,7 @@ function triggerAuction(id, address){
 		console.log("created auction for cat: %d", id);
 	}
 		
-	//} else {
-		//ck_contract.methods.createSaleAuction(id,web3.utils.toWei("0.3", "ether"),web3.utils.toWei("0.05", "ether"), 604800).send({from: web3.eth.defaultAccount, gas: 900000});
-	//}
 }
-//function for finding and adding breeding pairs
 
 function isEmptyObject( obj ) {
     for ( var name in obj ) {
@@ -446,9 +450,8 @@ function findBreedingPairsTargeted(cats,targetedTraits){
 	}
 	console.log("Found " + newCats.length + " filtered cats!");
 	cats = newCats;
-
-
 }
+
 function findBreedingPairs(cats, targetedTraits){
 	var listOfUsedCats = [];
 	var newCats = [];
