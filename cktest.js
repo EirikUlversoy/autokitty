@@ -6,6 +6,7 @@ var fs = require("fs");
 var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
+var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
 var generations_breeding_upper_limit = 1;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
@@ -53,15 +54,6 @@ var o = {};
 
 //List of cats
 var cats = [];
-
-//Class describing a cat
-function Cat(id, generation, attributeList) {
-	this.id = id;
-	this.generation = generation;
-	this.attributeList = attributeList;
-}
-
-
 
 var callsMade = 0;
 var callsHandled = 0;
@@ -183,9 +175,6 @@ function doFilterWork(id,address){
 	}
 
 }
-function filterAllOwnedCatsFromBlockchain(){
-
-}
 function job (name) {
   var text = `job ${name}`
   console.log('started', text)
@@ -226,11 +215,6 @@ function loopGetUserKittesNAPI(err, res){
 	var splitText = text.split(",");
 	return splitText;
 }
-/*
-for (; i < 5;) {
-	CKClient().getKitten(5000+i).then(handleKitten);
-	i++;
-}*/
 
 function chunkify(a, n, balanced) {
     
@@ -296,70 +280,9 @@ if(api_calls_on){
 	//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
 }
 
-
-
-
-
-function check(id){
-	ck_contract.methods.isPregnant(id).call().then(z => secondCheck(id,z));
-}
-
-function secondCheck(id, pregnant){
-	if(!pregnant){
-		ck_contract.methods.ownerOf(id).call().then(z => triggerAuction(id, z));
-	} else {
-		console.log("Pregnant cat!");
-	}
-}
-function triggerAuction(id, address){
-	//console.log(ck_contract.methods.getKitty(id).call());
-	//if(ck_contract.methods.getKitty(id).siringWithId == 0){
-	if(address != upper_wallet_address){
-		console.log("Already on auction!")
-		console.log(address);
-
-	} else {
-		//ck_contract.methods.createSaleAuction(id,web3.utils.toWei("0.049", "ether"),web3.utils.toWei("0.01", "ether"), 3048000).send({from: web3.eth.defaultAccount, gas: 900000, gasPrice: web3.utils.toWei("0.000000015", "ether")});
-		console.log("(((would have)))");
-		console.log("created auction for cat: %d", id);
-	}
-		
-}
-
 function isEmptyObject( obj ) {
     for ( var name in obj ) {
         return false;
     }
     return true;
 }
-
-function findAuctionItems(cats_current){
-	var highGenCats = []
-	for (var cat in cats_current){
-		count = cat;
-		cat = cats_current[cat];
-		if(cat.generation >= 5){
-			highGenCats.push(cat.id);
-			setTimeout(check, 2000*count, cat.id);
-		}
-
-	}
-	console.log("Found " + highGenCats.length + " possible auctions!");
-	return highGenCats;
-}
-
-function pairHitsAll(cat_one,cat_two){
-	//pseudo: if cat pair has all needed traits in combination => breed
-}
-
-
-function findBreedingPairs(cats, targetedTraits){
-
-
-}
-
-
-
-
-
-

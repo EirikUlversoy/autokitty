@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "auctioneer": "file:auctioneer",
     "breeder": "file:breeder",
     "bs58": "^4.0.1",
     "ckclient": "file:ckclient",
