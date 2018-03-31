@@ -7,11 +7,10 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 10;
+var generations_breeding_upper_limit = 1;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
-console.log(Breeder);
 //Breeder = Breeder(generations_breeding_upper_limit);
 var promiseLimit = require('promise-limit')
 
@@ -69,13 +68,19 @@ function handleKittens(kittens){
 
 function handleKittensWithID(kittens){
 	var promiseArray = [];
-
+	//web3.eth.defaultBlock = 5356409;
 	for(kitten in kittens){
 		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten]).call().then(doWork.bind(null,kittens[kitten]));
 	}
+
+	//return Promise.map(promiseArray, Promise.resolve, {concurrency: 1}).catch(function(err){
+	//console.log("Had " + result.length + " pending promises(map)!");
+	//return promiseArray;
+	//});
+	
 	return Promise.all(promiseArray).catch(function(err){
-		var result = promiseArray.filter(z => z.id);
-		console.log("Had " + result.length + " pending promises!");
+		//var result = promiseArray.filter(z => z.id);
+		//console.log("Had " + result.length + " pending promises!");
 		return promiseArray;
 	});
 	//return Promise.settleVal(null,promiseArray);
@@ -138,17 +143,19 @@ function saveKittenIds(kittens){
 function mainFunction (calls){
 	console.log("is in main");
 
-	var targeted_traits = ["Cyan","Cymric","Elk","Happygokitty","Selkirk"];
-
+	//var targeted_traits = ["Elk","Cyan","Cymric","Happygokitty"];
+	var targeted_traits = ["Strawberry","Chocolate","Wuvme","Baddate"];
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
 
 	console.log("There are " + cats.length + " cats in the list!");
-
+	console.log("There are " + allFilteredCats.length + " cats in the filtered list!");
+	cats = allFilteredCats;
 	//findAuctionItems(cats);
 	if(targeted_traits.length != 0){
-		Breeder.advancedBreedingLoop(cats, ck_contract, targeted_traits)
+		console.log("heading into advanced breeding loop");
+		Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract);
 	} else {
 		Breeder.breedingLoop(cats, ck_contract);
 	}
@@ -174,10 +181,10 @@ function loopGetUserKitties(err, res){
 	return Promise.map(array, fetch, {concurrency: 2});
 }
 
-function doFilterWork(id,address){
+function doFilterWork(cat,address){
 	if(address == upper_wallet_address){
-		allFilteredCatIDs.push(id);
-		console.log("Found owned cat!")
+		allFilteredCats.push(cat);
+		//console.log("Found owned cat!")
 
 	}
 
@@ -192,6 +199,30 @@ function job (name) {
       resolve(text)
     }, 100)
   })
+}
+
+var ownedTokens = [];
+function placeTokensInGlobalList(tokens){
+	console.log("Found tokens: " + tokens);
+	console.log(tokens.length);
+	ownedTokens = tokens;
+}
+function getTokensOfOwner(){
+	var aPromise = ck_contract.methods.tokensOfOwner(owner_wallet_address).call({gas:9900000000000}).then(placeTokensInGlobalList);
+	console.log(aPromise);
+	return Promise.all([aPromise]).catch(function(err){
+		console.log(err);
+	});
+}
+function checkOwnershipOfCats(cats_bad){
+	var promiseArray = [];
+	for(var cat in cats){
+		counter = cat;
+		cat = cats[cat];
+		promiseArray[counter] = ck_contract.methods.ownerOf(cat.id).call().then(doFilterWork.bind(null,cat));
+	}
+
+	return Promise.all(promiseArray).catch(console.log("Cat owner lookup failed somewhere:("));
 }
 function grabAllOwnedCatsFromBlockchain(){
 
@@ -258,28 +289,32 @@ function chunkify(a, n, balanced) {
 
     return out;
 }
-var allFilteredCatIDs = [];
+var allFilteredCats = [];
 function helper(){
+	console.log("Own ID list is: " + ownedTokens);
 	var kittens = loopGetUserKittesNAPI();
-	
+	console.log("Amount of kittens in the external ID list is: " + kittens.length );
 	//var kittens = grabAllOwnedCatsFromBlockchain();
-	//var kittens = allFilteredCatIDs;
-	//console.log(allFilteredCatIDs.length + " cats owned by own address");
-	var kittenArrays = chunkify(kittens,1,false);
+
+	var kittenArrays = chunkify(kittens,100,false);
 	var promiseArrayStack = [];
+	//return handleKittensWithID(kittens);
+
 	for(var kittenArray in kittenArrays){
 		promiseArrayStack[kittenArray] = handleKittensWithID(kittenArrays[kittenArray]);
-	//return handleKittensWithID(kittens).then(mainFunction);
 	}
-	return Promise.all(promiseArrayStack);
+	//return Promise.map(promiseArrayStack, Promise.resolve, {concurrency: 1});
+
+	//return Promise.all(promiseArrayStack);
+	return Promise.settleVal(null,promiseArrayStack);
 }
 
 //Test output
 if(api_calls_on){
 	loopGetUserKitties().then(mainFunction);
 } else {
-	Promise.delay(10000).then(helper().then(mainFunction));
-
+	//Promise.delay(10000).then(helper().then(mainFunction));
+	Promise.delay(3000).then(helper).then(checkOwnershipOfCats).then(mainFunction);
 	//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
 }
 

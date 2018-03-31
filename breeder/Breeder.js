@@ -27,11 +27,12 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	}
 
 	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract){
-		var targetedTraits = [];
 		self.ck_contract = ck_contract;
 		var filteredCatList = self.separateByGeneration(cats);
+		console.log("Excluded generations and was left with: " + filteredCatList.length + " cats!");
 		var breedingPairs = self.findBreedingPairsTargeted(filteredCatList, targetedTraits);
-		console.log('Kitten breeding pairs found: %d', breedingPairs.length);
+		console.log('Fitting kittens found: %d', breedingPairs.length);
+		//console.log(breedingPairs);
 		console.log("Account used to breed: " + self.web3.eth.defaultAccount);
 	
 	}
@@ -124,7 +125,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			}
 		}
 		console.log("Found " + newCats.length + " filtered cats!");
-		console.log(newCats);
+		//console.log(newCats);
 		return newCats;
 	}
 
