@@ -291,11 +291,10 @@ function chunkify(a, n, balanced) {
 }
 var allFilteredCats = [];
 function helper(){
-	console.log("Own ID list is: " + ownedTokens);
 	var kittens = loopGetUserKittesNAPI();
 	console.log("Amount of kittens in the external ID list is: " + kittens.length );
 	//var kittens = grabAllOwnedCatsFromBlockchain();
-
+	console.log(cats.length);
 	var kittenArrays = chunkify(kittens,100,false);
 	var promiseArrayStack = [];
 	//return handleKittensWithID(kittens);
@@ -304,17 +303,29 @@ function helper(){
 		promiseArrayStack[kittenArray] = handleKittensWithID(kittenArrays[kittenArray]);
 	}
 	//return Promise.map(promiseArrayStack, Promise.resolve, {concurrency: 1});
-
-	//return Promise.all(promiseArrayStack);
-	return Promise.settleVal(null,promiseArrayStack);
+	return Promise.all(promiseArrayStack).catch(console.log("Error in helper?"));
+	//return Promise.settleVal(null,promiseArrayStack);
 }
+
+function getCatsLoop(catArray){
+	return catArray.reduce(function(promise, cat) {
+		return promise.then(function(){
+			return ck_contract.methods.getKitty(cat).call().then(doWork.bind(null, cat));
+		});
+	}, Promise.resolve());
+}
+
 
 //Test output
 if(api_calls_on){
 	loopGetUserKitties().then(mainFunction);
 } else {
 	//Promise.delay(10000).then(helper().then(mainFunction));
-	Promise.delay(3000).then(helper).then(checkOwnershipOfCats).then(mainFunction);
+	//Promise.delay(3000).then(helper).then(checkOwnershipOfCats).then(mainFunction);
+	var kittens = loopGetUserKittesNAPI();
+	console.log("There are: " + kittens.length + "kitten IDS stored on disk");
+	getCatsLoop(kittens).then(checkOwnershipOfCats).then(mainFunction);
+	//Promise.delay(3000).then(helper).then(helper).then(helper).then(helper).then(helper).then(checkOwnershipOfCats).then(mainFunction);
 	//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
 }
 
