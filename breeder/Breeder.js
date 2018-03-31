@@ -30,12 +30,61 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		self.ck_contract = ck_contract;
 		var filteredCatList = self.separateByGeneration(cats);
 		console.log("Excluded generations and was left with: " + filteredCatList.length + " cats!");
-		var breedingPairs = self.findBreedingPairsTargeted(filteredCatList, targetedTraits);
-		console.log('Fitting kittens found: %d', breedingPairs.length);
+		var catsWithAnyTrait = self.findBreedingPairsTargeted(filteredCatList, targetedTraits);
+		console.log('Fitting kittens found: %d', catsWithAnyTrait.length);
 		//console.log(breedingPairs);
 		console.log("Account used to breed: " + self.web3.eth.defaultAccount);
-	
+		var topLists = [];
+		topLists = self.createTopLists(catsWithAnyTrait,targetedTraits);
+		for(var nTopList in topLists){
+			nTopList = topLists[nTopList];
+			for(var rHolder in nTopList){
+				rHolder = nTopList[rHolder];
+				console.log("Kitten with ID: " + rHolder.id);
+				console.log("Has the score: " + JSON.stringify(rHolder.chanceOfTrait,null,4));
+			}
+		}
 	}
+
+	self.createTopLists = function(cats,targetedTraits){
+		var topLists = [];
+		for(var trait in targetedTraits){
+			trait = targetedTraits[trait];
+			traitTopList = self.createSingleTopList(cats, trait);
+			topLists.push(traitTopList);
+			//console.log(traitTopList);
+		}
+
+		return topLists;
+	}
+
+	self.createSingleTopList = function(cats, trait){
+		var topList = [];
+		for(var cat in cats){
+			cat = cats[cat];
+			if(cat.chanceOfTrait[trait]){
+				topList.push(cat);
+			}
+
+		}
+		topList.sort(self.traitScoreComparator(trait));
+		return topList;
+	}
+
+	self.traitScoreComparator = function(trait){
+		var sortOrder = 1;
+		if(trait[0] === "-") {
+			sortOrder = -1;
+			trait = trait.substr(1);
+		}
+
+		return function (a,b) {
+	        var result = (a.chanceOfTrait[trait] < b.chanceOfTrait[trait]) ? -1 : (a.chanceOfTrait[trait] > b.chanceOfTrait[trait]) ? 1 : 0;
+	        return result * sortOrder;
+	    }
+
+	}
+
 	self.breedingLoop = function(cats, ck_contract){
 		self.ck_contract = ck_contract;
 		var filteredCatList = self.separateByGeneration(cats);
