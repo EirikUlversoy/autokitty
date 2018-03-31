@@ -8,24 +8,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	//Ck_contract needs to be initialized before breeding
 	self.ck_contract = null;
 
-	self.findBreedingPairsTargeted = function(cats,targetedTraits){
-		var traitLists = {}
-
-		for(var trait in targetedTraits){
-			traitLists[targetedTraits[trait]] = [];
-		}
-
-		for(var cat in cats){
-			//GeneDecoder.readKitten(cats[cat],targetedTraits);
-			var newKitten = GeneDecoder.simpleFilter(cats[cat],targetedTraits);
-			if(!isEmptyObject(newKitten.chanceOfTrait)){
-				newCats.push(newKitten);
-
-			}
-		}
-		console.log("Found " + newCats.length + " filtered cats!");
-		cats = newCats;
-	}
+	
 	self.separateByGeneration = function(cats){
 		var filteredCatList = [];
 
@@ -43,9 +26,14 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		return filteredCatList;
 	}
 
-	self.advancedBreedingLoop = function(){
+	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract){
 		var targetedTraits = [];
-		//Same as breeding loop but with trait selection
+		self.ck_contract = ck_contract;
+		var filteredCatList = self.separateByGeneration(cats);
+		var breedingPairs = self.findBreedingPairsTargeted(filteredCatList, targetedTraits);
+		console.log('Kitten breeding pairs found: %d', breedingPairs.length);
+		console.log("Account used to breed: " + self.web3.eth.defaultAccount);
+	
 	}
 	self.breedingLoop = function(cats, ck_contract){
 		self.ck_contract = ck_contract;
@@ -91,9 +79,9 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 
 	self.triggerTransactionOnly = function(id, id2, canBreed){
 		if(canBreed){
-			self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000007", "ether") });
+			//self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000007", "ether") });
 			console.log("Breeding: " + id +" and " + id2 + " together!");
-			//console.log("(((would have)))");
+			console.log("(((would have)))");
 		} else {
 			console.log("Breeding failed. Possible cause: Too close relation");
 		}
@@ -102,6 +90,12 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		return cat.isReady && potentialPartner.isReady;
 	}
 
+	function isEmptyObject( obj ) {
+	    for ( var name in obj ) {
+	        return false;
+	    }
+	    return true;
+	}
 	//Tuple describing a breeding pair
 	function BreedingPair(id1, id2){
 		this.id1 = id1;
@@ -114,6 +108,26 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	    return e !== element;
 	});
 	}
+
+	self.findBreedingPairsTargeted = function(cats,targetedTraits){
+		var traitLists = {}
+		var newCats = [];
+		for(var trait in targetedTraits){
+			traitLists[targetedTraits[trait]] = [];
+		}
+
+		for(var cat in cats){
+			var newKitten = GeneDecoder.simpleFilter(cats[cat],targetedTraits);
+			if(!isEmptyObject(newKitten.chanceOfTrait)){
+				newCats.push(newKitten);
+
+			}
+		}
+		console.log("Found " + newCats.length + " filtered cats!");
+		console.log(newCats);
+		return newCats;
+	}
+
 	self.findBreedingPairs = function(cats){
 		var listOfUsedCats = [];
 		var newCats = [];

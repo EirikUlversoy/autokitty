@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 1;
+var generations_breeding_upper_limit = 10;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
@@ -137,14 +137,21 @@ function saveKittenIds(kittens){
 
 function mainFunction (calls){
 	console.log("is in main");
+
+	var targeted_traits = ["Cyan","Cymric","Elk","Happygokitty","Selkirk"];
+
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
-	console.log(GeneDecoder);
+
+	console.log("There are " + cats.length + " cats in the list!");
 
 	//findAuctionItems(cats);
-
-	Breeder.breedingLoop(cats, ck_contract);
+	if(targeted_traits.length != 0){
+		Breeder.advancedBreedingLoop(cats, ck_contract, targeted_traits)
+	} else {
+		Breeder.breedingLoop(cats, ck_contract);
+	}
 
 }
 
@@ -204,10 +211,6 @@ function grabAllOwnedCatsFromBlockchain(){
 		{
 			console.log(err);
 		}});*/
-	
-
- 
- 
 }
 
 function loopGetUserKittesNAPI(err, res){

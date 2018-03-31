@@ -363,6 +363,7 @@ function GeneDecoder(){
 
 	self.simpleChanceOfTrait = function(geneArray, trait){
 		var chanceOfTrait = 0.0;
+		console.log("checking for " + trait);
 		for (var gene in geneArray){
 			if(geneArray[gene] == trait){
 				chanceOfTrait += genePercentages[gene];
@@ -371,7 +372,7 @@ function GeneDecoder(){
 		return chanceOfTrait;
 	}
 
-		function isEmptyObject( obj ) {
+	function isEmptyObject( obj ) {
 	    for ( var name in obj ) {
 	        return false;
 	    }
@@ -379,6 +380,7 @@ function GeneDecoder(){
 	}
 	self.simpleFilter = function(kitten, targetedTraits){
 		geneArrays = self.readKitten(kitten,targetedTraits);
+		//console.log(geneArrays);
 		traitChances = {};
 		//console.log(targetedTraits);
 		for(var trait in targetedTraits){
@@ -386,15 +388,15 @@ function GeneDecoder(){
 				var chance = self.simpleChanceOfTrait(geneArrays[gArray],targetedTraits[trait]);
 				if(chance != 0.0){
 					traitChances[targetedTraits[trait]] = chance;  
+				}
 			}
+			if(!isEmptyObject(traitChances)){
+				console.log(traitChances);
+			}
+			kitten.chanceOfTrait = traitChances;
 		}
-		if(!isEmptyObject(traitChances)){
-			console.log(traitChances);
-		}
-		kitten.chanceOfTrait = traitChances;
 		return kitten;
 	}
-}
 
 	self.readKitten = function (kitten, targetedTraits){
 		var testKaiSequence = "9ac9558524a2f4fad8185144f97c17513483441qdgdagegg";
