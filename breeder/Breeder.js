@@ -40,12 +40,66 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			nTopList = topLists[nTopList];
 			for(var rHolder in nTopList){
 				rHolder = nTopList[rHolder];
-				console.log("Kitten with ID: " + rHolder.id);
-				console.log("Has the score: " + JSON.stringify(rHolder.chanceOfTrait,null,4));
+				//console.log("Kitten with ID: " + rHolder.id);
+				//console.log("Has the score: " + JSON.stringify(rHolder.chanceOfTrait,null,4));
 			}
 		}
+
+		var largestTrait = null;
+		var largestTraitList = 0;
+		for(var trait in targetedTraits){
+			var length = topLists[trait].length;
+			if(length > largestTraitList){
+				largestTrait = targetedTraits[trait];
+				largestTraitList = length;
+			}
+		}
+
+		console.log("Largest trait is: " + largestTrait);
+		console.log("Amount of cats with the trait is: " + largestTraitList);
+		var scores = self._scoreCatsBasedOnTraits(catsWithAnyTrait, targetedTraits);
+
+		function CatWithScore(id, score){
+			this.id = id;
+			this.score = score;
+		}
+		var arrayOfScoredCats = [];
+		var scoreKeys = Object.keys(scores);
+
+		for(var key in scoreKeys){
+			//arrayOfScoredCats.push(new CatWithScore(scores[score]))
+			arrayOfScoredCats.push(new CatWithScore(scoreKeys[key], scores[scoreKeys[key]]));
+
+			
+		}
+		arrayOfScoredCats.sort(self._keyComparator("score"));
+		console.log(arrayOfScoredCats);
+
+
+
+
 	}
 
+	self._scoreCatsBasedOnTraits = function(cats, targetedTraits){
+		var catScores = {};
+		//Dictionary pairing catIDs with scores.
+
+		for(var cat in cats){
+			var count = cat;
+			cat = cats[cat];
+			var score = 0;
+			for(var trait in targetedTraits){
+				var chance = cat.chanceOfTrait[targetedTraits[trait]];
+				if(chance > 0){
+					score += chance;
+				}
+
+			}
+			catScores[cat.id] = score;
+		}
+
+		return catScores;
+	}
 	self.createTopLists = function(cats,targetedTraits){
 		var topLists = [];
 		for(var trait in targetedTraits){
@@ -70,7 +124,18 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		topList.sort(self.traitScoreComparator(trait));
 		return topList;
 	}
+	self._keyComparator = function(key){
+		var sortOrder = -1;
+		if(key[0] === "-"){
+			sortOrder = -1;
+			key = key.substr(1); 
+		}
 
+		return function(a,b){
+			var result = (a[key] < b[key]) ? -1 : (a[key] > b[key]) ? 1 : 0;
+			return result * sortOrder;
+		}
+	}
 	self.traitScoreComparator = function(trait){
 		var sortOrder = 1;
 		if(trait[0] === "-") {
