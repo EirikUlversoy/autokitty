@@ -76,8 +76,8 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		arrayOfScoredCats.sort(self._keyComparator("score"));
 		console.log(arrayOfScoredCats);
 
-		var breedingPairs = _simpleBreedingAlgorithm(cats, arrayOfScoredCats, targetedTraits);
-
+		var breedingPairs = self._simpleBreedingAlgorithm(cats, arrayOfScoredCats, targetedTraits);
+		self._triggerBreedingPairs(breedingPairs);
 	}
 
 	self._triggerBreedingPairs = function(breedingPairs){
