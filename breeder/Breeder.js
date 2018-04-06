@@ -84,6 +84,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 
 	self._triggerBreedingPairs = function(breedingPairs){
 		for(var bp in breedingPairs){
+			count = bp;
 			bp = breedingPairs[bp];
 			setTimeout(self.readyToBreedCheckA,150*count, bp.id1, bp.id2);
 		}
@@ -109,7 +110,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			//console.log(scoredCat);
 
 			if(potentialPartners.includes(scoredCat)){
-				if(scoredCat.score > 0.5){
+				if(scoredCat.score > 0.125*targetedTraits.length){
 					console.log("now trying to find a match for: " + scoredCat.id);
 					//Simplifying assumption
 					if(scoredCat.missingTraits.length == 0){
@@ -121,32 +122,41 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 					} else if (scoredCat.missingTraits.length == 1){
 						console.log("Missing one trait, pick based on top scoring cat of that trait");
 						var missingTrait = scoredCat.missingTraits[0];
-						var missingTraitScoreList = self._scoreCatsBasedOnSingleTrait(cats, missingTrait);
+						var missingTraitScoreList = self._scoreCatsBasedOnSingleTrait(potentialPartners, missingTrait);
 						var orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(missingTraitScoreList);
-						remove(potentialPartners, scoredCat.id);
-						var partner = orderedTraitScoreList[0];
-						remove(potentialPartners, partner.id);
-						breedingPairs.push(new BreedingPair(scoredCat.id,partner.id));
+						if(orderedTraitScoreList.length > 0){
+							remove(potentialPartners, scoredCat.id);
+							var partner = orderedTraitScoreList[0];
+							remove(potentialPartners, partner.id);
+							breedingPairs.push(new BreedingPair(scoredCat.id,partner.id));
+						} else {
+							console.log("No cat with the cattribute " + missingTrait + " left :(");
+						}
+						
 					} else if (scoredCat.missingTraits.length == 2) {
 						console.log("Missing two traits.. Looking at both ");
 						var missingTraits = scoredCat.missingTraits;
 						console.log("Traits: " + missingTraits[0] + ", " + missingTraits[1]);						
-						var firstMissingTraitScoreList = self._scoreCatsBasedOnSingleTrait(cats, missingTraits[0]);
-						var secondMissingTraitScoreList = self._scoreCatsBasedOnSingleTrait(cats, missingTraits[1]);
+						var firstMissingTraitScoreList = self._scoreCatsBasedOnSingleTrait(potentialPartners, missingTraits[0]);
+						var secondMissingTraitScoreList = self._scoreCatsBasedOnSingleTrait(potentialPartners, missingTraits[1]);
 						var firstOrderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(firstMissingTraitScoreList);
 						var secondOrderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(secondMissingTraitScoreList);
-
-						for(var tCat in firstOrderedTraitScoreList){
-							var tCat = firstOrderedTraitScoreList[tCat];
-							//TODO: 0.3 magic number 
-							if(secondMissingTraitScoreList[tCat.id] > 0.1 ){
-								remove(potentialPartners, scoredCat.id);
-								var partner = tCat;
-								remove(potentialPartners, partner.id);
-								breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
-								break;
+						if(firstOrderedTraitScoreList.length > 0 && secondOrderedTraitScoreList.length > 0){
+							for(var tCat in firstOrderedTraitScoreList){
+								var tCat = firstOrderedTraitScoreList[tCat];
+								//TODO: 0.3 magic number 
+								if(secondMissingTraitScoreList[tCat.id] > 0.1 ){
+									remove(potentialPartners, scoredCat.id);
+									var partner = tCat;
+									remove(potentialPartners, partner.id);
+									breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
+									break;
+								}
 							}
+						} else {
+							console.log("Both traits are not present any longer");
 						}
+						
 					} else {
 						console.log("Missing three or more traits, probably should not breed this cat");
 					}

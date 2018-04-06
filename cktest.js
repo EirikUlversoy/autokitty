@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 10;
+var generations_breeding_upper_limit = 5;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 750;
+var amountOfCalls = 700;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -64,6 +64,14 @@ function handleKittens(kittens){
 	return Promise.all(promiseArray);
 }
 
+function handleKittensWithContract(kittens){	
+	var promiseArray = [];	
+	for (kitten in kittens){	
+		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten].id).call().then(doWork.bind(null, kittens[kitten].id));	
+	}	
+	
+	return Promise.all(promiseArray);
+}
 
 
 function handleKittensWithID(kittens){
@@ -135,7 +143,14 @@ function saveKittenIds(kittens){
 	for (var kitten in kittens){
 		output.push(kittens[kitten].id);
 	}
-	fs.writeFile('kittens.txt', output, (err) => {
+	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens.txt', 'utf8');
+	textSplit = text.split(",");
+	for(var textPiece in textSplit ){
+		if(!output.includes(textSplit[textPiece])){
+			output.push(textSplit[textPiece]);
+		}
+	}
+	fs.writeFile('kittens2.txt', output, (err) => {
   	if (err) throw err;
   	console.log('It\'s saved!');
 });}
@@ -146,7 +161,8 @@ function mainFunction (calls){
 	//var targeted_traits = ["Elk","Cyan","Cymric","Happygokitty"];
 	var targeted_traits = ["Strawberry","Chocolate","Wuvme","Baddate"];
 	var earnie = ["Birman","Hotrod","Grim","Orangesoda"];
-	var targeted_traits = earnie;
+	var Patrickstarfish = ["Frosting", "Morningglory"];
+	var targeted_traits = Patrickstarfish;
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
@@ -157,8 +173,8 @@ function mainFunction (calls){
 	//findAuctionItems(cats);
 	if(targeted_traits.length != 0){
 		console.log("heading into advanced breeding loop");
-		Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract);
 		GeneDecoder.statistics(cats);
+		Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract);
 	} else {
 		Breeder.breedingLoop(cats, ck_contract);
 	}
@@ -178,9 +194,13 @@ function fetch(id){
 function loopGetUserKitties(err, res){
 	var promiseArray = []
 	array = new Array();
-	for (i = 0; i < amountOfCalls; i++) {
+	//Most likely only need last 1000 cats or so, the rest is already present.
+	for (i = 650; i < amountOfCalls; i++) {
     	array[i] = i;
 	}
+	array = array.filter(function(e){return e}); 
+	console.log(array.length);
+	console.log(array);
 	return Promise.map(array, fetch, {concurrency: 2});
 }
 
@@ -217,6 +237,15 @@ function getTokensOfOwner(){
 		console.log(err);
 	});
 }
+
+function getOwnershipOfCatsLoop(cats){
+	return cats.reduce(function(promise, cat) {
+		return promise.then(function(){
+			return ck_contract.methods.ownerOf(cat.id).call().then(doFilterWork.bind(null, cat));
+		});
+	}, Promise.resolve());
+}
+
 function checkOwnershipOfCats(cats_bad){
 	var promiseArray = [];
 	for(var cat in cats){
@@ -224,8 +253,8 @@ function checkOwnershipOfCats(cats_bad){
 		cat = cats[cat];
 		promiseArray[counter] = ck_contract.methods.ownerOf(cat.id).call().then(doFilterWork.bind(null,cat));
 	}
-
-	return Promise.all(promiseArray).catch(console.log("Cat owner lookup failed somewhere:("));
+	return Promise.settleVal(null,promiseArray).catch(console.log("Failed to check cat ownership"));
+	//return Promise.all(promiseArray).catch(console.log("Cat owner lookup failed somewhere:("));
 }
 function grabAllOwnedCatsFromBlockchain(){
 
@@ -250,6 +279,22 @@ function grabAllOwnedCatsFromBlockchain(){
 function loopGetUserKittesNAPI(err, res){
 	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens.txt', 'utf8');
 	var splitText = text.split(",");
+	var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens2.txt', 'utf8');
+	var secondSplitText = secondText.split(",");
+	for(var kittenID in secondSplitText){
+		kittenID = secondSplitText[kittenID];
+		if(!splitText.includes(kittenID)){
+			splitText.push(kittenID);
+		}
+	}
+	var thirdText = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens2.txt', 'utf8');
+	var thirdSplitText = thirdText.split(",");
+	for(var kittenID in thirdSplitText){
+		kittenID = thirdSplitText[kittenID];
+		if(!splitText.includes(kittenID)){
+			splitText.push(kittenID);
+		}
+	}
 	return splitText;
 }
 
@@ -328,6 +373,8 @@ if(api_calls_on){
 	var kittens = loopGetUserKittesNAPI();
 	console.log("There are: " + kittens.length + "kitten IDS stored on disk");
 	getCatsLoop(kittens).then(checkOwnershipOfCats).then(mainFunction);
+	//getCatsLoop(kittens).then(getOwnershipOfCatsLoop).then(mainFunction);
+
 	//Promise.delay(3000).then(helper).then(helper).then(helper).then(helper).then(helper).then(checkOwnershipOfCats).then(mainFunction);
 	//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
 }

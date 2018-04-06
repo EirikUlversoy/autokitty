@@ -160,7 +160,8 @@ function GeneDecoder(){
 		colorTertiaryGeneNames["Seafoam"] = "q";
 		colorTertiaryGeneNames["Mintmacaron"] = "t";
 		colorTertiaryGeneNames["Frosting"] = "g";
-
+		colorTertiaryGeneNames["Patrickstarfish"] = "p";
+		
 		wildGeneNames["Dracula"] = "1";
 		wildGeneNames["Santa"] = "d";
 		wildGeneNames["Elk"] = "i";
