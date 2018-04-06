@@ -37,6 +37,10 @@ function GeneDecoder(){
 		bodyGeneNames["Ragamuffin"] = "f";
 		bodyGeneNames["Ragdoll"] = "g";
 		bodyGeneNames["Norwegianforest"] = "h";
+		bodyGeneNames["Mainecoon"] = "n";
+		bodyGeneNames["Laperm"] = "o";
+		bodyGeneNames["Persian"] = "p";
+		bodyGeneNames["Manx"] = "t";
 
 		patternGeneNames["Tiger"] = "2";
 		patternGeneNames["Rascal"] = "3";
@@ -44,7 +48,7 @@ function GeneDecoder(){
 		patternGeneNames["Leopard"] = "5";
 		patternGeneNames["Camo"] = "6";
 		patternGeneNames["Totesbasic"] = "7";
-		patternGeneNames["Totesbasic2"] = "8";
+		patternGeneNames["Spangled"] = "8";
 		patternGeneNames["Calicool"] = "9";
 		patternGeneNames["Luckystripe"] = "a";
 		patternGeneNames["Amur"] = "b";
