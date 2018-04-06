@@ -145,6 +145,8 @@ function mainFunction (calls){
 
 	//var targeted_traits = ["Elk","Cyan","Cymric","Happygokitty"];
 	var targeted_traits = ["Strawberry","Chocolate","Wuvme","Baddate"];
+	var earnie = ["Birman","Hotrod","Grim","Orangesoda"];
+	var targeted_traits = earnie;
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
@@ -156,6 +158,7 @@ function mainFunction (calls){
 	if(targeted_traits.length != 0){
 		console.log("heading into advanced breeding loop");
 		Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract);
+		GeneDecoder.statistics(cats);
 	} else {
 		Breeder.breedingLoop(cats, ck_contract);
 	}

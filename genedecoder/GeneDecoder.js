@@ -77,6 +77,7 @@ function GeneDecoder(){
 		colorEyesGeneNames["Bubblegum"] = "k";
 		colorEyesGeneNames["Twilightsparkle"] = "m";
 		colorEyesGeneNames["Babypuke"] = "q";
+		colorEyesGeneNames["Doridnudibranch"] = "e";
 
 		eyesGeneNames["Wonky"] = "2";
 		eyesGeneNames["Serpent"] = "3";
@@ -97,6 +98,7 @@ function GeneDecoder(){
 		eyesGeneNames["Sweetmeloncakes"] = "p";
 		eyesGeneNames["Wingtips"] = "r";
 		eyesGeneNames["Buzzed"] = "t";
+
 
 		colorPrimaryGeneNames["Shadowgrey"] = "1";
 		colorPrimaryGeneNames["Salmon"] = "2";
@@ -134,6 +136,7 @@ function GeneDecoder(){
 		colorSecondaryGeneNames["Cerulian"] = "n";
 		colorSecondaryGeneNames["Skyblue"] = "o";
 		colorSecondaryGeneNames["Royalblue"] = "s";
+		colorSecondaryGeneNames["Springcrocus"] = "2";
 
 		colorTertiaryGeneNames["Belleblue"] = "1";
 		colorTertiaryGeneNames["Sandalwood"] = "2";
@@ -151,6 +154,8 @@ function GeneDecoder(){
 		colorTertiaryGeneNames["Bloodred"] = "k";
 		colorTertiaryGeneNames["Periwinkle"] = "o";
 		colorTertiaryGeneNames["Seafoam"] = "q";
+		colorTertiaryGeneNames["Mintmacaron"] = "t";
+		colorTertiaryGeneNames["Frosting"] = "g";
 
 		wildGeneNames["Dracula"] = "1";
 		wildGeneNames["Santa"] = "d";
@@ -378,7 +383,7 @@ function GeneDecoder(){
 	    return true;
 	}
 	self.simpleFilter = function(kitten, targetedTraits){
-		geneArrays = self.readKitten(kitten,targetedTraits);
+		geneArrays = self.readKitten(kitten);
 		var traitChances = {};
 		for(var trait in targetedTraits){
 			for(var gArray in geneArrays){
@@ -395,7 +400,24 @@ function GeneDecoder(){
 		return kitten;
 	}
 
-	self.readKitten = function (kitten, targetedTraits){
+	self.statistics = function(cats){
+		statsDictionary = {};
+		for(var cat in cats){
+			cat = cats[cat];
+			geneArrays = self.readKitten(cat);
+			for(var gArray in geneArrays){
+				gArray = geneArrays[gArray];
+				if(statsDictionary[gArray[3]]){
+					statsDictionary[gArray[3]] = statsDictionary[gArray[3]] + 1;
+				} else {
+					statsDictionary[gArray[3]] = 1;
+				}
+			}
+		}
+		console.log("Wall of stats:");
+		console.log(statsDictionary);
+	}
+	self.readKitten = function (kitten){
 		var testKaiSequence = "9ac9558524a2f4fad8185144f97c17513483441qdgdagegg";
 		var KAISequence = self.translateGenesToKai(kitten.genes);
 
