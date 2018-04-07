@@ -7,7 +7,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	self.generations_breeding_upper_limit = generations_breeding_upper_limit;
 	//Ck_contract needs to be initialized before breeding
 	self.ck_contract = null;
-
+	self.lower_limit = 1;
 	
 	self.separateByGeneration = function(cats){
 		var filteredCatList = [];
@@ -18,8 +18,11 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 				self.o[cats[kitten].generation] = [];
 			}
 			if(cats[kitten].generation <= self.generations_breeding_upper_limit){
-				self.o[cats[kitten].generation].push(cats[kitten]);
-				filteredCatList.push(cats[kitten]);
+				if(cats[kitten].generation >= self.lower_limit){
+					self.o[cats[kitten].generation].push(cats[kitten]);
+					filteredCatList.push(cats[kitten]);
+				}
+
 			}
 
 		}
@@ -36,6 +39,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract){
 		self.ck_contract = ck_contract;
 		var filteredCatList = self.separateByGeneration(cats);
+		cats = filteredCatList;
 		console.log("Excluded generations and was left with: " + filteredCatList.length + " cats!");
 		var catsWithAnyTrait = self.findBreedingPairsTargeted(filteredCatList, targetedTraits);
 		console.log('Fitting kittens found: %d', catsWithAnyTrait.length);
@@ -99,17 +103,25 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 
 		}
 
-		var potentialPartners = arrayOfScoredCats.slice();
-		console.log(potentialPartners);
+		console.log("Making single scored lists for all traits and putting them in a dict...");
+		self.singleTraitScoreDictionary = {};
+		for(var trait in targetedTraits){
+			trait = targetedTraits[trait];
+			var traitScoreList = self._scoreCatsBasedOnSingleTrait(cats,trait);
+			//var orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
+			self.singleTraitScoreDictionary[trait] = traitScoreList;
+		}
 		console.log("Trying to find find these traits:");
 		console.log(targetedTraits);
+		potentialPartners = arrayOfScoredCats.slice();
+		var usedCats = [];
 		for(var scoredCat in arrayOfScoredCats){
 			count = scoredCat;
 			scoredCat = arrayOfScoredCats[scoredCat];
 			//Assuming 1 is a good score
 			//console.log(scoredCat);
 
-			if(potentialPartners.includes(scoredCat)){
+			if(potentialPartners.includes(scoredCat) && !usedCats.includes(scoredCat.id)){
 				if(scoredCat.score > 0.125*targetedTraits.length){
 					console.log("now trying to find a match for: " + scoredCat.id);
 					//Simplifying assumption
@@ -118,17 +130,46 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 						remove(potentialPartners, scoredCat.id);
 						var partner = potentialPartners[0];
 						remove(potentialPartners, partner.id);
+						for(var trait in targetedTraits){
+							trait = targetedTraits[trait];
+							var traitScoreList = self.singleTraitScoreDictionary[trait];
+							delete traitScoreList[partner.id];
+							delete traitScoreList[scoredCat.id];
+							self.singleTraitScoreDictionary[trait] = traitScoreList;
+						}
+						usedCats.push(scoredCat.id);
+						usedCats.push(partner.id);
+
 						breedingPairs.push(new BreedingPair(scoredCat.id,partner.id));
 					} else if (scoredCat.missingTraits.length == 1){
 						console.log("Missing one trait, pick based on top scoring cat of that trait");
 						var missingTrait = scoredCat.missingTraits[0];
-						var missingTraitScoreList = self._scoreCatsBasedOnSingleTrait(potentialPartners, missingTrait);
-						var orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(missingTraitScoreList);
-						if(orderedTraitScoreList.length > 0){
-							remove(potentialPartners, scoredCat.id);
-							var partner = orderedTraitScoreList[0];
-							remove(potentialPartners, partner.id);
-							breedingPairs.push(new BreedingPair(scoredCat.id,partner.id));
+						var missingTraitScoreList = self.singleTraitScoreDictionary[missingTrait];
+						orderedMissingTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(missingTraitScoreList);
+						if(orderedMissingTraitScoreList.length > 0){
+							for(var catInList in orderedMissingTraitScoreList){
+								var partner = orderedMissingTraitScoreList[catInList];
+								if(catDictionary[partner.id].isReady){
+									remove(potentialPartners, scoredCat.id);
+									remove(potentialPartners, partner.id);
+									for(var trait in targetedTraits){
+										trait = targetedTraits[trait];
+										var traitScoreList = self.singleTraitScoreDictionary[trait];
+										delete traitScoreList[partner.id];
+										delete traitScoreList[scoredCat.id];
+										self.singleTraitScoreDictionary[trait] = traitScoreList;
+									}
+									usedCats.push(scoredCat.id);
+									usedCats.push(partner.id);
+									breedingPairs.push(new BreedingPair(scoredCat.id,partner.id));
+									break;
+								} else {
+									usedCats.push(partner.id);
+
+								}
+							}
+							
+							
 						} else {
 							console.log("No cat with the cattribute " + missingTrait + " left :(");
 						}
@@ -182,17 +223,25 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		return arrayOfScoredCats;
 
 	}
-	self._scoreCatsBasedOnSingleTrait = function(cats, trait){
+	self._scoreCatsBasedOnSingleTrait = function(zCats, trait){
 		var catScores = {};
-		for(var cat in cats){
-			var count = cat;
-			cat = cats[cat];
-			var score = 0;
-			var chance = cat.chanceOfTrait[trait];
-			if(chance > 0){
-				score += chance;
+		for(var cat in zCats){
+			if(zCats[cat]){
+				var count = cat;
+				cat = zCats[cat];
+				var score = 0;
+				if(cat.chanceOfTrait){
+					var chance = cat.chanceOfTrait[trait];
+				} else {
+					var chance = 0;
+				}
+				if(chance > 0){
+					score += chance;
+					catScores[cat.id] = score;
+
+				}
 			}
-			catScores[cat.id] = score;
+			
 
 		}
 		return catScores;
@@ -316,7 +365,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 
 	self.triggerTransactionOnly = function(id, id2, canBreed){
 		if(canBreed){
-			//self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000007", "ether") });
+			self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000007", "ether") });
 			console.log("Breeding: " + id +" and " + id2 + " together!");
 			console.log("(((would have)))");
 		} else {
