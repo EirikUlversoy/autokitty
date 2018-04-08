@@ -7,10 +7,14 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	self.generations_breeding_upper_limit = generations_breeding_upper_limit;
 	//Ck_contract needs to be initialized before breeding
 	self.ck_contract = null;
-	self.lower_limit = 1;
+	self.lower_limit = 0;
 	
-	self.separateByGeneration = function(cats){
+	self.separateByGeneration = function(cats, generation){
 		var filteredCatList = [];
+		if(generation != 999){
+			self.generations_breeding_upper_limit = generation;
+			self.lower_limit = generation;
+		}
 
 		for (var kitten in cats){
 
@@ -36,9 +40,9 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		}
 
 
-	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract){
+	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract, generation){
 		self.ck_contract = ck_contract;
-		var filteredCatList = self.separateByGeneration(cats);
+		var filteredCatList = self.separateByGeneration(cats, generation);
 		cats = filteredCatList;
 		console.log("Excluded generations and was left with: " + filteredCatList.length + " cats!");
 		var catsWithAnyTrait = self.findBreedingPairsTargeted(filteredCatList, targetedTraits);
@@ -128,7 +132,10 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 					if(scoredCat.missingTraits.length == 0){
 						console.log("no missing traits, pick top scorer!");
 						remove(potentialPartners, scoredCat.id);
-						var partner = potentialPartners[0];
+
+						traitScoreList = self.singleTraitScoreDictionary[targetedTraits[0]];
+						orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
+						var partner = orderedTraitScoreList[0];
 						remove(potentialPartners, partner.id);
 						for(var trait in targetedTraits){
 							trait = targetedTraits[trait];
