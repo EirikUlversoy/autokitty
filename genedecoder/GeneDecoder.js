@@ -161,7 +161,7 @@ function GeneDecoder(){
 		colorTertiaryGeneNames["Mintmacaron"] = "t";
 		colorTertiaryGeneNames["Frosting"] = "g";
 		colorTertiaryGeneNames["Patrickstarfish"] = "p";
-		
+
 		wildGeneNames["Dracula"] = "1";
 		wildGeneNames["Santa"] = "d";
 		wildGeneNames["Elk"] = "i";
@@ -272,7 +272,17 @@ function GeneDecoder(){
 		return KAISequence;
 
 	}
-
+	self.checkGroupAttribute = function(group, groupDictionary){
+		groupDictionary = invert(groupDictionary);
+		var keys = Object.keys(groupDictionary);
+		for(var gene in group){
+			if(!groupDictionary[group[gene]]){
+				console.log("Possible new gene? : " + group[gene]);
+				return true;
+			}
+		}
+		return false;
+	}
 	self.outputGroupAttribute = function(group, groupDictionary){
 		var recessiveA = "unknown";
 		var recessiveB = "unknown";
@@ -336,6 +346,40 @@ function GeneDecoder(){
 			}
 		}
 
+		return geneArrays;
+	}
+
+	self.probeCattributes = function(KaiGroups){
+		var geneArrays = [];
+		for (var group in KaiGroups){
+			//console.log("Now looking at the " + geneGroupNames[group]);
+			if(group == 0){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],{}));
+			} else if (group == 1){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],{}));
+			} else if (group == 2){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],{}))
+			} else if (group == 3){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],mouthGeneNames));
+			} else if (group == 4){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],wildGeneNames));
+			} else if (group == 5){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],colorTertiaryGeneNames));
+			} else if (group == 6){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],colorSecondaryGeneNames));
+			} else if (group == 7){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],colorPrimaryGeneNames));
+			} else if (group == 8){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],eyesGeneNames));
+			} else if (group == 9){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],colorEyesGeneNames));
+			} else if (group == 10){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],patternGeneNames));
+			} else if (group == 11){
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],bodyGeneNames));
+			}
+		}
+		console.log("Done probing!");
 		return geneArrays;
 	}
 
