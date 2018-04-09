@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 9;
+var generations_breeding_upper_limit = 5;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 60;
+var amountOfCalls = 300;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -157,18 +157,58 @@ function mainFunction (calls){
 	var Patrickstarfish = ["Frosting", "Morningglory"];
 	var Mintmakaronmutation = ["Patrickstarfish","Periwinkle"];
 	var Thunderstruck = ["Rascal","Ganado"];
-	//var Periwinkle = ["Periwinkle"];
+	var Periwinkle = ["Periwinkle"];
 	var Turtleback = ["Lilac","Apricot"];
+	var Seafoam = ["Flamingo","Daffodil"];
 	var Safetyvest = ["Egyptiankohl","Poisonberry"];
 	var Twilightsparkle = ["Sapphire","Forgetmenot"];
 	var PatrickstarfishB = ["Patrickstarfish"];
-	var targeted_traits = Patrickstarfish;
+	var Daffodil = ["Belleblue", "Sandalwood"];
+	var Flamingo = ["Peach", "Icy"];
+	var Hotrod = ["Tigerpunk", "Henna"];
+	var Tigerpunk = ["Calicool", "Luckystripe"];
+	var Henna = ["Amur","Jaguar"];
+	var Buzzed = ["Sass","Sweetmeloncakes"];
+	var Wingtips = ["Fabulous","Raisedbrow"];
+	var Fabulous = ["Otaku","Simple"];
+	var Onyx = ["Oldlace","Koala"];
+	var Koala = ["Nachocheez","Aquamarine"];
+	var Trioculus = ["Wild_7","Wild_8"];
+	var Mainecoon = ["Chartreux","Himalayan"];
+	var Manx = ["Laperm","Persian"];
+	var Wolfgrey = ["Swampgreen", "Violet"];
+	var Royalblue = ["Cerulian", "Wolfgrey"];
+	var Babypuke = ["Pumpkin", "Limegreen"];
+	var Yokel = ["Cheeky", "Starstruck"];
+	var Neckbeard = ["Dali","Grimace"];
+	//var targeted_traits = Patrickstarfish;
 	//targeted_traits = Periwinkle;
 	//targeted_traits = PatrickstarfishB;
-	//targeted_traits = Mintmakaronmutation;
+	targeted_traits = Mintmakaronmutation;
 	//targeted_traits = Thunderstruck;
 	//targeted_traits = Turtleback;
 	//targeted_traits = Safetyvest;
+	//targeted_traits = Daffodil;
+	//targeted_traits = Flamingo;
+	targeted_traits = Buzzed;
+	targeted_traits = Neckbeard;
+	//targeted_traits = Henna;
+	//targeted_traits = Tigerpunk;
+	//targeted_traits = Wingtips;
+	//targeted_traits = Fabulous;
+	targeted_traits = Onyx;
+	//targeted_traits = Koala;
+	//targeted_traits = Trioculus;
+	//targeted_traits = Mainecoon;
+	//targeted_traits = Manx;
+	//targeted_traits = Wolfgrey;
+	//targeted_traits = Babypuke;
+	targeted_traits = Seafoam;
+	//targeted_traits = Royalblue;
+	//targeted_traits = Yokel;
+	//targeted_traits = Hotrod;
+	//targeted_traits = Twilightsparkle;
+
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
@@ -289,29 +329,15 @@ function grabAllOwnedCatsFromBlockchain(){
 function loopGetUserKittesNAPI(err, res){
 	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens.txt', 'utf8');
 	var splitText = text.split(",");
-	var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens2.txt', 'utf8');
-	var secondSplitText = secondText.split(",");
-	for(var kittenID in secondSplitText){
-		kittenID = secondSplitText[kittenID];
-		if(!splitText.includes(kittenID)){
-			splitText.push(kittenID);
-		}
-	}
-	var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens3.txt', 'utf8');
-	var secondSplitText = secondText.split(",");
-	for(var kittenID in secondSplitText){
-		kittenID = secondSplitText[kittenID];
-		if(!splitText.includes(kittenID)){
-			splitText.push(kittenID);
-		}
-	}
 
-	var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens4.txt', 'utf8');
-	var secondSplitText = secondText.split(",");
-	for(var kittenID in secondSplitText){
-		kittenID = secondSplitText[kittenID];
-		if(!splitText.includes(kittenID)){
-			splitText.push(kittenID);
+	for(var y = 2; y <= 11; y++){
+		var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens'+y+'.txt', 'utf8');
+		var secondSplitText = secondText.split(",");
+		for(var kittenID in secondSplitText){
+			kittenID = secondSplitText[kittenID];
+			if(!splitText.includes(kittenID)){
+				splitText.push(kittenID);
+			}
 		}
 	}
 

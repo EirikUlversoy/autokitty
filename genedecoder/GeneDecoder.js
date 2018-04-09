@@ -166,6 +166,13 @@ function GeneDecoder(){
 		wildGeneNames["Santa"] = "d";
 		wildGeneNames["Elk"] = "i";
 		wildGeneNames["Trioculus"] = "k";
+		wildGeneNames["Wild_3"] = "3";
+		wildGeneNames["Wild_4"] = "4";
+		wildGeneNames["Wild_6"] = "6";
+		wildGeneNames["Wild_7"] = "7";
+		wildGeneNames["Wild_8"] = "8";
+		wildGeneNames["Wild_a"] = "a";
+		wildGeneNames["Wild_f"] = "f";
 
 		mouthGeneNames["Whixtensions"] = "1";
 		mouthGeneNames["Wasntme"] = "2";
@@ -313,6 +320,14 @@ function GeneDecoder(){
 		//console.log("Recessive genes: " + "\n" + recessiveA + "\n" + recessiveB + "\n" + recessiveC + "\nDominant genes: " + dominant + "\n");
 		return geneArray;
 
+	}
+
+	self._isPureBred = function(geneArray){
+		if(geneArray[0] == geneArray[1] == geneArray[2] == geneArray[3]){
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	self.outputCattributes = function(KaiGroups){
