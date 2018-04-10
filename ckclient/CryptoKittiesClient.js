@@ -53,8 +53,8 @@ function CryptokittiesClient(opts = {}){
       limit,
       offset,
       owner_wallet_address: address,
-      orderBy: "age",
-      orderDirection: "desc"
+      orderBy: "generation",
+      orderDirection: "asc"
     };
     return request(o).then(d=>d.kitties);
   }

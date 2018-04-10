@@ -84,7 +84,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			arrayOfScoredCats.push(scores[key]);
 		}
 		arrayOfScoredCats.sort(self._keyComparator("score"));
-		//console.log(arrayOfScoredCats);
+		console.log(arrayOfScoredCats);
 
 		var breedingPairs = self._simpleBreedingAlgorithm(cats, arrayOfScoredCats, targetedTraits);
 		self._triggerBreedingPairs(breedingPairs);
@@ -98,6 +98,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		}
 	}
 	self._simpleBreedingAlgorithm = function(cats, arrayOfScoredCats, targetedTraits){
+		var unchained = false;
 		var catDictionary = {};
 		var breedingPairs = [];
 
@@ -112,6 +113,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		for(var trait in targetedTraits){
 			trait = targetedTraits[trait];
 			var traitScoreList = self._scoreCatsBasedOnSingleTrait(cats,trait);
+			console.log(traitScoreList);
 			//var orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
 			self.singleTraitScoreDictionary[trait] = traitScoreList;
 		}
@@ -126,14 +128,23 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			//console.log(scoredCat);
 
 			if(potentialPartners.includes(scoredCat) && !usedCats.includes(scoredCat.id)){
-				if(scoredCat.score > 0.125*targetedTraits.length){
+				if(scoredCat.score > 0.20*targetedTraits.length){
 					console.log("now trying to find a match for: " + scoredCat.id);
 					//Simplifying assumption
 					if(scoredCat.missingTraits.length == 0){
 						console.log("no missing traits, pick top scorer!");
 						remove(potentialPartners, scoredCat.id);
+						var targetTrait = targetedTraits[0];
+						if(targetedTraits.length == 2){
+							var aCOF = catDictionary[scoredCat.id].chanceOfTrait;
+							if(aCOF[targetedTraits[0]] > aCOF[targetedTraits[1]]){
+								targetTrait = targetedTraits[1];
+							} else {
+								targetTrait = targetedTraits[0];
+							}
 
-						traitScoreList = self.singleTraitScoreDictionary[targetedTraits[0]];
+						}
+						traitScoreList = self.singleTraitScoreDictionary[targetTrait];
 						orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
 						var partner = orderedTraitScoreList[0];
 						remove(potentialPartners, partner.id);
@@ -160,28 +171,31 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 						if(orderedMissingTraitScoreList.length > 0){
 							for(var catInList in orderedMissingTraitScoreList){
 								var partner = orderedMissingTraitScoreList[catInList];
-								if(catDictionary[partner.id].isReady){
-									remove(potentialPartners, scoredCat.id);
-									remove(potentialPartners, partner.id);
-									for(var trait in targetedTraits){
-										trait = targetedTraits[trait];
-										var traitScoreList = self.singleTraitScoreDictionary[trait];
-										delete traitScoreList[partner.id];
-										delete traitScoreList[scoredCat.id];
-										self.singleTraitScoreDictionary[trait] = traitScoreList;
-									}
-									usedCats.push(scoredCat.id);
-									usedCats.push(partner.id);
-									if(catDictionary[partner.id].cooldownIndex < catDictionary[scoredCat.id].cooldownIndex){
-										breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
+								if(partner.score > 0.15 || unchained){
+									if(catDictionary[partner.id].isReady){
+										remove(potentialPartners, scoredCat.id);
+										remove(potentialPartners, partner.id);
+										for(var trait in targetedTraits){
+											trait = targetedTraits[trait];
+											var traitScoreList = self.singleTraitScoreDictionary[trait];
+											delete traitScoreList[partner.id];
+											delete traitScoreList[scoredCat.id];
+											self.singleTraitScoreDictionary[trait] = traitScoreList;
+										}
+										usedCats.push(scoredCat.id);
+										usedCats.push(partner.id);
+										if(catDictionary[partner.id].cooldownIndex < catDictionary[scoredCat.id].cooldownIndex){
+											breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
+										} else {
+											breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
+										}
+										break;
 									} else {
-										breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
-									}
-									break;
-								} else {
-									usedCats.push(partner.id);
+										usedCats.push(partner.id);
 
+									}
 								}
+
 							}
 							
 							

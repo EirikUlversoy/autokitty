@@ -27,7 +27,9 @@ function Auctioneer(upper_wallet_address, web3){
 		}
 			
 	}
-
+	self.searchForTrait = function(trait, gen, ck_contract){
+		
+	}
 	self.findAuctionItems = function(cats, ck_contract){
 		self.ck_contract = ck_contract;
 		var highGenCats = []

@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 7;
+var generations_breeding_upper_limit = 0;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 100;
+var amountOfCalls = 20;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -157,7 +157,7 @@ function mainFunction (calls){
 	var Patrickstarfish = ["Frosting", "Morningglory"];
 	var Mintmakaronmutation = ["Patrickstarfish","Periwinkle"];
 	var Thunderstruck = ["Rascal","Ganado"];
-	var Periwinkle = ["Periwinkle"];
+	var Periwinkle = ["Missmuffet","Azaleablush"];
 	var Turtleback = ["Lilac","Apricot"];
 	var Seafoam = ["Flamingo","Daffodil"];
 	var Safetyvest = ["Egyptiankohl","Poisonberry"];
@@ -176,47 +176,30 @@ function mainFunction (calls){
 	var Trioculus = ["Wild_7","Wild_8"];
 	var Mainecoon = ["Chartreux","Himalayan"];
 	var Manx = ["Laperm","Persian"];
+	var Oldlace = ["Cottoncandy","Mauveover"];
+	var Skyblue = ["Coffee","Lemonade"];
 	var Wolfgrey = ["Swampgreen", "Violet"];
 	var Royalblue = ["Cerulian", "Wolfgrey"];
+	var Cerulian = ["Scarlet","Barkbrown"];
 	var Babypuke = ["Pumpkin", "Limegreen"];
 	var Yokel = ["Cheeky", "Starstruck"];
+	var Bloodred = ["Kittencream", "Emeraldgreen"];
+	var Cloudwhite = ["Shadowgrey","Salmon"];
 	var Neckbeard = ["Dali","Grimace"];
+	var Persian = ["Ragamuffin","Ragdoll"];
+	var Verdigris = ["Hintomint","Bananacream"];
+	var Alien = ["Serpent","Googly"];
+	var Elk = ["Wild_3","Wild_4"];
+	var Dippedcone = ["Leopard","Camo"];
+	var Norwegianforest = ["Savannah","Selkirk"];
 	var BFAttempt = ["Egyptiankohl","Cerulian","Himalayan","Wuvme"];
 	var BFAttempt2 = ["Wuvme","Otaku","Himalayan"];
 	var BFAttempt3 = ["Wuvme","Himalayan","Royalblue"];
 	var BFAttempt4 = ["Hotrod","Himalayan","Wuvme"];
 	//var targeted_traits = Patrickstarfish;
-	//targeted_traits = Periwinkle;
-	//targeted_traits = PatrickstarfishB;
-	targeted_traits = Mintmakaronmutation;
-	//targeted_traits = Thunderstruck;
-	//targeted_traits = Turtleback;
-	//targeted_traits = Safetyvest;
-	//targeted_traits = Daffodil;
-	//targeted_traits = Flamingo;
-	targeted_traits = Buzzed;
-	targeted_traits = Neckbeard;
-	//targeted_traits = Henna;
-	//targeted_traits = Tigerpunk;
-	//targeted_traits = Wingtips;
-	//targeted_traits = Fabulous;
-	targeted_traits = Onyx;
-	//targeted_traits = Koala;
-	//targeted_traits = Trioculus;
-	//targeted_traits = Mainecoon;
-	//targeted_traits = Manx;
-	targeted_traits = Wolfgrey;
-	//targeted_traits = Babypuke;
-	//targeted_traits = Seafoam;
-	//targeted_traits = Royalblue;
-	//targeted_traits = Yokel;
-	//targeted_traits = Hotrod;
-	//targeted_traits = Twilightsparkle;
-	targeted_traits = BFAttempt;
-	targeted_traits = BFAttempt2;
-	targeted_traits = BFAttempt3;
-	targeted_traits = BFAttempt4;
-
+	targeted_traits = Periwinkle;
+	targeted_traits = Norwegianforest;
+	targeted_traits = Patrickstarfish;
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
@@ -227,12 +210,11 @@ function mainFunction (calls){
 	//findAuctionItems(cats);
 	if(targeted_traits.length != 0){
 		console.log("heading into advanced breeding loop");
-		console.log(cats);
 		GeneDecoder.statistics(cats);
-		Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract, 999);
-		//for(var x = 0; x <= generations_breeding_upper_limit; x++ ){
-		//	Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract,x);
-		//}
+		//Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract, 999);
+		for(var x = 0; x <= generations_breeding_upper_limit; x++ ){
+			Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract,x);
+		}
 	} else {
 		Breeder.breedingLoop(cats, ck_contract);
 	}
@@ -348,6 +330,9 @@ function loopGetUserKittesNAPI(err, res){
 			}
 		}
 	}
+
+	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/gen0.txt', 'utf8');
+	var splitText = text.split(",");
 
 	return splitText;
 }
