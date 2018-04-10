@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 20;
+var amountOfCalls = 40;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -147,59 +147,102 @@ function saveKittenIds(kittens){
   	if (err) throw err;
   	console.log('It\'s saved!');
 });}
-
+const args = process.argv;
+console.log(args);
 function mainFunction (calls){
 	console.log("is in main");
+	var PremierMutations = {};
+
+	PremierMutations["Norwegianforest"] = ["Savannah","Selkirk"];
+	PremierMutations["Pumpkin"] = ["Thundergrey","Gold"];
+	PremierMutations["Cloudwhite"] = ["Shadowgrey","Salmon"];
+	PremierMutations["Daffodil"] = ["Belleblue","Sandalwood"];
+	PremierMutations["Cheeky"] = ["Wasntme","Whixtensions"];
+	
+	PremierMutations["Thunderstruck"] = ["Rascal","Ganado"];
+	PremierMutations["Limegreen"] = ["Topaz","Mintgreen"];
+	PremierMutations["Alien"] = ["Serpent","Googly"];
+	PremierMutations["Safetyvest"] = ["Egyptiankohl","Poisonberry"];
+	PremierMutations["Flamingo"] = ["Peach","Icy"];
+	PremierMutations["Elk"] = ["Wild_3","Wild_4"];
+	PremierMutations["Starstruck"] = ["Wuvme","Gerbil"];
+	
+	PremierMutations["Dippedcone"] = ["Leopard","Camo"];
+	PremierMutations["Fabulous"] = ["Otaku","Simple"];
+	PremierMutations["Oldlace"] = ["Cottoncandy","Mauveover"];
+	PremierMutations["Turtleback"] = ["Lilac","Apricot"];
+
+	PremierMutations["Bubblegum"] = ["Chestnut","Strawberry"];
+	PremierMutations["Raisedbrow"] = ["Crazy","Thicccbrowz"];
+	PremierMutations["Koala"] = ["Aquamarine","Nachocheez"];
+	PremierMutations["Bloodred"] = ["Kittencream","Emeraldgreen"];
+	PremierMutations["Trioculus"] = ["Wild_7","Wild_8"];
+
+	PremierMutations["Tigerpunk"] = ["Calicool","Luckystripe"];
+	PremierMutations["Twilightsparkle"] = ["Sapphire","Forgetmenot"];
+	PremierMutations["Wolfgrey"] = ["Swampgreen","Violet"];
+	PremierMutations["Dali"] = ["Beard","Pouty"];
+
+	PremierMutations["Mainecoon"] = ["Chartreux","Himalayan"];
+	PremierMutations["Henna"] = ["Amur","Jaguar"];
+	PremierMutations["Cerulian"] = ["Scarlet","Barkbrown"];
+	PremierMutations["Grimace"] = ["Saycheese","Grim"];
+
+	PremierMutations["Laperm"] = ["Munchkin","Sphynx"];
+	PremierMutations["Sass"] = ["Chronic","Slyboots"];
+	PremierMutations["Skyblue"] = ["Coffee","Lemonade"];
+	PremierMutations["Periwinkle"] = ["Azaleablush","Missmuffet"];
+
+	PremierMutations["Persian"] = ["Ragamuffin","Ragdoll"];
+	PremierMutations["Totesbasic_p"] = ["Totesbasic_f","Totesbasic_g"];
+	PremierMutations["Sweetmeloncakes"] = ["Wiley","Stunned"];
+	PremierMutations["Verdigris"] = ["Hintomint","Bananacream"];
+	PremierMutations["Patrickstarfish"] = ["Morningglory","Frosting"];
+	PremierMutations["Tongue"] = ["Happygokitty","Soserious"];
+
+	var	SecondaryMutations = {}
+	SecondaryMutations["Babypuke"] = ["Pumpkin","Limegreen"];
+	SecondaryMutations["Seafoam"] = ["Daffodil","Flamingo"];
+	SecondaryMutations["Yokel"] = ["Cheeky","Starstruck"];
+
+	SecondaryMutations["Wingtips"] = ["Fabulous","Raisedbrow"]
+	SecondaryMutations["Onyx"] = ["Oldlace","Koala"];
+
+	SecondaryMutations["Hotrod"] = ["Tigerpunk","Henna"];
+	SecondaryMutations["Royalblue"] = ["Wolfgrey","Cerulian"];
+	SecondaryMutations["Neckbeard"] = ["Dali","Grimace"];
+
+	SecondaryMutations["Manx"] = ["Laperm","Persian"];
+	SecondaryMutations["Buzzed"] = ["Sass","Sweetmeloncakes"];
+	SecondaryMutations["Mintmacaron"] = ["Periwinkle","Patrickstarfish"];
+
 
 	//var targeted_traits = ["Elk","Cyan","Cymric","Happygokitty"];
 	var targeted_traits = ["Strawberry","Chocolate","Wuvme","Baddate"];
-	var earnie = ["Birman","Hotrod","Grim","Orangesoda"];
-	var Patrickstarfish = ["Frosting", "Morningglory"];
-	var Mintmakaronmutation = ["Patrickstarfish","Periwinkle"];
-	var Thunderstruck = ["Rascal","Ganado"];
-	var Periwinkle = ["Missmuffet","Azaleablush"];
-	var Turtleback = ["Lilac","Apricot"];
-	var Seafoam = ["Flamingo","Daffodil"];
-	var Safetyvest = ["Egyptiankohl","Poisonberry"];
-	var Twilightsparkle = ["Sapphire","Forgetmenot"];
-	var PatrickstarfishB = ["Patrickstarfish"];
-	var Daffodil = ["Belleblue", "Sandalwood"];
-	var Flamingo = ["Peach", "Icy"];
-	var Hotrod = ["Tigerpunk", "Henna"];
-	var Tigerpunk = ["Calicool", "Luckystripe"];
-	var Henna = ["Amur","Jaguar"];
-	var Buzzed = ["Sass","Sweetmeloncakes"];
-	var Wingtips = ["Fabulous","Raisedbrow"];
-	var Fabulous = ["Otaku","Simple"];
-	var Onyx = ["Oldlace","Koala"];
-	var Koala = ["Nachocheez","Aquamarine"];
-	var Trioculus = ["Wild_7","Wild_8"];
-	var Mainecoon = ["Chartreux","Himalayan"];
-	var Manx = ["Laperm","Persian"];
-	var Oldlace = ["Cottoncandy","Mauveover"];
-	var Skyblue = ["Coffee","Lemonade"];
-	var Wolfgrey = ["Swampgreen", "Violet"];
-	var Royalblue = ["Cerulian", "Wolfgrey"];
-	var Cerulian = ["Scarlet","Barkbrown"];
-	var Babypuke = ["Pumpkin", "Limegreen"];
-	var Yokel = ["Cheeky", "Starstruck"];
-	var Bloodred = ["Kittencream", "Emeraldgreen"];
-	var Cloudwhite = ["Shadowgrey","Salmon"];
-	var Neckbeard = ["Dali","Grimace"];
-	var Persian = ["Ragamuffin","Ragdoll"];
-	var Verdigris = ["Hintomint","Bananacream"];
-	var Alien = ["Serpent","Googly"];
-	var Elk = ["Wild_3","Wild_4"];
-	var Dippedcone = ["Leopard","Camo"];
-	var Norwegianforest = ["Savannah","Selkirk"];
 	var BFAttempt = ["Egyptiankohl","Cerulian","Himalayan","Wuvme"];
 	var BFAttempt2 = ["Wuvme","Otaku","Himalayan"];
 	var BFAttempt3 = ["Wuvme","Himalayan","Royalblue"];
 	var BFAttempt4 = ["Hotrod","Himalayan","Wuvme"];
-	//var targeted_traits = Patrickstarfish;
-	targeted_traits = Periwinkle;
-	targeted_traits = Norwegianforest;
-	targeted_traits = Patrickstarfish;
+	var Pumpkin = ["Thundergrey", "Gold"];
+	var Limegreen = ["Topaz","Mintgreen"];
+	var Starstruck = ["Wuvme", "Gerbil"];
+	var Cheeky = ["Wasntme","Whixtensions"];
+
+	var targeted_traits = [];
+	var mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus"];
+	var unchained = false;
+	if(args[2]){
+		targeted_traits = PremierMutations[args[2]];
+		console.log("Looking for " + args[2] + "!");
+		for(var unVar in mandatoryUnchain){
+			unVar = mandatoryUnchain[unVar];
+			if(unVar == args[2]){
+				unchained = true;
+				console.log("Set unchained?");
+			}
+		}
+	}
+
 	if(api_calls_on){
 		saveKittenIds(cats);
 	}
@@ -210,10 +253,10 @@ function mainFunction (calls){
 	//findAuctionItems(cats);
 	if(targeted_traits.length != 0){
 		console.log("heading into advanced breeding loop");
-		GeneDecoder.statistics(cats);
+		//GeneDecoder.statistics(cats);
 		//Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract, 999);
 		for(var x = 0; x <= generations_breeding_upper_limit; x++ ){
-			Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract,x);
+			Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract,x, unchained);
 		}
 	} else {
 		Breeder.breedingLoop(cats, ck_contract);

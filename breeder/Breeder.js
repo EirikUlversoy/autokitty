@@ -32,7 +32,15 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		}
 		return filteredCatList;
 	}
-
+	self.isReadyFilter = function(cats){
+		let filteredCatList = [];
+		for(var cat in cats){
+			if(cats[cat].isReady){
+				filteredCatList.push(cats[cat]);
+			}
+		}
+		return filteredCatList;
+	}
 	function CatWithScore(id, score, missingTraits){
 		this.id = id;
 		this.score = score;
@@ -40,10 +48,13 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		}
 
 
-	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract, generation){
+	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract, generation, unchained){
 		self.ck_contract = ck_contract;
 		var filteredCatList = self.separateByGeneration(cats, generation);
+		var readyFilteredCatList = self.isReadyFilter(cats);
 		cats = filteredCatList;
+		console.log("Excluded not ready cats and was left with: " + readyFilteredCatList.length + " cats!");
+
 		console.log("Excluded generations and was left with: " + filteredCatList.length + " cats!");
 		var catsWithAnyTrait = self.findBreedingPairsTargeted(filteredCatList, targetedTraits);
 		console.log('Fitting kittens found: %d', catsWithAnyTrait.length);
@@ -86,7 +97,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		arrayOfScoredCats.sort(self._keyComparator("score"));
 		console.log(arrayOfScoredCats);
 
-		var breedingPairs = self._simpleBreedingAlgorithm(cats, arrayOfScoredCats, targetedTraits);
+		var breedingPairs = self._simpleBreedingAlgorithm(cats, arrayOfScoredCats, targetedTraits, unchained);
 		self._triggerBreedingPairs(breedingPairs);
 	}
 
@@ -97,11 +108,14 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			setTimeout(self.readyToBreedCheckA,150*count, bp.id1, bp.id2);
 		}
 	}
-	self._simpleBreedingAlgorithm = function(cats, arrayOfScoredCats, targetedTraits){
-		var unchained = false;
+	self._simpleBreedingAlgorithm = function(cats, arrayOfScoredCats, targetedTraits, unchained){
+
 		var catDictionary = {};
 		var breedingPairs = [];
-
+		console.log(unchained);
+		if(unchained == true){
+			console.log("Running in unchained mode!");
+		}
 		for(var cat in cats){
 			cat = cats[cat];
 			catDictionary[cat.id] = cat;
@@ -117,6 +131,8 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			//var orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
 			self.singleTraitScoreDictionary[trait] = traitScoreList;
 		}
+
+
 		console.log("Trying to find find these traits:");
 		console.log(targetedTraits);
 		potentialPartners = arrayOfScoredCats.slice();
@@ -171,7 +187,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 						if(orderedMissingTraitScoreList.length > 0){
 							for(var catInList in orderedMissingTraitScoreList){
 								var partner = orderedMissingTraitScoreList[catInList];
-								if(partner.score > 0.15 || unchained){
+								if(partner.score > 0.10 || unchained){
 									if(catDictionary[partner.id].isReady){
 										remove(potentialPartners, scoredCat.id);
 										remove(potentialPartners, partner.id);
