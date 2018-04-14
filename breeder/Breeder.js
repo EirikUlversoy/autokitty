@@ -7,13 +7,16 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	self.generations_breeding_upper_limit = generations_breeding_upper_limit;
 	//Ck_contract needs to be initialized before breeding
 	self.ck_contract = null;
-	self.lower_limit = 0;
+	self.lower_limit = 4;
 	
 	self.separateByGeneration = function(cats, generation){
 		var filteredCatList = [];
 		if(generation != 999){
 			self.generations_breeding_upper_limit = generation;
 			self.lower_limit = generation;
+
+		} else {
+			return cats;
 		}
 
 		for (var kitten in cats){
@@ -51,12 +54,23 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract, generation, unchained){
 		self.ck_contract = ck_contract;
 		var filteredCatList = self.separateByGeneration(cats, generation);
-		var readyFilteredCatList = self.isReadyFilter(cats);
-		cats = filteredCatList;
+		var readyFilteredCatList = self.isReadyFilter(filteredCatList);
+		cats = readyFilteredCatList;
 		console.log("Excluded not ready cats and was left with: " + readyFilteredCatList.length + " cats!");
 
 		console.log("Excluded generations and was left with: " + filteredCatList.length + " cats!");
-		var catsWithAnyTrait = self.findBreedingPairsTargeted(filteredCatList, targetedTraits);
+		//var catsWithAnyTrait = self.findBreedingPairsTargeted(filteredCatList, targetedTraits);
+		
+
+		var extraPoints = ["Bubblegum","Babypuke","Dragonfruit","Hintomint","Verdigris","Onyx","Flamingo","Bloodred",
+		"Seafoam","Periwinkle"];
+		var extraPoints = ["Orangesoda","Peach","Daffodil",
+		"Flamingo","Cottoncandy","Dragonfruit","Hintomint","Bloodred","Seafoam","Bubblegum","Periwinkle","Verdigris"];
+		extraPoints = [];
+		var combinedTraits = targetedTraits.concat(extraPoints);
+
+		var catsWithAnyTrait = self.findBreedingPairsTargeted(readyFilteredCatList, combinedTraits);
+
 		console.log('Fitting kittens found: %d', catsWithAnyTrait.length);
 		//console.log(breedingPairs);
 		console.log("Account used to breed: " + self.web3.eth.defaultAccount);
@@ -82,8 +96,12 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		}
 
 		console.log("Largest trait is: " + largestTrait);
+		
 		console.log("Amount of cats with the trait is: " + largestTraitList);
-		var scores = self._scoreCatsBasedOnTraits(catsWithAnyTrait, targetedTraits);
+		//var scores = self._scoreCatsBasedOnTraits(catsWithAnyTrait, targetedTraits);
+		
+
+		var scores = self._scoreCatsBasedOnTraits(catsWithAnyTrait, targetedTraits, combinedTraits);
 
 
 		var arrayOfScoredCats = [];
@@ -144,7 +162,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			//console.log(scoredCat);
 
 			if(potentialPartners.includes(scoredCat) && !usedCats.includes(scoredCat.id)){
-				if(scoredCat.score > 0.20*targetedTraits.length){
+				if(scoredCat.score > 0.25*targetedTraits.length){
 					console.log("now trying to find a match for: " + scoredCat.id);
 					//Simplifying assumption
 					if(scoredCat.missingTraits.length == 0){
@@ -187,7 +205,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 						if(orderedMissingTraitScoreList.length > 0){
 							for(var catInList in orderedMissingTraitScoreList){
 								var partner = orderedMissingTraitScoreList[catInList];
-								if(partner.score > 0.10 || unchained){
+								if(partner.score > 0.20 || unchained){
 									if(catDictionary[partner.id].isReady){
 										remove(potentialPartners, scoredCat.id);
 										remove(potentialPartners, partner.id);
@@ -232,7 +250,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 								var tCat = firstOrderedTraitScoreList[tCat];
 								//TODO: 0.3 magic number 
 								if(catDictionary[tCat.id].isReady){
-									if(secondMissingTraitScoreList[tCat.id] > 0.1 ){
+									if(secondMissingTraitScoreList[tCat.id] > 0.05 ){
 										remove(potentialPartners, scoredCat.id);
 										var partner = tCat;
 										remove(potentialPartners, partner.id);
@@ -263,6 +281,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 						
 					} else {
 						console.log("Missing three or more traits, probably should not breed this cat");
+						usedCats.push(scoredCat.id);
 					}
 				}
 			}
@@ -311,25 +330,32 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	}
 
 
-	self._scoreCatsBasedOnTraits = function(cats, targetedTraits){
+	self._scoreCatsBasedOnTraits = function(cats, targetedTraits, extraPoints){
 		var catScores = {};
 		//Dictionary pairing catIDs with scores.
-
 		for(var cat in cats){
 			var count = cat;
 			cat = cats[cat];
 			var score = 0;
 			var missingTraits = [];
-			for(var trait in targetedTraits){
-				var chance = cat.chanceOfTrait[targetedTraits[trait]];
+			for(var trait in extraPoints){
+				var chance = cat.chanceOfTrait[extraPoints[trait]];
 				if(chance > 0){
-					score += chance;
+					if(targetedTraits.includes(extraPoints[trait])){
+						score += chance;
+
+					} else {
+						score += chance*3;
+					}
 				} else {
-					missingTraits.push(targetedTraits[trait]);
+					if(targetedTraits.includes(extraPoints[trait])){
+						missingTraits.push(extraPoints[trait]);
+					} 
 				}
 
 			}
 			catScores[cat.id] = new CatWithScore(cat.id, score, missingTraits);
+			console.log(cat.chanceOfTrait);
 		}
 
 		return catScores;
@@ -428,7 +454,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 
 	self.triggerTransactionOnly = function(id, id2, canBreed){
 		if(canBreed){
-			self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000007", "ether") });
+			//self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000007", "ether") });
 			console.log("Breeding: " + id +" and " + id2 + " together!");
 			console.log("(((would have)))");
 		} else {

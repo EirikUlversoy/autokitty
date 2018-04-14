@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 0;
+var generations_breeding_upper_limit = 15;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 40;
+var amountOfCalls = 200;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -223,25 +223,51 @@ function mainFunction (calls){
 	var BFAttempt2 = ["Wuvme","Otaku","Himalayan"];
 	var BFAttempt3 = ["Wuvme","Himalayan","Royalblue"];
 	var BFAttempt4 = ["Hotrod","Himalayan","Wuvme"];
+	var BFAttempt5 = ["Himalayan","Dippedcone"];
+	var VernonAttempt = ["Amur","Springcrocus","Fabulous"];
+	var Springcrocus = ["Springcrocus"];
 	var Pumpkin = ["Thundergrey", "Gold"];
 	var Limegreen = ["Topaz","Mintgreen"];
 	var Starstruck = ["Wuvme", "Gerbil"];
 	var Cheeky = ["Wasntme","Whixtensions"];
+	var listOfSecondaryMutations = ["Babypuke","Seafoam","Yokel","Wingtips","Onyx","Hotrod","Royalblue","Neckbeard"
+	,"Manx","Buzzed","Mintmacaron"];
 
 	var targeted_traits = [];
-	var mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus"];
+	var mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Fabulous","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck"];
+	var listOfTargetedTraitCombinations = ["Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm","Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle","Patrickstarfish", "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris"];
 	var unchained = false;
-	if(args[2]){
-		targeted_traits = PremierMutations[args[2]];
-		console.log("Looking for " + args[2] + "!");
-		for(var unVar in mandatoryUnchain){
-			unVar = mandatoryUnchain[unVar];
-			if(unVar == args[2]){
-				unchained = true;
-				console.log("Set unchained?");
-			}
+	var tryAll = false;
+	var tryAllGen0 = false;
+	if(args[2] != "all-gen1"){
+		if(args[3] == "gen1"){
+			targeted_traits = SecondaryMutations[args[2]];
+		} else {
+			targeted_traits = PremierMutations[args[2]];
+			targeted_traits = VernonAttempt;
 		}
 	}
+	if(args[2] == "all-gen1"){
+		tryAll = true;
+		targeted_traits = ["sample"];
+	}
+
+	if(args[2] == "all-gen0"){
+		tryAllGen0 = true;
+		targeted_traits = ["sample"];
+	}
+
+
+		
+	console.log("Looking for " + args[2] + "!");
+	for(var unVar in mandatoryUnchain){
+		unVar = mandatoryUnchain[unVar];
+		if(unVar == args[2]){
+			unchained = true;
+			console.log("Set unchained?");
+		}
+	}
+	
 
 	if(api_calls_on){
 		saveKittenIds(cats);
@@ -255,15 +281,44 @@ function mainFunction (calls){
 		console.log("heading into advanced breeding loop");
 		//GeneDecoder.statistics(cats);
 		//Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract, 999);
-		for(var x = 0; x <= generations_breeding_upper_limit; x++ ){
-			Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract,x, unchained);
+
+
+		if(tryAll){
+			console.log("In try all");
+			for(var secondaryMutationTarget in listOfSecondaryMutations){
+				sMT = listOfSecondaryMutations[secondaryMutationTarget];
+				Breeder.advancedBreedingLoop(cats, SecondaryMutations[sMT], ck_contract,1, unchained);
+			}
+		} else if(tryAllGen0){
+			console.log("In try all gen0");
+			gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats);
+		} else {
+			console.log("In normal generational loop");
+			for(var x = 0; x <= generations_breeding_upper_limit; x++ ){
+				Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract,x, unchained);
+			}
 		}
+
 	} else {
 		Breeder.breedingLoop(cats, ck_contract);
 	}
 
 }
 
+function gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats){
+
+	for(var traitCombo in listOfTargetedTraitCombinations){
+		unchained = false;
+		var count = traitCombo;
+		traitCombo = listOfTargetedTraitCombinations[traitCombo];
+		if(mandatoryUnchain.includes(traitCombo)){
+			unchained = true;
+		}
+		nbdList = [];
+		setTimeout(Breeder.advancedBreedingLoop, 180000*count, cats, PremierMutations[traitCombo], ck_contract, 0, unchained);
+	}
+
+}
 //List of breeding pairs
 var breedingPairs = [];
 var kittyCount = 0;
@@ -284,7 +339,7 @@ function loopGetUserKitties(err, res){
 	//array = array.filter(function(e){return e}); 
 	console.log(array.length);
 	console.log(array);
-	return Promise.map(array, fetch, {concurrency: 2});
+	return Promise.map(array, fetch, {concurrency: 1});
 }
 
 function doFilterWork(cat,address){
@@ -363,7 +418,7 @@ function loopGetUserKittesNAPI(err, res){
 	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens.txt', 'utf8');
 	var splitText = text.split(",");
 
-	for(var y = 2; y <= 12; y++){
+	for(var y = 2; y <= 18; y++){
 		var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens'+y+'.txt', 'utf8');
 		var secondSplitText = secondText.split(",");
 		for(var kittenID in secondSplitText){
@@ -373,9 +428,21 @@ function loopGetUserKittesNAPI(err, res){
 			}
 		}
 	}
-
-	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/gen0.txt', 'utf8');
+	/*
+	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/gen01.txt', 'utf8');
 	var splitText = text.split(",");
+
+	for(var xy = 2; xy <= 3; xy++){
+		var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/gen0'+xy+'.txt','utf8');
+		var secondSplitText = secondText.split(",");
+		for(var kittenID in secondSplitText){
+			kittenID = secondSplitText[kittenID];
+			if(!splitText.includes(kittenID)){
+				splitText.push(kittenID);
+			}
+		}
+	}*/
+
 
 	return splitText;
 }
@@ -447,19 +514,27 @@ function getCatsLoop(no_catArray){
 
 
 //Test output
-if(api_calls_on){
-	loopGetUserKitties().then(mainFunction);
-} else {
-	//Promise.delay(10000).then(helper().then(mainFunction));
-	//Promise.delay(3000).then(helper).then(checkOwnershipOfCats).then(mainFunction);
-	var kittens = loopGetUserKittesNAPI();
-	console.log("There are: " + kittens.length + "kitten IDS stored on disk");
-	//getCatsLoop(kittens).then(getOwnershipOfCatsLoop(kittens)).then(mainFunction);
-	//getCatsLoop(kittens).then(getOwnershipOfCatsLoop).then(mainFunction);
-	getOwnershipOfCatsLoop(kittens).then(getCatsLoop).then(mainFunction);
+for(v = 0; v <=40; v++){
+	setTimeout(realMain,1000000*v);
+	console.log("Scheduling: " + v);
+}
 
-	//Promise.delay(3000).then(helper).then(helper).then(helper).then(helper).then(helper).then(checkOwnershipOfCats).then(mainFunction);
-	//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
+
+function realMain(){
+	if(api_calls_on){
+		loopGetUserKitties().then(mainFunction);
+	} else {
+		//Promise.delay(10000).then(helper().then(mainFunction));
+		//Promise.delay(3000).then(helper).then(checkOwnershipOfCats).then(mainFunction);
+		var kittens = loopGetUserKittesNAPI();
+		console.log("There are: " + kittens.length + "kitten IDS stored on disk");
+		//getCatsLoop(kittens).then(getOwnershipOfCatsLoop(kittens)).then(mainFunction);
+		//getCatsLoop(kittens).then(getOwnershipOfCatsLoop).then(mainFunction);
+		getOwnershipOfCatsLoop(kittens).then(getCatsLoop).then(mainFunction);
+
+		//Promise.delay(3000).then(helper).then(helper).then(helper).then(helper).then(helper).then(checkOwnershipOfCats).then(mainFunction);
+		//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
+	}
 }
 
 function isEmptyObject( obj ) {
