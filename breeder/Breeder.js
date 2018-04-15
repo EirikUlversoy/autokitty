@@ -7,7 +7,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	self.generations_breeding_upper_limit = generations_breeding_upper_limit;
 	//Ck_contract needs to be initialized before breeding
 	self.ck_contract = null;
-	self.lower_limit = 4;
+	self.lower_limit = 6;
 	
 	self.separateByGeneration = function(cats, generation){
 		var filteredCatList = [];
@@ -16,7 +16,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			self.lower_limit = generation;
 
 		} else {
-			return cats;
+			//return cats;
 		}
 
 		for (var kitten in cats){
@@ -51,7 +51,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		}
 
 
-	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract, generation, unchained){
+	self.advancedBreedingLoop = function(cats, targetedTraits, ck_contract, generation, unchained, sixPercent){
 		self.ck_contract = ck_contract;
 		var filteredCatList = self.separateByGeneration(cats, generation);
 		var readyFilteredCatList = self.isReadyFilter(filteredCatList);
@@ -115,7 +115,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		arrayOfScoredCats.sort(self._keyComparator("score"));
 		console.log(arrayOfScoredCats);
 
-		var breedingPairs = self._simpleBreedingAlgorithm(cats, arrayOfScoredCats, targetedTraits, unchained);
+		var breedingPairs = self._simpleBreedingAlgorithm(cats, arrayOfScoredCats, targetedTraits, unchained, sixPercent);
 		self._triggerBreedingPairs(breedingPairs);
 	}
 
@@ -126,7 +126,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			setTimeout(self.readyToBreedCheckA,150*count, bp.id1, bp.id2);
 		}
 	}
-	self._simpleBreedingAlgorithm = function(cats, arrayOfScoredCats, targetedTraits, unchained){
+	self._simpleBreedingAlgorithm = function(cats, arrayOfScoredCats, targetedTraits, unchained, sixPercent){
 
 		var catDictionary = {};
 		var breedingPairs = [];
@@ -155,6 +155,10 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		console.log(targetedTraits);
 		potentialPartners = arrayOfScoredCats.slice();
 		var usedCats = [];
+		var treshold = 0.25;
+		if(sixPercent){
+			treshold = 0.06;
+		}
 		for(var scoredCat in arrayOfScoredCats){
 			count = scoredCat;
 			scoredCat = arrayOfScoredCats[scoredCat];
@@ -162,7 +166,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			//console.log(scoredCat);
 
 			if(potentialPartners.includes(scoredCat) && !usedCats.includes(scoredCat.id)){
-				if(scoredCat.score > 0.25*targetedTraits.length){
+				if(scoredCat.score > treshold*targetedTraits.length){
 					console.log("now trying to find a match for: " + scoredCat.id);
 					//Simplifying assumption
 					if(scoredCat.missingTraits.length == 0){
@@ -250,7 +254,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 								var tCat = firstOrderedTraitScoreList[tCat];
 								//TODO: 0.3 magic number 
 								if(catDictionary[tCat.id].isReady){
-									if(secondMissingTraitScoreList[tCat.id] > 0.05 ){
+									if(secondMissingTraitScoreList[tCat.id] > 0.20 ){
 										remove(potentialPartners, scoredCat.id);
 										var partner = tCat;
 										remove(potentialPartners, partner.id);
