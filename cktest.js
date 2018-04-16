@@ -496,22 +496,6 @@ function chunkify(a, n, balanced) {
     return out;
 }
 var allFilteredCats = [];
-function helper(){
-	var kittens = loopGetUserKittesNAPI();
-	console.log("Amount of kittens in the external ID list is: " + kittens.length );
-	//var kittens = grabAllOwnedCatsFromBlockchain();
-	console.log(cats.length);
-	var kittenArrays = chunkify(kittens,100,false);
-	var promiseArrayStack = [];
-	//return handleKittensWithID(kittens);
-
-	for(var kittenArray in kittenArrays){
-		promiseArrayStack[kittenArray] = handleKittensWithID(kittenArrays[kittenArray]);
-	}
-	//return Promise.map(promiseArrayStack, Promise.resolve, {concurrency: 1});
-	return Promise.all(promiseArrayStack).catch(console.log("Error in helper?"));
-	//return Promise.settleVal(null,promiseArrayStack);
-}
 
 function getCatsLoop(no_catArray){
 	return allFilteredCats.reduce(function(promise, cat) {
