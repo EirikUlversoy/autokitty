@@ -14,6 +14,7 @@
     "bs58": "^4.0.1",
     "ckclient": "file:ckclient",
     "genedecoder": "file:genedecoder",
+    "utilities": "file:utilities",
     "hex-to-binary": "^1.0.1",
     "promise-limit": "^2.6.0",
     "request": "^2.85.0",
