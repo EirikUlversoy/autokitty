@@ -9,7 +9,7 @@ var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
 var generations_breeding_upper_limit = 0;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
-var utilities = require("utilities");
+var Utilities = require("utilities");
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
 //Breeder = Breeder(generations_breeding_upper_limit);
 var promiseLimit = require('promise-limit')
@@ -54,16 +54,6 @@ var o = {};
 //List of cats
 var cats = [];
 
-var callsMade = 0;
-var callsHandled = 0;
-function handleKittens(kittens){
-	var promiseArray = []
-	for (kitten in kittens){
-		promiseArray[kitten] = CKClient.getKitten(kittens[kitten].id).then(handleKitten);
-	}
-	return Promise.all(promiseArray);
-}
-
 function handleKittensWithContract(kittens){	
 	var promiseArray = [];	
 	for (kitten in kittens){	
@@ -73,38 +63,13 @@ function handleKittensWithContract(kittens){
 	return Promise.all(promiseArray);
 }
 
-
-function handleKittensWithID(kittens){
-	var promiseArray = [];
-	for(kitten in kittens){
-		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten]).call().then(doWork.bind(null,kittens[kitten]));
-	}
-
-	return Promise.all(promiseArray).catch(function(err){
-		return promiseArray;
-	});
-}
-
-function contains(arr, x) {
-    return arr.filter(function(elem) { return elem.id == x.id }).length > 0;
-}
-
 function doWork(id, kitten){
 	kitten.id = id;
 	kitten.chanceOfTrait = {};
 	if(kitten.genes){
-		if(!contains(cats, kitten)){
+		if(!Utilities.contains(cats, kitten)){
 			cats.push(kitten);
 		}
-	}
-	return kitten;
-
-}
-function handleKitten(id,kitten){
-	kitten.id = id;
-	console.log(id);
-	if(!contains(cats,kitten)){
-		cats.push(kitten);
 	}
 	return kitten;
 
@@ -114,15 +79,7 @@ function noKittensToHandle(kittens){
 	console.log("got no kittens :( ");
 }
 
-function saveKittenIds(kittens){
-	output = [];
-	for (var kitten in kittens){
-		output.push(kittens[kitten].id);
-	}
-	fs.writeFile('kittens2.txt', output, (err) => {
-  	if (err) throw err;
-  	console.log('It\'s saved!');
-});}
+
 
 function setupDictionaries(){
 	let PremierMutations = {};
@@ -204,32 +161,20 @@ function mainFunction (calls){
 	let PremierMutations = mutationDicts[0];
 	let SecondaryMutations = mutationDicts[1];
 	console.log("is in main");
-	//var targeted_traits = ["Elk","Cyan","Cymric","Happygokitty"];
-	var targeted_traits = ["Strawberry","Chocolate","Wuvme","Baddate"];
-	var BFAttempt = ["Egyptiankohl","Cerulian","Himalayan","Wuvme"];
-	var BFAttempt2 = ["Wuvme","Otaku","Himalayan"];
-	var BFAttempt3 = ["Wuvme","Himalayan","Royalblue"];
-	var BFAttempt4 = ["Hotrod","Himalayan","Wuvme"];
-	var BFAttempt5 = ["Himalayan","Dippedcone"];
 	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue","Cloudwhite"];
-	var Springcrocus = ["Springcrocus"];
-	var Pumpkin = ["Thundergrey", "Gold"];
-	var Limegreen = ["Topaz","Mintgreen"];
-	var Starstruck = ["Wuvme", "Gerbil"];
-	var Cheeky = ["Wasntme","Whixtensions"];
 	var listOfSecondaryMutations = ["Babypuke","Seafoam","Yokel","Wingtips","Onyx","Hotrod","Royalblue","Neckbeard"
 	,"Manx","Buzzed","Mintmacaron"];
 
 	var targeted_traits = [];
-	var mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Fabulous","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck"];
 	var listOfTargetedTraitCombinations = ["Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm","Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle","Patrickstarfish", "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris"];
-	var sixPercenters = ["Flamingo","Cerulian","Wolfgrey","Sweetmeloncakes","Dali","Koala","Starstruck","Cheeky"];
-	listOfSecondaryMutations = utilities.shuffle(listOfSecondaryMutations);
-	listOfTargetedTraitCombinations = utilities.shuffle(listOfTargetedTraitCombinations);
-	var unchained = false;
-	var sixPercent = false;
-	var tryAll = false;
-	var tryAllGen0 = false;
+	listOfSecondaryMutations = Utilities.shuffle(listOfSecondaryMutations);
+	listOfTargetedTraitCombinations = Utilities.shuffle(listOfTargetedTraitCombinations);
+	var unchained = checkForUnchained();
+	var sixPercent = checkForSixPercent();
+	var tryAllGen1 = args[2] == "all-gen1" ? true : false;
+	var tryAllGen0 = args[2] == "all-gen0" ? true : false;
+	targeted_traits = ["sample"];
+
 	if(args[2] != "all-gen1"){
 		if(args[3] == "gen1"){
 			targeted_traits = SecondaryMutations[args[2]];
@@ -238,39 +183,11 @@ function mainFunction (calls){
 			targeted_traits = VernonAttempt;
 		}
 	}
-	if(args[2] == "all-gen1"){
-		tryAll = true;
-		targeted_traits = ["sample"];
-	}
-
-	if(args[2] == "all-gen0"){
-		tryAllGen0 = true;
-		targeted_traits = ["sample"];
-	}
-
-
-		
-	console.log("Looking for " + args[2] + "!");
-	for(var unVar in mandatoryUnchain){
-		unVar = mandatoryUnchain[unVar];
-		if(unVar == args[2]){
-			unchained = true;
-			console.log("Set unchained?");
-		}
-	}
-
-	for(var sixVar in sixPercenters){
-		sixVar = sixPercenters[sixVar];
-		if(sixVar == args[2]){
-			sixPercent = true;
-			console.log("Set six percent");
-		}
-	}
-	
 
 	if(api_calls_on){
-		saveKittenIds(cats);
+		Utilities.saveKittenIds(cats);
 	}
+	console.log("Looking for " + args[2] + "!");
 
 	console.log("There are " + cats.length + " cats in the list!");
 	console.log("There are " + allFilteredCats.length + " cats in the filtered list!");
@@ -281,7 +198,7 @@ function mainFunction (calls){
 		//GeneDecoder.statistics(cats);
 
 
-		if(tryAll){
+		if(tryAllGen1){
 			console.log("In try all");
 			for(var secondaryMutationTarget in listOfSecondaryMutations){
 				sMT = listOfSecondaryMutations[secondaryMutationTarget];
@@ -303,6 +220,32 @@ function mainFunction (calls){
 		Breeder.breedingLoop(cats, ck_contract);
 	}
 
+}
+
+function checkForUnchained(args){
+	let unchained = false;
+	let mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Fabulous","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck"];
+	for(let unVar in mandatoryUnchain){
+		unVar = mandatoryUnchain[unVar];
+		if(unVar == args[2]){
+			unchained = true;
+			console.log("Set unchained?");
+		}
+	}
+	return unchained;
+}
+
+function checkForSixPercent(args){
+	let sixPercent = false;
+	let sixPercenters = ["Flamingo","Cerulian","Wolfgrey","Sweetmeloncakes","Dali","Koala","Starstruck","Cheeky"];
+	for(var sixVar in sixPercenters){
+		sixVar = sixPercenters[sixVar];
+		if(sixVar == args[2]){
+			sixPercent = true;
+			console.log("Set six percent");
+		}
+	}
+	return sixPercent;
 }
 
 function gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats, sixPercenters){
@@ -333,6 +276,7 @@ function fetch(id){
 	return Promise.delay(3000, id).then(CKClient.getUserKitties(owner_wallet_address,64,id*20)
 		.then(handleKittensWithContract, noKittensToHandle));
 }
+
 function loopGetUserKitties(err, res){
 	var promiseArray = []
 	array = new Array();
@@ -340,9 +284,6 @@ function loopGetUserKitties(err, res){
 	for (i = 0; i < amountOfCalls; i++) {
     	array[i] = i;
 	}
-	//array = array.filter(function(e){return e}); 
-	console.log(array.length);
-	console.log(array);
 	return Promise.map(array, fetch, {concurrency: 1});
 }
 
@@ -381,65 +322,10 @@ function checkOwnershipOfCats(cats_bad){
 		cat = cats[cat];
 		promiseArray[counter] = ck_contract.methods.ownerOf(cat.id).call().then(doFilterWork.bind(null,cat));
 	}
-	//return Promise.settleVal(null,promiseArray).catch(console.log("Failed to check cat ownership"));
 	return Promise.all(promiseArray).catch(console.log("Cat owner lookup failed somewhere:("));
 }
-function grabAllOwnedCatsFromBlockchain(){
 
-	var promiseArray = [];
-	for(var i = 0; i < 700000; i++){
-		promiseArray[i] = ck_contract.methods.ownerOf(i).call().then(doFilterWork.bind(null,i));
 
-	}
-	console.log("done adding promises?");
-	var limit = promiseLimit(1000);
-
-	return Promise.all(promiseArray.map((name) => {
-  		return limit(() => job(name))
-	}))
-	/*
-	return Promise.all(promiseArray).catch(function(err){
-		{
-			console.log(err);
-		}});*/
-}
-
-function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-}
-
-function readKittensFromDisk(filename, numberFrom, numberTo){
-	let text = fs.readFileSync('C:/users/eulve/autokitty/kittens/' + filename + numberFrom + '.txt', 'utf8');
-	let splitText = text.split(",");
-
-	for(let filenumber = numberFrom+1; filenumber <= numberTo; filenumber++){
-		let secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/' + filename +filenumber+'.txt','utf8');
-		let secondSplitText = secondText.split(",");
-		for(let kittenID in secondSplitText){
-			kittenID = secondSplitText[kittenID];
-			if(!splitText.includes(kittenID)){
-				splitText.push(kittenID);
-			}
-		}
-	}
-
-	return splitText;
-}
 
 function loopGetUserKittensNAPI(err, res){
 
@@ -451,54 +337,16 @@ function loopGetUserKittensNAPI(err, res){
 	}
 
 	if(lowGenCatsOnly){
-		return readKittensFromDisk("gen0Merged", 0, 0);
+		return Utilities.readKittensFromDisk("gen0Merged", 0, 0);
 		
 	} else {
-		return readKittensFromDisk("kittensMerged",0,0);
+		return Utilities.readKittensFromDisk("kittensMerged",0,0);
 	}
 
 	return splitText;
 }
 
-function chunkify(a, n, balanced) {
-    
-    if (n < 2)
-        return [a];
 
-    var len = a.length,
-            out = [],
-            i = 0,
-            size;
-
-    if (len % n === 0) {
-        size = Math.floor(len / n);
-        while (i < len) {
-            out.push(a.slice(i, i += size));
-        }
-    }
-
-    else if (balanced) {
-        while (i < len) {
-            size = Math.ceil((len - i) / n--);
-            out.push(a.slice(i, i += size));
-        }
-    }
-
-    else {
-
-        n--;
-        size = Math.floor(len / n);
-        if (len % size === 0)
-            size--;
-        while (i < size * n) {
-            out.push(a.slice(i, i += size));
-        }
-        out.push(a.slice(size * n));
-
-    }
-
-    return out;
-}
 var allFilteredCats = [];
 
 function getCatsLoop(no_catArray){
@@ -512,12 +360,12 @@ function getCatsLoop(no_catArray){
 
 //Test output
 for(v = 0; v <=200; v++){
-	setTimeout(realMain,3000000*v);
+	setTimeout(main,3000000*v);
 	console.log("Scheduling: " + v);
 }
 
 
-function realMain(){
+function main(){
 	if(api_calls_on){
 		loopGetUserKitties().then(mainFunction);
 	} else {
@@ -527,9 +375,4 @@ function realMain(){
 	}
 }
 
-function isEmptyObject( obj ) {
-    for ( var name in obj ) {
-        return false;
-    }
-    return true;
-}
+
