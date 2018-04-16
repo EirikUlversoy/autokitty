@@ -171,6 +171,7 @@ function GeneDecoder(){
 		wildGeneNames["Wild_6"] = "6";
 		wildGeneNames["Wild_7"] = "7";
 		wildGeneNames["Wild_8"] = "8";
+		wildGeneNames["Wild_9"] = "9";
 		wildGeneNames["Wild_a"] = "a";
 		wildGeneNames["Wild_f"] = "f";
 

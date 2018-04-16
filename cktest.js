@@ -112,6 +112,7 @@ function setupDictionaries(){
 	PremierMutations["Tigerpunk"] = ["Calicool","Luckystripe"];
 	PremierMutations["Twilightsparkle"] = ["Sapphire","Forgetmenot"];
 	PremierMutations["Wolfgrey"] = ["Swampgreen","Violet"];
+	PremierMutations["Daemonwings"] = ["Wild_9","Wild_a"];
 	PremierMutations["Dali"] = ["Beard","Pouty"];
 
 	PremierMutations["Mainecoon"] = ["Chartreux","Himalayan"];
@@ -166,7 +167,7 @@ function mainFunction (calls){
 	,"Manx","Buzzed","Mintmacaron"];
 
 	var targeted_traits = [];
-	var listOfTargetedTraitCombinations = ["Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm","Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle","Patrickstarfish", "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum"];
+	var listOfTargetedTraitCombinations = ["Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm","Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle","Patrickstarfish", "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum","Daemonwings"];
 	listOfSecondaryMutations = Utilities.shuffle(listOfSecondaryMutations);
 	listOfTargetedTraitCombinations = Utilities.shuffle(listOfTargetedTraitCombinations);
 	var unchained = checkForUnchained(args);
