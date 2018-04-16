@@ -76,45 +76,14 @@ function handleKittensWithContract(kittens){
 
 function handleKittensWithID(kittens){
 	var promiseArray = [];
-	//web3.eth.defaultBlock = 5356409;
 	for(kitten in kittens){
 		promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten]).call().then(doWork.bind(null,kittens[kitten]));
 	}
 
-	//return Promise.map(promiseArray, Promise.resolve, {concurrency: 1}).catch(function(err){
-	//console.log("Had " + result.length + " pending promises(map)!");
-	//return promiseArray;
-	//});
-	
 	return Promise.all(promiseArray).catch(function(err){
-		//var result = promiseArray.filter(z => z.id);
-		//console.log("Had " + result.length + " pending promises!");
 		return promiseArray;
 	});
-	//return Promise.settleVal(null,promiseArray);
 }
-function testFunction(p,count){
-	if(count <= 200){
-		return Promise.resolve(p).catch(function(err){
-			return testFunction(p,count+1);
-		})
-	} else {
-		return null;
-	}
-
-}
-Promise.settleVal = function(rejectVal, promises) {
-    return Promise.all(promises.map(function(p) {
-        // make sure any values or foreign promises are wrapped in a promise
-        return Promise.resolve(p).catch(function(err) {
-            // instead of rejection, just return the rejectVal (often null or 0 or "" or {})
-        	return testFunction(p,0);
-
-            //return rejectVal;
-        });
-    }));
-};
-
 
 function contains(arr, x) {
     return arr.filter(function(elem) { return elem.id == x.id }).length > 0;
@@ -124,11 +93,9 @@ function doWork(id, kitten){
 	kitten.id = id;
 	kitten.chanceOfTrait = {};
 	if(kitten.genes){
-		//if(!cats.includes(kitten)){
 		if(!contains(cats, kitten)){
 			cats.push(kitten);
 		}
-		//}
 	}
 	return kitten;
 
@@ -156,11 +123,9 @@ function saveKittenIds(kittens){
   	if (err) throw err;
   	console.log('It\'s saved!');
 });}
-const args = process.argv;
-console.log(args);
-function mainFunction (calls){
-	console.log("is in main");
-	var PremierMutations = {};
+
+function setupDictionaries(){
+	let PremierMutations = {};
 
 	PremierMutations["Norwegianforest"] = ["Savannah","Selkirk"];
 	PremierMutations["Pumpkin"] = ["Thundergrey","Gold"];
@@ -209,7 +174,7 @@ function mainFunction (calls){
 	PremierMutations["Patrickstarfish"] = ["Morningglory","Frosting"];
 	PremierMutations["Tongue"] = ["Happygokitty","Soserious"];
 
-	var	SecondaryMutations = {}
+	let	SecondaryMutations = {}
 	SecondaryMutations["Babypuke"] = ["Pumpkin","Limegreen"];
 	SecondaryMutations["Seafoam"] = ["Daffodil","Flamingo"];
 	SecondaryMutations["Yokel"] = ["Cheeky","Starstruck"];
@@ -225,7 +190,17 @@ function mainFunction (calls){
 	SecondaryMutations["Buzzed"] = ["Sass","Sweetmeloncakes"];
 	SecondaryMutations["Mintmacaron"] = ["Periwinkle","Patrickstarfish"];
 
+	mutationDicts = [];
+	mutationDicts.push(PremierMutations);
+	mutationDicts.push(SecondaryMutations);
 
+	return mutationDicts;
+}
+
+const args = process.argv;
+console.log(args);
+function mainFunction (calls, PremierMutations, SecondaryMutations){
+	console.log("is in main");
 	//var targeted_traits = ["Elk","Cyan","Cymric","Happygokitty"];
 	var targeted_traits = ["Strawberry","Chocolate","Wuvme","Baddate"];
 	var BFAttempt = ["Egyptiankohl","Cerulian","Himalayan","Wuvme"];
@@ -388,20 +363,6 @@ function job (name) {
   })
 }
 
-var ownedTokens = [];
-function placeTokensInGlobalList(tokens){
-	console.log("Found tokens: " + tokens);
-	console.log(tokens.length);
-	ownedTokens = tokens;
-}
-function getTokensOfOwner(){
-	var aPromise = ck_contract.methods.tokensOfOwner(owner_wallet_address).call({gas:9900000000000}).then(placeTokensInGlobalList);
-	console.log(aPromise);
-	return Promise.all([aPromise]).catch(function(err){
-		console.log(err);
-	});
-}
-
 function getOwnershipOfCatsLoop(cats){
 	return cats.reduce(function(promise, cat) {
 		return promise.then(function(){
@@ -458,35 +419,39 @@ function shuffle(array) {
 
   return array;
 }
-function loopGetUserKittesNAPI(err, res){
-	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens.txt', 'utf8');
-	var splitText = text.split(",");
-	
-	for(var y = 2; y <= 20; y++){
-		var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens'+y+'.txt', 'utf8');
-		var secondSplitText = secondText.split(",");
-		for(var kittenID in secondSplitText){
+
+function readKittensFromDisk(filename, numberFrom, numberTo){
+	let text = fs.readFileSync('C:/users/eulve/autokitty/kittens/' + filename + numberFrom + '.txt', 'utf8');
+	let splitText = text.split(",");
+
+	for(let filenumber = numberFrom+1; filenumber <= numberTo; filenumber++){
+		let secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/' + filename +filenumber+'.txt','utf8');
+		let secondSplitText = secondText.split(",");
+		for(let kittenID in secondSplitText){
 			kittenID = secondSplitText[kittenID];
 			if(!splitText.includes(kittenID)){
 				splitText.push(kittenID);
 			}
 		}
 	}
-	/*
-	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/gen01.txt', 'utf8');
-	var splitText = text.split(",");
 
-	for(var xy = 2; xy <= 7; xy++){
-		var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/gen0'+xy+'.txt','utf8');
-		var secondSplitText = secondText.split(",");
-		for(var kittenID in secondSplitText){
-			kittenID = secondSplitText[kittenID];
-			if(!splitText.includes(kittenID)){
-				splitText.push(kittenID);
-			}
-		}
-	}*/
+	return splitText;
+}
+function loopGetUserKittesNAPI(err, res){
 
+	let lowGenCatsOnly = false; 
+	if(args[2] == ("all-gen0" || "all-gen1")){
+		lowGenCatsOnly = true;
+	} else {
+		lowGenCatsOnly = false;
+	}
+
+	if(lowGenCatsOnly){
+		return readKittensFromDisk("gen0", 2, 8);
+		
+	} else {
+		return readKittensFromDisk("kittens")
+	}
 
 	return splitText;
 }
@@ -568,16 +533,9 @@ function realMain(){
 	if(api_calls_on){
 		loopGetUserKitties().then(mainFunction);
 	} else {
-		//Promise.delay(10000).then(helper().then(mainFunction));
-		//Promise.delay(3000).then(helper).then(checkOwnershipOfCats).then(mainFunction);
 		var kittens = loopGetUserKittesNAPI();
 		console.log("There are: " + kittens.length + "kitten IDS stored on disk");
-		//getCatsLoop(kittens).then(getOwnershipOfCatsLoop(kittens)).then(mainFunction);
-		//getCatsLoop(kittens).then(getOwnershipOfCatsLoop).then(mainFunction);
 		getOwnershipOfCatsLoop(kittens).then(getCatsLoop).then(mainFunction);
-
-		//Promise.delay(3000).then(helper).then(helper).then(helper).then(helper).then(helper).then(checkOwnershipOfCats).then(mainFunction);
-		//loopGetUserKittesNAPI().then(handleKittensWithID).then(mainFunction);
 	}
 }
 
