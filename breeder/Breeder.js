@@ -7,7 +7,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	self.generations_breeding_upper_limit = generations_breeding_upper_limit;
 	//Ck_contract needs to be initialized before breeding
 	self.ck_contract = null;
-	self.lower_limit = 6;
+	self.lower_limit = 0;
 	
 	self.separateByGeneration = function(cats, generation){
 		var filteredCatList = [];
@@ -155,7 +155,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		console.log(targetedTraits);
 		potentialPartners = arrayOfScoredCats.slice();
 		var usedCats = [];
-		var treshold = 0.25;
+		var treshold = 0.16;
 		if(sixPercent){
 			treshold = 0.06;
 		}

@@ -7,14 +7,14 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 20;
+var generations_breeding_upper_limit = 0;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
 //Breeder = Breeder(generations_breeding_upper_limit);
 var promiseLimit = require('promise-limit')
 
-var api_calls_on = true;
+var api_calls_on = false;
 //Address of the wallet containing the cats, can be set in the console afterwards
 //or provided as a start parameter
 var owner_wallet_address = "0x68b42e44079d1d0a4a037e8c6ecd62c48967e69f";
@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 50;
+var amountOfCalls = 120;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -233,7 +233,7 @@ function mainFunction (calls){
 	var BFAttempt3 = ["Wuvme","Himalayan","Royalblue"];
 	var BFAttempt4 = ["Hotrod","Himalayan","Wuvme"];
 	var BFAttempt5 = ["Himalayan","Dippedcone"];
-	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue"];
+	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue","Cloudwhite"];
 	var Springcrocus = ["Springcrocus"];
 	var Pumpkin = ["Thundergrey", "Gold"];
 	var Limegreen = ["Topaz","Mintgreen"];
@@ -461,8 +461,8 @@ function shuffle(array) {
 function loopGetUserKittesNAPI(err, res){
 	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens.txt', 'utf8');
 	var splitText = text.split(",");
-	
-	for(var y = 2; y <= 20; y++){
+	/*
+	for(var y = 2; y <= 21; y++){
 		var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/kittens'+y+'.txt', 'utf8');
 		var secondSplitText = secondText.split(",");
 		for(var kittenID in secondSplitText){
@@ -471,12 +471,12 @@ function loopGetUserKittesNAPI(err, res){
 				splitText.push(kittenID);
 			}
 		}
-	}
-	/*
+	}*/
+	
 	var text = fs.readFileSync('C:/users/eulve/autokitty/kittens/gen01.txt', 'utf8');
 	var splitText = text.split(",");
 
-	for(var xy = 2; xy <= 7; xy++){
+	for(var xy = 2; xy <= 8; xy++){
 		var secondText = fs.readFileSync('C:/users/eulve/autokitty/kittens/gen0'+xy+'.txt','utf8');
 		var secondSplitText = secondText.split(",");
 		for(var kittenID in secondSplitText){
@@ -485,7 +485,7 @@ function loopGetUserKittesNAPI(err, res){
 				splitText.push(kittenID);
 			}
 		}
-	}*/
+	}
 
 
 	return splitText;
@@ -559,7 +559,7 @@ function getCatsLoop(no_catArray){
 
 //Test output
 for(v = 0; v <=200; v++){
-	setTimeout(realMain,1000000*v);
+	setTimeout(realMain,3000000*v);
 	console.log("Scheduling: " + v);
 }
 
