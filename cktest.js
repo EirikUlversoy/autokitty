@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 120;
+var amountOfCalls = 150;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -161,16 +161,16 @@ function mainFunction (calls){
 	let PremierMutations = mutationDicts[0];
 	let SecondaryMutations = mutationDicts[1];
 	console.log("is in main");
-	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue","Cloudwhite"];
+	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue","Twilightsparkle"];
 	var listOfSecondaryMutations = ["Babypuke","Seafoam","Yokel","Wingtips","Onyx","Hotrod","Royalblue","Neckbeard"
 	,"Manx","Buzzed","Mintmacaron"];
 
 	var targeted_traits = [];
-	var listOfTargetedTraitCombinations = ["Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm","Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle","Patrickstarfish", "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris"];
+	var listOfTargetedTraitCombinations = ["Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm","Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle","Patrickstarfish", "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum"];
 	listOfSecondaryMutations = Utilities.shuffle(listOfSecondaryMutations);
 	listOfTargetedTraitCombinations = Utilities.shuffle(listOfTargetedTraitCombinations);
-	var unchained = checkForUnchained();
-	var sixPercent = checkForSixPercent();
+	var unchained = checkForUnchained(args);
+	var sixPercent = checkForSixPercent(args);
 	var tryAllGen1 = args[2] == "all-gen1" ? true : false;
 	var tryAllGen0 = args[2] == "all-gen0" ? true : false;
 	targeted_traits = ["sample"];
@@ -196,6 +196,8 @@ function mainFunction (calls){
 	if(targeted_traits.length != 0){
 		console.log("heading into advanced breeding loop");
 		//GeneDecoder.statistics(cats);
+		let mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Fabulous","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck"];
+		let sixPercenters = ["Flamingo","Cerulian","Wolfgrey","Sweetmeloncakes","Dali","Koala","Starstruck","Cheeky"];
 
 
 		if(tryAllGen1){
@@ -266,10 +268,6 @@ function gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierM
 	}
 
 }
-//List of breeding pairs
-var breedingPairs = [];
-var kittyCount = 0;
-//Block for calling the API. TODO: Can separate this into a function
 
 function fetch(id){
 	console.log("Fetching " + id);
@@ -290,21 +288,8 @@ function loopGetUserKitties(err, res){
 function doFilterWork(cat,address){
 	if(address == upper_wallet_address){
 		allFilteredCats.push(cat);
-		//console.log("Found owned cat!")
-		//return cat;
 	}
 
-}
-function job (name) {
-  var text = `job ${name}`
-  console.log('started', text)
- 
-  return new Promise(function (resolve) {
-    setTimeout(() => {
-      console.log('       ', text, 'finished')
-      resolve(text)
-    }, 100)
-  })
 }
 
 function getOwnershipOfCatsLoop(cats){
@@ -329,18 +314,22 @@ function checkOwnershipOfCats(cats_bad){
 
 function loopGetUserKittensNAPI(err, res){
 
-	let lowGenCatsOnly = false; 
-	if(args[2] == ("all-gen0" || "all-gen1")){
+	var lowGenCatsOnly = false; 
+	if(args[2] == "all-gen0"){
+		console.log("low gen only!");
 		lowGenCatsOnly = true;
-	} else {
-		lowGenCatsOnly = false;
+	}
+
+	if(args[2] == "all-gen1"){
+		console.log("low gen only!");
+		lowGenCatsOnly = true;
 	}
 
 	if(lowGenCatsOnly){
-		return Utilities.readKittensFromDisk("gen0Merged", 0, 0);
+		return Utilities.readKittensFromDisk("gen0Merged", 0, 1);
 		
 	} else {
-		return Utilities.readKittensFromDisk("kittensMerged",0,0);
+		return Utilities.readKittensFromDisk("kittensMerged",0,1);
 	}
 
 	return splitText;
