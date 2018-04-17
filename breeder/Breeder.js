@@ -146,7 +146,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			self._removeBreedingPairFromTraitList(scoredCat, partner, targetedTraits[trait]);
 		}
 	}
-	
+
 	self._removeBreedingPairFromTraitList = function(scoredCat, partner,trait){
 		var traitScoreList = self.singleTraitScoreDictionary[trait];
 		delete traitScoreList[partner.id];
@@ -154,25 +154,26 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		self.singleTraitScoreDictionary[trait] = traitScoreList;
 	}
 
+	self._decideTargetTrait = function(scoredCat, targetedTraits, catDictionary){
+		var aCOF = catDictionary[scoredCat.id].chanceOfTrait;
+		if(aCOF[targetedTraits[0]] > aCOF[targetedTraits[1]]){
+			targetTrait = targetedTraits[1];
+		} else {
+			targetTrait = targetedTraits[0];
+		}
+	}
 	self._findMatchZeroMissing = function(potentialPartners, scoredCat, targetedTraits, catDictionary){
 		console.log("no missing traits, pick top scorer!");
 		remove(potentialPartners, scoredCat.id);
 		var targetTrait = targetedTraits[0];
 		if(targetedTraits.length == 2){
-			var aCOF = catDictionary[scoredCat.id].chanceOfTrait;
-			if(aCOF[targetedTraits[0]] > aCOF[targetedTraits[1]]){
-				targetTrait = targetedTraits[1];
-			} else {
-				targetTrait = targetedTraits[0];
-			}
-
+			targetTrait = self._decideTargetTrait(scoredCat, targetedTraits, catDictionary);
 		}
+
 		traitScoreList = self.singleTraitScoreDictionary[targetTrait];
 		orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
 		var partner = orderedTraitScoreList[0];
 		remove(potentialPartners, partner.id);
-
-		
 
 		usedCats.push(scoredCat.id);
 		usedCats.push(partner.id);
