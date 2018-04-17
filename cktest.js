@@ -14,7 +14,7 @@ var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_a
 //Breeder = Breeder(generations_breeding_upper_limit);
 var promiseLimit = require('promise-limit')
 
-var api_calls_on = false;
+var api_calls_on = true;
 //Address of the wallet containing the cats, can be set in the console afterwards
 //or provided as a start parameter
 var owner_wallet_address = "0x68b42e44079d1d0a4a037e8c6ecd62c48967e69f";
@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 150;
+var amountOfCalls = 50;
 console.log(amountOfCalls);
 
 var i = 0;

@@ -156,7 +156,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		potentialPartners = arrayOfScoredCats.slice();
 
 		var usedCats = [];
-		var treshold = 0.16;
+		var treshold = 0.21;
 		if(sixPercent){
 			treshold = 0.06;
 		}
