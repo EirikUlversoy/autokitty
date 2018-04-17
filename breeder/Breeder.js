@@ -108,11 +108,22 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			setTimeout(self.readyToBreedCheckA,150*count, bp.id1, bp.id2);
 		}
 	}
+
+	self._makeSingleTraitScoreDictionary = function(cats, targetedTraits){
+		console.log("Making single scored lists for all traits and putting them in a dict...");
+		singleTraitScoreDictionary = {};
+		for(let trait in targetedTraits){
+			trait = targetedTraits[trait];
+			let traitScoreList = self._scoreCatsBasedOnSingleTrait(cats,trait);
+			self.singleTraitScoreDictionary[trait] = traitScoreList;
+		}
+		return self.singleTraitScoreDictionary;
+
+	}
 	self._simpleBreedingAlgorithm = function(cats, arrayOfScoredCats, targetedTraits, unchained, sixPercent, scores){
 
 		var catDictionary = {};
 		var breedingPairs = [];
-		console.log(unchained);
 		if(unchained == true){
 			console.log("Running in unchained mode!");
 		}
@@ -121,17 +132,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			catDictionary[cat.id] = cat;
 
 		}
-
-		console.log("Making single scored lists for all traits and putting them in a dict...");
-		self.singleTraitScoreDictionary = {};
-		for(var trait in targetedTraits){
-			trait = targetedTraits[trait];
-			var traitScoreList = self._scoreCatsBasedOnSingleTrait(cats,trait);
-			//console.log(traitScoreList);
-			//var orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
-			self.singleTraitScoreDictionary[trait] = traitScoreList;
-		}
-
+		self.singleTraitScoreDictionary = self._makeSingleTraitScoreDictionary(cats, targetedTraits);
 
 		console.log("Trying to find find these traits:");
 		console.log(targetedTraits);
