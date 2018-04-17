@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 20;
+var generations_breeding_upper_limit = 0;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 50;
+var amountOfCalls = 125;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -332,7 +332,7 @@ function loopGetUserKittensNAPI(err, res){
 		return Utilities.readKittensFromDisk("gen0Merged", 0, 1);
 		
 	} else {
-		return Utilities.readKittensFromDisk("kittensMerged",0,1);
+		return Utilities.readKittensFromDisk("kittensMerged",0,3);
 	}
 
 	return splitText;

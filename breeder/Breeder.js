@@ -7,7 +7,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 	self.generations_breeding_upper_limit = generations_breeding_upper_limit;
 	//Ck_contract needs to be initialized before breeding
 	self.ck_contract = null;
-	self.lower_limit = 3;
+	self.lower_limit = 0;
 	
 	self.separateByGeneration = function(cats, generation){
 		var filteredCatList = [];
@@ -77,15 +77,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		var topLists = [];
 		topLists = self.createTopLists(catsWithAnyTrait,targetedTraits);
 
-		console.log("Largest trait is: " + largestTrait);
-		
-		console.log("Amount of cats with the trait is: " + largestTraitList);
-		//var scores = self._scoreCatsBasedOnTraits(catsWithAnyTrait, targetedTraits);
-		
-
 		var scores = self._scoreCatsBasedOnTraits(catsWithAnyTrait, targetedTraits, combinedTraits);
-
-
 		var arrayOfScoredCats = [];
 		var scoreKeys = Object.keys(scores);
 
@@ -97,8 +89,8 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		arrayOfScoredCats.sort(self._keyComparator("score"));
 		//console.log(arrayOfScoredCats);
 
-		var breedingPairs = self._simpleBreedingAlgorithm(cats, arrayOfScoredCats, targetedTraits, unchained, sixPercent, scores);
-		self._triggerBreedingPairs(breedingPairs);
+		self.breedingPairs = self._simpleBreedingAlgorithm(cats, arrayOfScoredCats, targetedTraits, unchained, sixPercent, scores);
+		self._triggerBreedingPairs(self.breedingPairs);
 	}
 
 	self._triggerBreedingPairs = function(breedingPairs){
@@ -115,29 +107,16 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		for(let trait in targetedTraits){
 			trait = targetedTraits[trait];
 			let traitScoreList = self._scoreCatsBasedOnSingleTrait(cats,trait);
-			self.singleTraitScoreDictionary[trait] = traitScoreList;
+			singleTraitScoreDictionary[trait] = traitScoreList;
 		}
-		return self.singleTraitScoreDictionary;
+		return singleTraitScoreDictionary;
 
 	}
 	self._decideBreedOrderAndPush = function(scoredCat, partner, catDictionary){
 		if(catDictionary[partner.id].cooldownIndex < catDictionary[scoredCat.id].cooldownIndex){
-			breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
+			self.breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
 		} else {
-			breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
-		}
-	}
-	self._findMatch = switch(missingTraitsLength){
-		case (missingTraitsLength == 0):
-			return self._findMatchZeroMissing();
-			break;
-		case (missingTraitsLength == 1):
-			return self._findMatchOneMissing();
-			break;	
-		case (missingTraitsLength == 2):
-			return self._findMatchTwoMissing();
-		default:
-
+			self.breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
 		}
 	}
 
@@ -162,23 +141,42 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			targetTrait = targetedTraits[0];
 		}
 	}
-	self._findMatchZeroMissing = function(potentialPartners, scoredCat, targetedTraits, catDictionary){
+	self._findMatchZeroMissing = function(scoredCat, targetedTraits, catDictionary, treshold){
 		console.log("no missing traits, pick top scorer!");
-		remove(potentialPartners, scoredCat.id);
+		remove(self.potentialPartners, scoredCat.id);
 		var targetTrait = targetedTraits[0];
 		if(targetedTraits.length == 2){
 			targetTrait = self._decideTargetTrait(scoredCat, targetedTraits, catDictionary);
+			traitScoreList = self.singleTraitScoreDictionary[targetTrait];
+			orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
+			var partner = orderedTraitScoreList[0];
+			remove(self.potentialPartners, partner.id);
+
+			self.usedCats.push(scoredCat.id);
+			self.usedCats.push(partner.id);
+
+			self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
+		} else {
+			for(var partner in self.potentialPartners){
+				partner = self.potentialPartners[partner];
+				if(!self.usedCats.includes(partner.id)){
+					remove(self.potentialPartners, partner.id);
+
+					self.usedCats.push(scoredCat.id);
+					self.usedCats.push(partner.id);
+
+					self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
+					console.log("Found match in zero missing, larger than two conditional");
+					break;
+				} else {
+					remove(self.potentialPartners, partner.id);
+				}
+			}
+			
+			
 		}
 
-		traitScoreList = self.singleTraitScoreDictionary[targetTrait];
-		orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
-		var partner = orderedTraitScoreList[0];
-		remove(potentialPartners, partner.id);
 
-		usedCats.push(scoredCat.id);
-		usedCats.push(partner.id);
-
-		self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
 	}
 
 	self._fancySpecificFindPartnerLoop = function(scoredCat, potentialPartners, targetedTraits){
@@ -196,125 +194,122 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			
 		}
 	}
-	self._fancySpecificOneMissing = function(scoredCat, potentialPartners, targetedTraits, catDictionary){
-		let foundPartner = self._fancySpecificFindPartnerLoop(scoredCat, potentialPartners, targetedTraits);
-		
+	self._fancySpecificOneMissing = function(scoredCat, targetedTraits, catDictionary, treshold){
+		let foundPartner = self._fancySpecificFindPartnerLoop(scoredCat, self.potentialPartners, targetedTraits);
 		if(foundPartner != null){
 			if(catDictionary[foundPartner.id].isReady){
-				remove(potentialPartners, scoredCat.id);
-				remove(potentialPartners, foundPartner.id);
+				remove(self.potentialPartners, scoredCat.id);
+				remove(self.potentialPartners, foundPartner.id);
 
 				self._removeBreedingPairFromAllTraitLists(foundPartner, scoredCat, targetedTraits);
-				usedCats.push(scoredCat.id);
-				usedCats.push(foundPartner.id);
+				self.usedCats.push(scoredCat.id);
+				self.usedCats.push(foundPartner.id);
 
 				self._decideBreedOrderAndPush(scoredCat, foundPartner, catDictionary);
 			} else {
-				usedCats.push(foundPartner.id);
+				self.usedCats.push(foundPartner.id);
+				remove(self.potentialPartners, foundPartner.id);
 			}
 			
 			
 		}
 	}
-	self._findMatchOneMissing = function(potentialPartners, scoredCat, targetedTraits, catDictionary){
-		if(targetedTraits.length > 15){
-			self._fancySpecificOneMissing();
-		} else {
-			console.log("Missing one trait, pick based on top scoring cat of that trait");
-			var missingTrait = scoredCat.missingTraits[0];
-			var missingTraitScoreList = self.singleTraitScoreDictionary[missingTrait];
-			orderedMissingTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(missingTraitScoreList);
-			if(orderedMissingTraitScoreList.length > 0){
-				for(var catInList in orderedMissingTraitScoreList){
-					var partner = orderedMissingTraitScoreList[catInList];
-					scoredPartner = scores[partner.id];
+	self._findMatchOneMissing = function(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained){
+		console.log("Missing one trait, pick based on top scoring cat of that trait");
+		var missingTrait = scoredCat.missingTraits[0];
+		var missingTraitScoreList = self.singleTraitScoreDictionary[missingTrait];
+		orderedMissingTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(missingTraitScoreList);
+		if(orderedMissingTraitScoreList.length > 0){
+			for(var catInList in orderedMissingTraitScoreList){
+				var partner = orderedMissingTraitScoreList[catInList];
+				scoredPartner = scores[partner.id];
+				if(!self.usedCats.includes(partner.id)){
 					if(scoredPartner > treshold*targetedTraits.length || unchained){
 						if(catDictionary[partner.id].isReady){
-							remove(potentialPartners, scoredCat.id);
-							remove(potentialPartners, partner.id);
+							remove(self.potentialPartners, scoredCat.id);
+							remove(self.potentialPartners, partner.id);
 							self._removeBreedingPairFromAllTraitLists(scoredCat, partner, targetedTraits);
-							usedCats.push(scoredCat.id);
-							usedCats.push(partner.id);
+							self.usedCats.push(scoredCat.id);
+							self.usedCats.push(partner.id);
 
 							self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
+							console.log("Found match in _findMatchOneMissing");
 							break;
 						} else {
-							usedCats.push(partner.id);
+							self.usedCats.push(partner.id);
 
 						}
 					}
-
 				}
-			
-			} else {
-				console.log("No cat with the cattribute " + missingTrait + " left :(");
+				
+
 			}
+		
+		} else {
+			console.log("No cat with the cattribute " + missingTrait + " left :(");
 		}
 	}
 
-	self._findMatchTwoMissing = function(potentialPartners, scoredCat, targetedTraits, catDictionary){
-		if(targetedTraits.length > 15){
-			self._fancySpecificTwoMissing();
-		} else {
-			console.log("Missing two traits.. Looking at both ");
-			var missingTraits = scoredCat.missingTraits;
-			console.log("Traits: " + missingTraits[0] + ", " + missingTraits[1]);						
-			var firstMissingTraitScoreList = self.singleTraitScoreDictionary[missingTraits[0]];
-			var secondMissingTraitScoreList = self.singleTraitScoreDictionary[missingTraits[1]];
-			var firstOrderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(firstMissingTraitScoreList);
-			var secondOrderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(secondMissingTraitScoreList);
-			if(firstOrderedTraitScoreList.length > 0 && secondOrderedTraitScoreList.length > 0){
-				for(var tCat in firstOrderedTraitScoreList){
-					var tCat = firstOrderedTraitScoreList[tCat];
-					//TODO: 0.3 magic number 
-					scoredPartner = scores[tCat.id];
+	self._findMatchTwoMissing = function(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained){
+		console.log("Missing two traits.. Looking at both ");
+		var missingTraits = scoredCat.missingTraits;
+		console.log("Traits: " + missingTraits[0] + ", " + missingTraits[1]);						
+		var firstMissingTraitScoreList = self.singleTraitScoreDictionary[missingTraits[0]];
+		var secondMissingTraitScoreList = self.singleTraitScoreDictionary[missingTraits[1]];
+		var firstOrderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(firstMissingTraitScoreList);
+		var secondOrderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(secondMissingTraitScoreList);
+		if(firstOrderedTraitScoreList.length > 0 && secondOrderedTraitScoreList.length > 0){
+			for(var tCat in firstOrderedTraitScoreList){
+				var tCat = firstOrderedTraitScoreList[tCat];
+				//TODO: 0.3 magic number 
+				scoredPartner = scores[tCat.id];
 
-					if(catDictionary[tCat.id].isReady){
-
+				if(catDictionary[tCat.id].isReady){
+					if(!self.usedCats.includes(tCat.id)){
 						if(secondMissingTraitScoreList[tCat.id] > 0.20 && scoredPartner.score > targetedTraits.length * treshold ){
-							remove(potentialPartners, scoredCat.id);
+							remove(self.potentialPartners, scoredCat.id);
 							var partner = tCat;
-							remove(potentialPartners, partner.id);
+							remove(self.potentialPartners, partner.id);
 
 							self._removeBreedingPairFromAllTraitLists(scoredCat, partner);
-							usedCats.push(scoredCat.id);
-							usedCats.push(partner.id);
+							self.usedCats.push(scoredCat.id);
+							self.usedCats.push(partner.id);
 							self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
-
+							console.log("Found match in _findMatchTwoMissing");
 							break;
 						}
-					} else {
-						usedCats.push(tCat.id);
 					}
 					
+				} else {
+					self.usedCats.push(tCat.id);
 				}
-			} else {
-				console.log("Both traits are not present any longer");
+				
 			}
+		} else {
+			console.log("Both traits are not present any longer");
 		}
 	}
 
-	self._fancySpecificTwoMissing = function(potentialPartners, scoredCat, targetedTraits, catDictionary){
-		let foundPartner = self._fancySpecificFindPartnerLoop(scoredCat, potentialPartners, targetedTraits);
+	self._fancySpecificTwoMissing = function(scoredCat, targetedTraits, catDictionary, treshold){
+		let foundPartner = self._fancySpecificFindPartnerLoop(scoredCat, self.potentialPartners, targetedTraits);
 		
 		if(foundPartner != null){
 			if(catDictionary[foundPartner.id].isReady){
-				remove(potentialPartners, scoredCat.id);
-				remove(potentialPartners, foundPartner.id);
+				remove(self.potentialPartners, scoredCat.id);
+				remove(self.potentialPartners, foundPartner.id);
 				self._removeBreedingPairFromAllTraitLists(scoredCat, foundPartner);
-				usedCats.push(scoredCat.id);
-				usedCats.push(foundPartner.id);
+				self.usedCats.push(scoredCat.id);
+				self.usedCats.push(foundPartner.id);
 				self._decideBreedOrderAndPush(scoredCat, foundPartner, catDictionary);
-				break;
 			} else {
-				usedCats.push(foundPartner.id);
+				self.usedCats.push(foundPartner.id);
 			}
 		}
 	}
 	self._simpleBreedingAlgorithm = function(cats, arrayOfScoredCats, targetedTraits, unchained, sixPercent, scores){
 
 		var catDictionary = {};
-		var breedingPairs = [];
+		self.breedingPairs = [];
 		if(unchained == true){
 			console.log("Running in unchained mode!");
 		}
@@ -327,10 +322,10 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 
 		console.log("Trying to find find these traits:");
 		console.log(targetedTraits);
-		potentialPartners = arrayOfScoredCats.slice();
+		self.potentialPartners = arrayOfScoredCats.slice();
 
-		var usedCats = [];
-		var treshold = 0.21;
+		self.usedCats = [];
+		var treshold = 0.25;
 		if(sixPercent){
 			treshold = 0.06;
 		}
@@ -340,23 +335,28 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			//Assuming 1 is a good score
 			//console.log(scoredCat);
 			if(catDictionary[scoredCat.id].isReady){
-				if(potentialPartners.includes(scoredCat) && !usedCats.includes(scoredCat.id)){
+				if(self.potentialPartners.includes(scoredCat) && !self.usedCats.includes(scoredCat.id)){
 					if(scoredCat.score > treshold*targetedTraits.length){
 						console.log("now trying to find a match for: " + scoredCat.id);
 						if(scoredCat.missingTraits.length == 0){
-							self._findMatchZeroMissing();
+							self._findMatchZeroMissing(scoredCat, targetedTraits, catDictionary, scores, treshold);
 						} else if (scoredCat.missingTraits.length == 1){
-							self._findMatchOneMissing();
+							if(targetedTraits.length > 15){
+								self._fancySpecificOneMissing(scoredCat, targetedTraits, catDictionary, scores, treshold);
+							} else {
+								self._findMatchOneMissing(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained);
+							}
 						} else if (scoredCat.missingTraits.length == 2) {
 							if(targetedTraits.length > 15){
-								self._fancySpecificTwoMissing();
+								self._fancySpecificTwoMissing(scoredCat, targetedTraits, catDictionary, scores, treshold);
 							} else {
-								self._findMatchTwoMissing();								
+								self._findMatchTwoMissing(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained);								
 							}
 						} else {
 							console.log("Missing three or more traits, probably should not breed this cat");
-							usedCats.push(scoredCat.id);
+							self.usedCats.push(scoredCat.id);
 						}
+
 					}
 				}
 
@@ -364,8 +364,8 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			
 		}
 		console.log("Tried to find breeding pairs...");
-		console.log("Found: " + breedingPairs.length + " breeding pairs!");
-		return breedingPairs;
+		console.log("Found: " + self.breedingPairs.length + " breeding pairs!");
+		return self.breedingPairs;
 	}
 
 	self._unorderedDictionaryToOrderedArrayByScore = function(catDictionary){
@@ -437,6 +437,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 
 		return catScores;
 	}
+
 	self.createTopLists = function(cats,targetedTraits){
 		var topLists = [];
 		for(var trait in targetedTraits){
@@ -473,6 +474,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 			return result * sortOrder;
 		}
 	}
+
 	self.traitScoreComparator = function(trait){
 		var sortOrder = 1;
 		if(trait[0] === "-") {
@@ -494,6 +496,7 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		console.log('Kitten breeding pairs found: %d', breedingPairs.length);
 		console.log("Account used to breed: " + self.web3.eth.defaultAccount);
 	}
+
 	self.o = {};
 	self.readyToBreedCheckA = function(id, id2){
 		self.ck_contract.methods.isReadyToBreed(id).call().then(z => self.readyToBreedCheckB(id, id2, z));
