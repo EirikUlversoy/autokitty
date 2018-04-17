@@ -76,24 +76,6 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		console.log("Account used to breed: " + self.web3.eth.defaultAccount);
 		var topLists = [];
 		topLists = self.createTopLists(catsWithAnyTrait,targetedTraits);
-		for(var nTopList in topLists){
-			nTopList = topLists[nTopList];
-			for(var rHolder in nTopList){
-				rHolder = nTopList[rHolder];
-				//console.log("Kitten with ID: " + rHolder.id);
-				//console.log("Has the score: " + JSON.stringify(rHolder.chanceOfTrait,null,4));
-			}
-		}
-
-		var largestTrait = null;
-		var largestTraitList = 0;
-		for(var trait in targetedTraits){
-			var length = topLists[trait].length;
-			if(length > largestTraitList){
-				largestTrait = targetedTraits[trait];
-				largestTraitList = length;
-			}
-		}
 
 		console.log("Largest trait is: " + largestTrait);
 		
