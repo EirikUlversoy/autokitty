@@ -120,7 +120,13 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		return self.singleTraitScoreDictionary;
 
 	}
-
+	self._decideBreedOrderAndPush = function(scoredCat, partner, catDictionary){
+		if(catDictionary[partner.id].cooldownIndex < catDictionary[scoredCat.id].cooldownIndex){
+			breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
+		} else {
+			breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
+		}
+	}
 	self._findMatch = switch(missingTraitsLength){
 		case (missingTraitsLength == 0):
 			return self._findMatchZeroMissing();
@@ -134,6 +140,20 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 
 		}
 	}
+
+	self._removeBreedingPairFromAllTraitLists = function(scoredCat, partner, targetedTraits){
+		for(var trait in targetedTraits){
+			self._removeBreedingPairFromTraitList(scoredCat, partner, targetedTraits[trait]);
+		}
+	}
+	
+	self._removeBreedingPairFromTraitList = function(scoredCat, partner,trait){
+		var traitScoreList = self.singleTraitScoreDictionary[trait];
+		delete traitScoreList[partner.id];
+		delete traitScoreList[scoredCat.id];
+		self.singleTraitScoreDictionary[trait] = traitScoreList;
+	}
+
 	self._findMatchZeroMissing = function(potentialPartners, scoredCat, targetedTraits, catDictionary){
 		console.log("no missing traits, pick top scorer!");
 		remove(potentialPartners, scoredCat.id);
@@ -151,20 +171,16 @@ function Breeder(generations_breeding_upper_limit, upper_wallet_address, web3){
 		orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
 		var partner = orderedTraitScoreList[0];
 		remove(potentialPartners, partner.id);
-		for(var trait in targetedTraits){
-			trait = targetedTraits[trait];
-			var traitScoreList = self.singleTraitScoreDictionary[trait];
-			delete traitScoreList[partner.id];
-			delete traitScoreList[scoredCat.id];
-			self.singleTraitScoreDictionary[trait] = traitScoreList;
-		}
+
+		
+
 		usedCats.push(scoredCat.id);
 		usedCats.push(partner.id);
-		if(catDictionary[partner.id].cooldownIndex < catDictionary[scoredCat.id].cooldownIndex){
-			breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
-		} else {
-			breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
-		}
+
+		self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
+
+
+		
 	}
 
 	self._findMatchOneMissing = function(){
