@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 0;
+var generations_breeding_upper_limit = 20;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
@@ -162,7 +162,7 @@ function mainFunction (calls){
 	let PremierMutations = mutationDicts[0];
 	let SecondaryMutations = mutationDicts[1];
 	console.log("is in main");
-	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue","Twilightsparkle"];
+	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue","Cottoncandy","Soserious"];
 	var listOfSecondaryMutations = ["Babypuke","Seafoam","Yokel","Wingtips","Onyx","Hotrod","Royalblue","Neckbeard"
 	,"Manx","Buzzed","Mintmacaron"];
 
@@ -350,7 +350,7 @@ function getCatsLoop(no_catArray){
 
 //Test output
 for(v = 0; v <=200; v++){
-	setTimeout(main,3000000*v);
+	setTimeout(main,1000000*v);
 	console.log("Scheduling: " + v);
 }
 
