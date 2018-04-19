@@ -7,14 +7,14 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 0;
+var generations_breeding_upper_limit = 20;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
 //Breeder = Breeder(generations_breeding_upper_limit);
 var promiseLimit = require('promise-limit')
 
-var api_calls_on = true;
+var api_calls_on = false;
 //Address of the wallet containing the cats, can be set in the console afterwards
 //or provided as a start parameter
 var owner_wallet_address = "0x68b42e44079d1d0a4a037e8c6ecd62c48967e69f";
@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 125;
+var amountOfCalls = 50;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -214,16 +214,18 @@ function mainFunction (calls){
 			gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats,sixPercenters);
 		} else {
 			console.log("In normal generational loop");
-			Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract, 999, unchained, sixPercent);
-			/*
-			for(var x = 0; x <= generations_breeding_upper_limit; x++ ){
+			//Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract, 999, unchained, sixPercent);
+			
+			for(var x = 2; x <= generations_breeding_upper_limit; x++ ){
 				Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract,x, unchained, sixPercent);
-			}*/
+			}
 		}
 
 	} else {
 		Breeder.breedingLoop(cats, ck_contract);
 	}
+	cats = [];
+	allFilteredCats = [];
 
 }
 
@@ -329,10 +331,10 @@ function loopGetUserKittensNAPI(err, res){
 	}
 
 	if(lowGenCatsOnly){
-		return Utilities.readKittensFromDisk("gen0Merged", 0, 1);
+		return Utilities.readKittensFromDisk("gen0Merged", 0, 2);
 		
 	} else {
-		return Utilities.readKittensFromDisk("kittensMerged",0,3);
+		return Utilities.readKittensFromDisk("kittensMerged",0,10);
 	}
 
 	return splitText;
