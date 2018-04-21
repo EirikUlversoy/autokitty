@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 20;
+var generations_breeding_upper_limit = 0;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
 var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
@@ -43,7 +43,7 @@ function countHandler(counter){
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 50;
+var amountOfCalls = 100;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -174,8 +174,14 @@ function mainFunction (calls){
 	listOfTargetedTraitCombinations = Utilities.shuffle(listOfTargetedTraitCombinations);
 	var unchained = checkForUnchained(args);
 	var sixPercent = checkForSixPercent(args);
-	var tryAllGen1 = args[2] == "all-gen1" ? true : false;
-	var tryAllGen0 = args[2] == "all-gen0" ? true : false;
+	var tryAllGen1 = false;
+	var tryAllGen0 = false;
+	if(args[2] == "all-gen1"){
+		tryAllGen1 = true;
+	}
+	if(args[2] == "all-gen0"){
+		tryAllGen0 = true;
+	}
 	targeted_traits = ["sample"];
 
 	if(args[2] != "all-gen1"){
@@ -214,11 +220,11 @@ function mainFunction (calls){
 			gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats,sixPercenters);
 		} else {
 			console.log("In normal generational loop");
-			//Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract, 999, unchained, sixPercent);
-			
+			Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract, 999, unchained, sixPercent);
+			/*
 			for(var x = 2; x <= generations_breeding_upper_limit; x++ ){
 				Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract,x, unchained, sixPercent);
-			}
+			}*/
 		}
 
 	} else {
@@ -334,7 +340,7 @@ function loopGetUserKittensNAPI(err, res){
 		return Utilities.readKittensFromDisk("gen0Merged", 0, 2);
 		
 	} else {
-		return Utilities.readKittensFromDisk("kittensMerged",0,10);
+		return Utilities.readKittensFromDisk("kittensMerged",0,11);
 	}
 
 	return splitText;
@@ -354,7 +360,7 @@ function getCatsLoop(no_catArray){
 
 //Test output
 for(v = 0; v <=200; v++){
-	setTimeout(main,1000000*v);
+	setTimeout(main,3000000*v);
 	console.log("Scheduling: " + v);
 }
 
