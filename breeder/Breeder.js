@@ -312,7 +312,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 								self.usedCats.push(scoredCat.id);
 								self.usedCats.push(partner.id);
 								self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
-								console.log("Found match in _findMatchTwoMissing");
+								console.log("Found a candidate match in _findMatchTwoMissing");
 								console.log("Match had the score --> : " + scoredCat.score + " , " + scoredPartner.score);
 								var bpscore = [];
 								bpscore.push(scoredCat.score);
@@ -328,7 +328,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 				}
 			}
 		} else {
-			console.log("Both traits are not present any longer");
+			console.log("Neither trait is present");
 		}
 	}
 
@@ -364,7 +364,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		console.log("Tried to find breeding pairs...");
 		console.log("Found: " + self.breedingPairs.length + " breeding pairs!");
 		console.log("Their scores are:");
-		
+
 		for(var bpscore in breedingPairScores){
 			console.log(self.breedingPairScores[bpscore]);			
 		}
