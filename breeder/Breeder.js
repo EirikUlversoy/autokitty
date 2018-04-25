@@ -355,16 +355,11 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			treshold = 0.06;
 		}
 		for(var scoredCat in arrayOfScoredCats){
-			count = scoredCat;
+			var suitable = false;
+			suitable = self._checkIfSuitableCat();
 			scoredCat = arrayOfScoredCats[scoredCat];
-			if(catDictionary[scoredCat.id].isReady){
-				if(self.potentialPartners.includes(scoredCat) && !self.usedCats.includes(scoredCat.id)){
-					if(scoredCat.score > treshold*targetedTraits.length){
-						console.log("now trying to find a match for: " + scoredCat.id);
-						self._findMatch(scoredCat, catDictionary, scores, treshold, unchained);
-					}
-				}
-
+			if(suitable){
+				self._findMatch(scoredCat, catDictionary, scores, treshold);
 			}
 			
 		}
@@ -376,13 +371,26 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		return breedingPairs;
 	}
 
-	self._findMatch = function(scoredCat, catDictionary, scores, treshold, unchained){
+	//Checks for the cat being ready, being in potentialpartners and that it is not in the usedCats list. 
+	//Also matches versus the treshold.
+	self._checkIfSuitableCat = function(scoredCat, catDictionary, treshold){
+		if(catDictionary[scoredCat.id].isReady){
+			if(self.potentialPartners.includes(scoredCat) && !self.usedCats.includes(scoredCat.id)){
+				if(scoredCat.score > treshold*targetedTraits.length){
+					console.log("Cat: " + scoredCat.id + " is suitable! Trying to find a match!)";
+					return true;
+				}
+			}
+
+		}
+	}
+	self._findMatch = function(scoredCat, catDictionary, scores, treshold){
 		if(scoredCat.missingTraits.length == 0){
-			self._findMatchZeroMissing(scoredCat, targetedTraits, catDictionary, scores, treshold);
+			self._findMatchZeroMissing(scoredCat, catDictionary, scores, treshold);
 		} else if (scoredCat.missingTraits.length == 1){
-			self._findMatchOneMissing(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained);
+			self._findMatchOneMissing(scoredCat, catDictionary, scores, treshold);
 		} else if (scoredCat.missingTraits.length == 2) {
-			self._findMatchTwoMissing(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained);								
+			self._findMatchTwoMissing(scoredCat, catDictionary, scores, treshold);								
 		} else {
 			console.log("Missing three or more traits, probably should not breed this cat");
 			self.usedCats.push(scoredCat.id);
