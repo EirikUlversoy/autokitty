@@ -91,7 +91,13 @@ module.exports = {
 		fs.writeFile('kittens2.txt', output, (err) => {
 	  	if (err) throw err;
 	  	console.log('It\'s saved!');
-	});}
+	});},
+		remove(array, element){
+		return array.filter(function(e) { 
+	    return e !== element;
+	});
+
+	}
 	
 
 };

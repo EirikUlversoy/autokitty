@@ -9,16 +9,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ak-comparators": "file:ak-comparators",
     "auctioneer": "file:auctioneer",
     "breeder": "file:breeder",
     "bs58": "^4.0.1",
     "ckclient": "file:ckclient",
     "genedecoder": "file:genedecoder",
-    "utilities": "file:utilities",
     "hex-to-binary": "^1.0.1",
     "promise-limit": "^2.6.0",
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
+    "utilities": "file:utilities",
     "web3": "^1.0.0-beta.33"
   },
   "devDependencies": {},
