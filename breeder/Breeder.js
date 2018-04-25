@@ -335,7 +335,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self._simpleBreedingAlgorithm = function(arrayOfScoredCats, scores){
 
 		var catDictionary = {};
-		if(unchained == true){
+		if(self.unchained == true){
 			console.log("Running in unchained mode!");
 		}
 		for(var cat in cats){
@@ -351,20 +351,20 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		self.usedCats = [];
 		var treshold = 0.16;
-		if(sixPercent){
+		if(self.sixPercent){
 			treshold = 0.06;
 		}
 		for(var scoredCat in arrayOfScoredCats){
-			var suitable = false;
-			suitable = self._checkIfSuitableCat();
 			scoredCat = arrayOfScoredCats[scoredCat];
-			if(suitable){
+			if(self._isSuitableCat(scoredCat, catDictionary, treshold)){
 				self._findMatch(scoredCat, catDictionary, scores, treshold);
 			}
 			
 		}
 		console.log("Tried to find breeding pairs...");
 		console.log("Found: " + self.breedingPairs.length + " breeding pairs!");
+		console.log("Their scores are:");
+		
 		for(var bpscore in breedingPairScores){
 			console.log(self.breedingPairScores[bpscore]);			
 		}
@@ -373,7 +373,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	//Checks for the cat being ready, being in potentialpartners and that it is not in the usedCats list. 
 	//Also matches versus the treshold.
-	self._checkIfSuitableCat = function(scoredCat, catDictionary, treshold){
+	self._isSuitableCat = function(scoredCat, catDictionary, treshold){
 		if(catDictionary[scoredCat.id].isReady){
 			if(self.potentialPartners.includes(scoredCat) && !self.usedCats.includes(scoredCat.id)){
 				if(scoredCat.score > treshold*targetedTraits.length){
@@ -383,6 +383,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			}
 
 		}
+		return false;
 	}
 	self._findMatch = function(scoredCat, catDictionary, scores, treshold){
 		if(scoredCat.missingTraits.length == 0){
