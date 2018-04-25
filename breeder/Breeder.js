@@ -101,12 +101,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		console.log("Account used to breed: " + self.web3.eth.defaultAccount);
 
 		//Scoring functions are needed for the breeding algorithm that follows
-		var topLists = [];
-		topLists = self.createTopLists(catsWithAnyTargetedTrait,targetedTraits);
-
+		var topLists = self.createTopLists(catsWithAnyTargetedTrait,targetedTraits);
 		var scores = self._scoreCatsBasedOnTraits(catsWithAnyTargetedTrait, targetedTraits, combinedTraits);
 		var arrayOfScoredCats = self._getSortedArrayOfScoredCatsFromDictionary(scores);
-		//console.log(arrayOfScoredCats);
 
 		self.breedingPairs = self._simpleBreedingAlgorithm(arrayOfScoredCats, scores);
 		self._triggerBreedingPairs(self.breedingPairs);
@@ -364,18 +361,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 				if(self.potentialPartners.includes(scoredCat) && !self.usedCats.includes(scoredCat.id)){
 					if(scoredCat.score > treshold*targetedTraits.length){
 						console.log("now trying to find a match for: " + scoredCat.id);
-
-						if(scoredCat.missingTraits.length == 0){
-							self._findMatchZeroMissing(scoredCat, targetedTraits, catDictionary, scores, treshold);
-						} else if (scoredCat.missingTraits.length == 1){
-							self._findMatchOneMissing(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained);
-						} else if (scoredCat.missingTraits.length == 2) {
-							self._findMatchTwoMissing(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained);								
-						} else {
-							console.log("Missing three or more traits, probably should not breed this cat");
-							self.usedCats.push(scoredCat.id);
-						}
-
+						self._findMatch(scoredCat, catDictionary, scores, treshold, unchained);
 					}
 				}
 
@@ -388,6 +374,19 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			console.log(self.breedingPairScores[bpscore]);			
 		}
 		return breedingPairs;
+	}
+
+	self._findMatch = function(scoredCat, catDictionary, scores, treshold, unchained){
+		if(scoredCat.missingTraits.length == 0){
+			self._findMatchZeroMissing(scoredCat, targetedTraits, catDictionary, scores, treshold);
+		} else if (scoredCat.missingTraits.length == 1){
+			self._findMatchOneMissing(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained);
+		} else if (scoredCat.missingTraits.length == 2) {
+			self._findMatchTwoMissing(scoredCat, targetedTraits, catDictionary, scores, treshold, unchained);								
+		} else {
+			console.log("Missing three or more traits, probably should not breed this cat");
+			self.usedCats.push(scoredCat.id);
+		}
 	}
 
 	self._unorderedDictionaryToOrderedArrayByScore = function(catDictionary){
