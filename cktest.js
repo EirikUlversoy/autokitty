@@ -7,10 +7,9 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 0;
+var generations_breeding_upper_limit = 20;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
-var Breeder = require("breeder")(generations_breeding_upper_limit,upper_wallet_address, web3);
 //Breeder = Breeder(generations_breeding_upper_limit);
 var promiseLimit = require('promise-limit')
 
@@ -27,6 +26,8 @@ var kitty_abi =
 
 //Linking to the contract itself
 var ck_contract = new web3.eth.Contract(kitty_abi,cryptokitties_contract_address);
+var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+
 //Owned cats API call template for illustration
 var api_call = "https://api.cryptokitties.co/kitties?offset=60&limit=64&owner_wallet_address=" + owner_wallet_address + "&sorting=cheap&orderBy=current_price&orderDirection=asc";
 
@@ -190,7 +191,7 @@ function mainFunction (calls){
 		} else {
 			targeted_traits = PremierMutations[args[2]];
 			targeted_traits = VernonAttempt;
-			targeted_traits = ["Dali","Elk","Icy"];
+			//targeted_traits = ["Dali","Cottoncandy","Icy"];
 		}
 	}
 
@@ -214,18 +215,22 @@ function mainFunction (calls){
 			console.log("In try all");
 			for(var secondaryMutationTarget in listOfSecondaryMutations){
 				sMT = listOfSecondaryMutations[secondaryMutationTarget];
-				Breeder.advancedBreedingLoop(cats, SecondaryMutations[sMT], ck_contract,1, unchained, sixPercent);
+				Breeder.advancedBreedingLoop();
 			}
 		} else if(tryAllGen0){
 			console.log("In try all gen0");
 			gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats,sixPercenters);
 		} else {
+			//Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 999, 2);
 			console.log("In normal generational loop");
-			Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract, 999, unchained, sixPercent);
-			/*
+			//Breeder.advancedBreedingLoop();
+			
 			for(var x = 2; x <= generations_breeding_upper_limit; x++ ){
-				Breeder.advancedBreedingLoop(cats, targeted_traits, ck_contract,x, unchained, sixPercent);
-			}*/
+				var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+				Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, x, x);
+				console.log("Breeding generation number:" + x);
+				Breeder.advancedBreedingLoop();
+			}
 		}
 
 	} else {
@@ -341,7 +346,7 @@ function loopGetUserKittensNAPI(err, res){
 		return Utilities.readKittensFromDisk("gen0Merged", 0, 2);
 		
 	} else {
-		return Utilities.readKittensFromDisk("kittensMerged",5,6); //11 is latest
+		return Utilities.readKittensFromDisk("kittensMerged",0,11); //11 is latest
 	}
 
 	return splitText;
