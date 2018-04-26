@@ -190,6 +190,7 @@ function mainFunction (calls){
 		} else {
 			targeted_traits = PremierMutations[args[2]];
 			targeted_traits = VernonAttempt;
+			targeted_traits = ["Dali","Elk","Icy"];
 		}
 	}
 
@@ -340,7 +341,7 @@ function loopGetUserKittensNAPI(err, res){
 		return Utilities.readKittensFromDisk("gen0Merged", 0, 2);
 		
 	} else {
-		return Utilities.readKittensFromDisk("kittensMerged",0,11);
+		return Utilities.readKittensFromDisk("kittensMerged",5,6); //11 is latest
 	}
 
 	return splitText;
