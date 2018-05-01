@@ -186,15 +186,27 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			traitScoreList = self.singleTraitScoreDictionary[targetTrait];
 			orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
 			var partner = orderedTraitScoreList[0];
-			Utilities.remove(self.potentialPartners, partner.id);
+			
+			if(partner != undefined){
+				Utilities.remove(self.potentialPartners, partner.id);
+				Utilities.remove(self.potentialPartners, scoredCat.id);
+				self.usedCats.push(scoredCat.id);
+				self.usedCats.push(partner.id);
+				self._removeBreedingPairFromAllTraitLists(scoredCat, partner, self.targetedTraits);
+				self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
 
-			self.usedCats.push(scoredCat.id);
-			self.usedCats.push(partner.id);
-
-			self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
+				console.log("Found match in zero missing, mutation mode");
+				console.log("Match had the score --> : " + scoredCat.score + " , " + partner.score);
+				var bpscore = [];
+				bpscore.push(scoredCat.score);
+				bpscore.push(partner.score);
+				self.breedingPairScores.push(bpscore);
+			}
+			
 		} else {
-			for(var partner in self.potentialPartners){
-				partner = self.potentialPartners[partner];
+			var partnerCopy = self.potentialPartners.slice();
+			for(var partner in partnerCopy){
+				partner = partnerCopy[partner];
 				if(partner.id != scoredCat.id){
 					if(!self.usedCats.includes(partner.id)){
 						if(!self._isRelated(catDictionary[partner.id],catDictionary[scoredCat.id])){
@@ -217,6 +229,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 									break;
 								} else {
 									self.usedCats.push(partner.id);
+									//Utilities.remove(self.potentialPartners, partner.id);
 								}
 								
 							}
@@ -303,7 +316,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 								var partner = tCat;
 								Utilities.remove(self.potentialPartners, partner.id);
 
-								self._removeBreedingPairFromAllTraitLists(scoredCat, partner, self.targetedTraits);
+								self._removeBreedingPairFromAllTraitLists(scoredCat, scoredPartner, self.targetedTraits);
 								self.usedCats.push(scoredCat.id);
 								self.usedCats.push(partner.id);
 								self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
