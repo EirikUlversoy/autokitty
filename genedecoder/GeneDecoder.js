@@ -375,11 +375,43 @@ function GeneDecoder(){
 		secretGeneNames["Non-rel_secret_p"] = "p";
 		secretGeneNames["Non-rel_secret_q"] = "q";
 		secretGeneNames["Secret_r"] = "r";
+		secretGeneNames["Non-rel_secret_s"] = "s";
+		secretGeneNames["Non-rel_secret_t"] = "t";
+		secretGeneNames["Non-rel_secret_u"] = "u";
+		secretGeneNames["Non-rel_secret_v"] = "v";
+		secretGeneNames["Non-rel_secret_w"] = "w";
 
-
-
-
-
+		unknownGeneNames["Non-rel_unknown_1"] = "1";
+		unknownGeneNames["Non-rel_unknown_2"] = "2";
+		unknownGeneNames["Non-rel_unknown_3"] = "3";
+		unknownGeneNames["Non-rel_unknown_4"] = "4";
+		unknownGeneNames["Non-rel_unknown_5"] = "5";
+		unknownGeneNames["Non-rel_unknown_6"] = "6";
+		unknownGeneNames["Unknown_7"] = "7";
+		unknownGeneNames["Non-rel_unknown_8"] = "8";
+		unknownGeneNames["Unknown_9"] = "9";
+		unknownGeneNames["Unknown_a"] = "a";
+		unknownGeneNames["Non-rel_unknown_b"] = "b";
+		unknownGeneNames["Unknown_c"] = "c";
+		unknownGeneNames["Unknown_d"] = "d";
+		unknownGeneNames["Non-rel_unknown_e"] = "e";
+		unknownGeneNames["Non-rel_unknown_f"] = "f";
+		unknownGeneNames["Unknown_g"] = "g";
+		unknownGeneNames["Non-rel_unknown_h"] = "h";
+		unknownGeneNames["Non-rel_unknown_i"] = "i";
+		unknownGeneNames["Non-rel_unknown_j"] = "j";
+		unknownGeneNames["Non-rel_unknown_k"] = "k";
+		unknownGeneNames["Unknown_m"] = "m";
+		unknownGeneNames["Non-rel_unknown_n"] = "n";
+		unknownGeneNames["Non-rel_unknown_o"] = "o";
+		unknownGeneNames["Non-rel_unknown_p"] = "p";
+		unknownGeneNames["Non-rel_unknown_q"] = "q";
+		unknownGeneNames["Non-rel_unknown_r"] = "r";
+		unknownGeneNames["Non-rel_unknown_s"] = "s";
+		unknownGeneNames["Non-rel_unknown_t"] = "t";
+		unknownGeneNames["Non-rel_unknown_u"] = "u";
+		unknownGeneNames["Non-rel_unknown_v"] = "v";
+		unknownGeneNames["Non-rel_unknown_w"] = "w";
 
 
 		geneNames[0] = "3rd Recessive";
@@ -397,6 +429,9 @@ function GeneDecoder(){
 	var colorTertiaryGeneNames = {};
 	var wildGeneNames = {};
 	var mouthGeneNames = {};
+	var environmentGeneNames = {};
+	var secretGeneNames = {};
+	var unknownGeneNames = {};
 	var geneNames = {};
 
 
@@ -472,8 +507,8 @@ function GeneDecoder(){
 		groupDictionary = invert(groupDictionary);
 		var keys = Object.keys(groupDictionary);
 		for(var gene in group){
-			if(!groupDictionary[group[gene]]){
-				console.log("Possible new gene? : " + group[gene]);
+			if(gene.contains("Un-rel")){
+				console.log("Unreleased gene released! Or out of date trait database...");
 				return true;
 			}
 		}
@@ -524,11 +559,11 @@ function GeneDecoder(){
 		for (var group in KaiGroups){
 			//console.log("Now looking at the " + geneGroupNames[group]);
 			if(group == 0){
-				geneArrays.push(self.outputGroupAttribute(KaiGroups[group],{}));
+				geneArrays.push(self.outputGroupAttribute(KaiGroups[group],unknownGeneNames));
 			} else if (group == 1){
-				geneArrays.push(self.outputGroupAttribute(KaiGroups[group],{}));
+				geneArrays.push(self.outputGroupAttribute(KaiGroups[group],secretGeneNames));
 			} else if (group == 2){
-				geneArrays.push(self.outputGroupAttribute(KaiGroups[group],{}))
+				geneArrays.push(self.outputGroupAttribute(KaiGroups[group],environmentGeneNames))
 			} else if (group == 3){
 				geneArrays.push(self.outputGroupAttribute(KaiGroups[group],mouthGeneNames));
 			} else if (group == 4){
@@ -558,11 +593,11 @@ function GeneDecoder(){
 		for (var group in KaiGroups){
 			//console.log("Now looking at the " + geneGroupNames[group]);
 			if(group == 0){
-				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],{}));
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],unknownGeneNames));
 			} else if (group == 1){
-				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],{}));
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],secretGeneNames));
 			} else if (group == 2){
-				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],{}))
+				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],environmentGeneNames))
 			} else if (group == 3){
 				geneArrays.push(self.checkGroupAttribute(KaiGroups[group],mouthGeneNames));
 			} else if (group == 4){
@@ -589,9 +624,9 @@ function GeneDecoder(){
 
 	self.traitChance = function(kitten, trait, groupNumber, KaiGroups){
 		var nameLookup = {};
-		nameLookup[0] = {};
-		nameLookup[1] = {};
-		nameLookup[2] = {};
+		nameLookup[0] = unknownGeneNames;
+		nameLookup[1] = secretGeneNames;
+		nameLookup[2] = environmentGeneNames;
 		nameLookup[3] = mouthGeneNames;
 		nameLookup[4] = wildGeneNames;
 		nameLookup[5] = colorTertiaryGeneNames;
