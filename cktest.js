@@ -97,6 +97,7 @@ function setupDictionaries(){
 	PremierMutations["Cloudwhite"] = ["Shadowgrey","Salmon"];
 	PremierMutations["Daffodil"] = ["Belleblue","Sandalwood"];
 	PremierMutations["Cheeky"] = ["Wasntme","Whixtensions"];
+	PremierMutations["Salty"] = ["Mystery_1","Mystery_2"]
 	
 	PremierMutations["Thunderstruck"] = ["Rascal","Ganado"];
 	PremierMutations["Limegreen"] = ["Topaz","Mintgreen"];
@@ -110,18 +111,22 @@ function setupDictionaries(){
 	PremierMutations["Fabulous"] = ["Otaku","Simple"];
 	PremierMutations["Oldlace"] = ["Cottoncandy","Mauveover"];
 	PremierMutations["Turtleback"] = ["Lilac","Apricot"];
+	PremierMutations["Secret_j"] = ["Secret_5","Secret_6"];
 
 	PremierMutations["Bubblegum"] = ["Chestnut","Strawberry"];
 	PremierMutations["Raisedbrow"] = ["Crazy","Thicccbrowz"];
 	PremierMutations["Koala"] = ["Aquamarine","Nachocheez"];
 	PremierMutations["Bloodred"] = ["Kittencream","Emeraldgreen"];
 	PremierMutations["Trioculus"] = ["Wild_7","Wild_8"];
+	PremierMutations["Secret_k"] = ["Secret_7","Secret_8"]
 
 	PremierMutations["Tigerpunk"] = ["Calicool","Luckystripe"];
 	PremierMutations["Twilightsparkle"] = ["Sapphire","Forgetmenot"];
+	PremierMutations["Lavender"] = ["Harbourfog","Cinderella"];
 	PremierMutations["Wolfgrey"] = ["Swampgreen","Violet"];
 	PremierMutations["Daemonwings"] = ["Wild_9","Wild_a"];
 	PremierMutations["Dali"] = ["Beard","Pouty"];
+	PremierMutations["Unknown_m"] = ["Unknown_9","Unknown_a"];
 
 	PremierMutations["Mainecoon"] = ["Chartreux","Himalayan"];
 	PremierMutations["Henna"] = ["Amur","Jaguar"];
@@ -135,9 +140,11 @@ function setupDictionaries(){
 
 	PremierMutations["Persian"] = ["Ragamuffin","Ragdoll"];
 	PremierMutations["Totesbasic_p"] = ["Totesbasic_f","Totesbasic_g"];
+	PremierMutations["Eclipse"] = ["Parakeet","Cyan"];
 	PremierMutations["Sweetmeloncakes"] = ["Wiley","Stunned"];
 	PremierMutations["Verdigris"] = ["Hintomint","Bananacream"];
 	PremierMutations["Patrickstarfish"] = ["Morningglory","Frosting"];
+	PremierMutations["Daemonhorns"] = ["Wild_f","Wild_g"];
 	PremierMutations["Tongue"] = ["Happygokitty","Soserious"];
 
 	let	SecondaryMutations = {}
@@ -147,6 +154,7 @@ function setupDictionaries(){
 
 	SecondaryMutations["Wingtips"] = ["Fabulous","Raisedbrow"]
 	SecondaryMutations["Onyx"] = ["Oldlace","Koala"];
+	SecondaryMutations["Secret_r"] = ["Secret_j","Secret_k"];
 
 	SecondaryMutations["Hotrod"] = ["Tigerpunk","Henna"];
 	SecondaryMutations["Royalblue"] = ["Wolfgrey","Cerulian"];
