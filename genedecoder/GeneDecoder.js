@@ -174,6 +174,7 @@ function GeneDecoder(){
 		wildGeneNames["Wild_9"] = "9";
 		wildGeneNames["Wild_a"] = "a";
 		wildGeneNames["Wild_f"] = "f";
+		wildGeneNames["Wild_g"] = "g";
 
 		mouthGeneNames["Whixtensions"] = "1";
 		mouthGeneNames["Wasntme"] = "2";

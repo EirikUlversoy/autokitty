@@ -40,8 +40,15 @@ web3.eth.defaultAccount = "0x68b42e44079d1d0a4a037e8c6ecd62c48967e69f"
 function countHandler(counter){
 	console.log(counter);
 }
+var totalSupply = 0;
+
 //Should state the number of cats in the address. Read only function, should not make a transaction
 var count = ck_contract.methods.balanceOf(owner_wallet_address).call(null, countHandler);
+ck_contract.methods.totalSupply().call().then(setTotalSupply);
+
+function setTotalSupply(supply){
+	totalSupply = supply;
+}
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
 var amountOfCalls = 100;
@@ -191,7 +198,7 @@ function mainFunction (calls){
 		} else {
 			targeted_traits = PremierMutations[args[2]];
 			targeted_traits = VernonAttempt;
-			//targeted_traits = ["Dali","Cottoncandy","Icy"];
+			targeted_traits = ["Jaguar","Lemonade","Azaleablush","Cloudwhite","Wild_f"];
 		}
 	}
 
@@ -288,7 +295,7 @@ function gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierM
 
 function fetch(id){
 	console.log("Fetching " + id);
-	return Promise.delay(3000, id).then(CKClient.getUserKitties(owner_wallet_address,64,id*20)
+	return Promise.delay(2000, id).then(CKClient.getUserKitties(owner_wallet_address,64,id*20)
 		.then(handleKittensWithContract, noKittensToHandle));
 }
 
@@ -299,7 +306,7 @@ function loopGetUserKitties(err, res){
 	for (i = 0; i < amountOfCalls; i++) {
     	array[i] = i;
 	}
-	return Promise.map(array, fetch, {concurrency: 1});
+	return Promise.map(array, fetch, {concurrency: 2});
 }
 
 function doFilterWork(cat,address){
@@ -346,12 +353,19 @@ function loopGetUserKittensNAPI(err, res){
 		return Utilities.readKittensFromDisk("gen0Merged", 0, 2);
 		
 	} else {
-		return Utilities.readKittensFromDisk("kittensMerged",0,11); //11 is latest
+		let kittens = Utilities.readKittensFromDisk("kittensMerged",0,16); //12 is latest
+		console.log("total supply is: " + totalSupply);
+
+		for(var x = 717000; x < 729402; x++){
+			kittens.push(x);
+		}
+		return kittens;
 	}
 
 	return splitText;
 }
 
+//var totalSupply = 717000;
 
 var allFilteredCats = [];
 
@@ -366,7 +380,7 @@ function getCatsLoop(no_catArray){
 
 //Test output
 for(v = 0; v <=200; v++){
-	setTimeout(main,3000000*v);
+	setTimeout(main,900000*v);
 	console.log("Scheduling: " + v);
 }
 
@@ -375,9 +389,9 @@ function main(){
 	if(api_calls_on){
 		loopGetUserKitties().then(mainFunction);
 	} else {
-		var kittens = loopGetUserKittensNAPI();
+		kittens = loopGetUserKittensNAPI();
 		console.log("There are: " + kittens.length + "kitten IDS stored on disk");
-		getOwnershipOfCatsLoop(kittens).then(getCatsLoop).then(mainFunction);
+		getOwnershipOfCatsLoop(kittens).then(getCatsLoop).then(mainFunction);		
 	}
 }
 

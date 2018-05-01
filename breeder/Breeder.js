@@ -140,7 +140,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		for(var bp in breedingPairs){
 			count = bp;
 			bp = breedingPairs[bp];
-			setTimeout(self.readyToBreedCheckA,150*count, bp.id1, bp.id2);
+			setTimeout(self.readyToBreedCheckA,300*count, bp.id1, bp.id2);
 		}
 	}
 	self._removeBreedingPairFromAllTraitLists = function(scoredCat, partner, targetedTraits){
@@ -167,6 +167,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self._eitherCatIsBriskOrBetter = function(catA, catB){
 		return ((catA.cooldownIndex <= 6) || (catB.cooldownIndex <= 6));
+		//return true;
 	}
 
 	//Takes two cats and compares their matrons and sires. Depends on the last gotten info from calling the
@@ -177,11 +178,11 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 
-	self._findMatchZeroMissing = function(scoredCat, targetedTraits, catDictionary, treshold){
+	self._findMatchZeroMissing = function(scoredCat, catDictionary, scores, treshold){
 		console.log("no missing traits, pick top scorer!");
-		var targetTrait = targetedTraits[0];
-		if(targetedTraits.length == 2){
-			targetTrait = self._decideTargetTrait(scoredCat, targetedTraits, catDictionary);
+		var targetTrait = self.targetedTraits[0];
+		if(self.targetedTraits.length == 2){
+			targetTrait = self._decideTargetTrait(scoredCat, self.targetedTraits, catDictionary);
 			traitScoreList = self.singleTraitScoreDictionary[targetTrait];
 			orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
 			var partner = orderedTraitScoreList[0];
@@ -199,21 +200,25 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 						if(!self._isRelated(catDictionary[partner.id],catDictionary[scoredCat.id])){
 
 							if(self._eitherCatIsBriskOrBetter(scoredCat, catDictionary[partner.id])){
+								if(catDictionary[partner.id].isReady){
+									Utilities.remove(self.potentialPartners, partner.id);
+									Utilities.remove(self.potentialPartners, scoredCat.id);
 
-								Utilities.remove(self.potentialPartners, partner.id);
-								Utilities.remove(self.potentialPartners, scoredCat.id);
-
-								self.usedCats.push(scoredCat.id);
-								self.usedCats.push(partner.id);
-								self._removeBreedingPairFromAllTraitLists(scoredCat, partner, targetedTraits);
-								self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
-								console.log("Found match in zero missing, larger than two conditional");
-								console.log("Match had the score --> : " + scoredCat.score + " , " + partner.score);
-								var bpscore = [];
-								bpscore.push(scoredCat.score);
-								bpscore.push(partner.score);
-								self.breedingPairScores.push(bpscore);
-								break;
+									self.usedCats.push(scoredCat.id);
+									self.usedCats.push(partner.id);
+									self._removeBreedingPairFromAllTraitLists(scoredCat, partner, self.targetedTraits);
+									self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
+									console.log("Found match in zero missing, larger than two conditional");
+									console.log("Match had the score --> : " + scoredCat.score + " , " + partner.score);
+									var bpscore = [];
+									bpscore.push(scoredCat.score);
+									bpscore.push(partner.score);
+									self.breedingPairScores.push(bpscore);
+									break;
+								} else {
+									self.usedCats.push(partner.id);
+								}
+								
 							}
 						}
 							
@@ -229,7 +234,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		}
 	}
 	self._findMatchOneMissing = function(scoredCat, catDictionary, scores, treshold){
-		console.log("Missing one trait, pick based on top scoring cat of that trait");
+		//console.log("Missing one trait, pick based on top scoring cat of that trait");
 		var missingTrait = scoredCat.missingTraits[0];
 		var missingTraitScoreList = self.singleTraitScoreDictionary[missingTrait];
 		orderedMissingTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(missingTraitScoreList);
@@ -252,7 +257,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 									self.usedCats.push(partner.id);
 
 									self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
-									console.log("Found match in _findMatchOneMissing");
+									//console.log("Found match in _findMatchOneMissing");
 									console.log("Match had the score --> : " + scoredCat.score + " , " + scoredPartner.score);
 									var bpscore = [];
 									bpscore.push(scoredCat.score);
@@ -276,9 +281,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		}
 	}
 	self._findMatchTwoMissing = function(scoredCat, catDictionary, scores, treshold){
-		console.log("Missing two traits.. Looking at both ");
+		//console.log("Missing two traits.. Looking at both ");
 		var missingTraits = scoredCat.missingTraits;
-		console.log("Missing traits: " + missingTraits[0] + ", " + missingTraits[1]);						
+		//console.log("Missing traits: " + missingTraits[0] + ", " + missingTraits[1]);						
 		var firstMissingTraitScoreList = self.singleTraitScoreDictionary[missingTraits[0]];
 		var secondMissingTraitScoreList = self.singleTraitScoreDictionary[missingTraits[1]];
 		var firstOrderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(firstMissingTraitScoreList);
@@ -302,7 +307,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 								self.usedCats.push(scoredCat.id);
 								self.usedCats.push(partner.id);
 								self._decideBreedOrderAndPush(scoredCat, partner, catDictionary);
-								console.log("Found a candidate match in _findMatchTwoMissing");
+								//console.log("Found a candidate match in _findMatchTwoMissing");
 								console.log("Match had the score --> : " + scoredCat.score + " , " + scoredPartner.score);
 								var bpscore = [];
 								bpscore.push(scoredCat.score);
@@ -339,7 +344,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.10;
+		var treshold = 0.28;
 		if(self.sixPercent){
 			treshold = 0.06;
 		}
@@ -367,7 +372,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		if(catDictionary[scoredCat.id].isReady){
 			if(self.potentialPartners.includes(scoredCat) && !self.usedCats.includes(scoredCat.id)){
 				if(scoredCat.score > treshold*self.targetedTraits.length){
-					console.log("Cat: " + scoredCat.id + " exceeds threshold and is suitable! Trying to find a match!");
+					//console.log("Cat: " + scoredCat.id + " exceeds threshold and is suitable! Trying to find a match!");
 					return true;
 				}
 			}
@@ -377,16 +382,16 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 	self._findMatch = function(scoredCat, catDictionary, scores, treshold){
 		if(scoredCat.missingTraits.length == 0){
-			console.log("This cat is missing 0 traits");
+			//console.log("This cat is missing 0 traits");
 			self._findMatchZeroMissing(scoredCat, catDictionary, scores, treshold);
 		} else if (scoredCat.missingTraits.length == 1){
-			console.log("This cat is missing 1 traits");			
+			//console.log("This cat is missing 1 traits");			
 			self._findMatchOneMissing(scoredCat, catDictionary, scores, treshold);
 		} else if (scoredCat.missingTraits.length == 2) {
-			console.log("This cat is missing 2 traits");
+			//console.log("This cat is missing 2 traits");
 			self._findMatchTwoMissing(scoredCat, catDictionary, scores, treshold);								
 		} else {
-			console.log("Missing three or more traits, probably should not breed this cat");
+			//console.log("Missing three or more traits, probably should not breed this cat");
 			self.usedCats.push(scoredCat.id);
 		}
 	}
@@ -530,7 +535,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self.triggerTransactionOnly = function(id, id2, canBreed){
 		if(canBreed){
-			//self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000007", "ether") });
+			self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000016", "ether") });
 			console.log("Breeding: " + id +" and " + id2 + " together!");
 			console.log("(((would have)))");
 		} else {
