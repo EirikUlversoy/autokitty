@@ -26,9 +26,13 @@ function GeneDecoder(){
 
 		bodyGeneNames["Savannah"] = "1";
 		bodyGeneNames["Selkirk"] = "2";
+		bodyGeneNames["Non-rel_body_3"] = "3";
 		bodyGeneNames["Birman"] = "4";
+		bodyGeneNames["Non-rel_body_5"] = "5";
 		bodyGeneNames["Bobtail"] = "6";
+		bodyGeneNames["Non-rel_body_7"] = "7";
 		bodyGeneNames["Pixiebob"] = "8";
+		bodyGeneNames["Non-rel_body_9"] = "9";
 		bodyGeneNames["Cymric"] = "a";
 		bodyGeneNames["Chartreux"] = "b";
 		bodyGeneNames["Himalayan"] = "c";
@@ -37,10 +41,21 @@ function GeneDecoder(){
 		bodyGeneNames["Ragamuffin"] = "f";
 		bodyGeneNames["Ragdoll"] = "g";
 		bodyGeneNames["Norwegianforest"] = "h";
+		bodyGeneNames["Non-rel_body_i"] = "i";
+		bodyGeneNames["Non-rel_body_j"] = "j";
+		bodyGeneNames["Non-rel_body_k"] = "k";
+		bodyGeneNames["Non-rel_body_m"] = "m";
 		bodyGeneNames["Mainecoon"] = "n";
 		bodyGeneNames["Laperm"] = "o";
 		bodyGeneNames["Persian"] = "p";
+		bodyGeneNames["Non-rel_body_q"] = "q";
+		bodyGeneNames["Non-rel_body_r"] = "r";
+		bodyGeneNames["Non-rel_body_s"] = "s";
 		bodyGeneNames["Manx"] = "t";
+		bodyGeneNames["Non-rel_body_u"] = "u";
+		bodyGeneNames["Non-rel_body_v"] = "v";
+		bodyGeneNames["Non-rel_body_w"] = "w";
+
 
 		patternGeneNames["Tiger"] = "2";
 		patternGeneNames["Rascal"] = "3";
@@ -54,14 +69,14 @@ function GeneDecoder(){
 		patternGeneNames["Amur"] = "b";
 		patternGeneNames["Jaguar"] = "c";
 		patternGeneNames["Spock"] = "d";
-		patternGeneNames["Totesbasic3"] = "f";
-		patternGeneNames["Totesbasic4"] = "g";
+		patternGeneNames["Totesbasic_f"] = "f";
+		patternGeneNames["Totesbasic_g"] = "g";
 		patternGeneNames["Thunderstruck"] = "i";
 		patternGeneNames["Dippedcone"] = "j";
 		patternGeneNames["Tigerpunk"] = "m";
 		patternGeneNames["Henna"] = "n";
-		patternGeneNames["Totesbasic5"] = "o";
-		patternGeneNames["Totesbasic6"] = "p";
+		patternGeneNames["Totesbasic_o"] = "o";
+		patternGeneNames["Totesbasic_p"] = "p";
 		patternGeneNames["Hotrod"] = "s";
 
 
@@ -80,6 +95,7 @@ function GeneDecoder(){
 		colorEyesGeneNames["Limegreen"] = "i";
 		colorEyesGeneNames["Bubblegum"] = "k";
 		colorEyesGeneNames["Twilightsparkle"] = "m";
+		colorEyesGeneNames["Eclipse"] = "p";
 		colorEyesGeneNames["Babypuke"] = "q";
 		colorEyesGeneNames["Doridnudibranch"] = "e";
 
