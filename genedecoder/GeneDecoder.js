@@ -621,6 +621,28 @@ function GeneDecoder(){
 		console.log("Done probing!");
 		return geneArrays;
 	}
+	self.b58Dict = {0:'1',1:'2',2:'3',3:'4',4:'5',5:'6',6:'7',7:'8',8:'9',9:'a',
+	10:'b',11: 'c', 12: 'd', 13: 'e', 14:'f',15:'g',16:'h',17:'i', 18:'j',19:'k'
+	20:'m',21:'n',22:'o',23:'p',24:'q',25:'r',26:'s',27:'t',28:'u', 29:'v', 30:'w'};
+
+	self.mutationMatcher = function(kitten_1, kitten_2, KaiGroups_1, KaiGroups_2){
+		var mutationPoints = 0.0;
+
+		for(var KaiGroupNumber in KaiGroups){
+			KaiGroup = KaiGroups[KaiGroupNumber];
+			for(var genenumber in KaiGroup){
+				gene = KaiGroup[genenumber];
+				geneInInteger = invert(self.b58Dict)[gene];
+				otherCatGene = KaiGroups_2[KaiGroupNumber][genenumber];
+				secondGeneInInteger = invert(self.b58Dict)[otherCatGene]
+				if(secondGeneInInteger == (geneInInteger+1)){
+					mutationPoints += 0.25*(1+genenumber);
+				}
+			}
+		}
+
+		return mutationPoints;
+	}
 
 	self.traitChance = function(kitten, trait, groupNumber, KaiGroups){
 		var nameLookup = {};

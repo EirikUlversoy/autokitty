@@ -7,10 +7,9 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 20;
+var generations_breeding_upper_limit = 5;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
-//Breeder = Breeder(generations_breeding_upper_limit);
 var promiseLimit = require('promise-limit')
 
 var api_calls_on = false;
@@ -27,6 +26,7 @@ var kitty_abi =
 //Linking to the contract itself
 var ck_contract = new web3.eth.Contract(kitty_abi,cryptokitties_contract_address);
 var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+//Breeder = Breeder(generations_breeding_upper_limit);
 
 //Owned cats API call template for illustration
 var api_call = "https://api.cryptokitties.co/kitties?offset=60&limit=64&owner_wallet_address=" + owner_wallet_address + "&sorting=cheap&orderBy=current_price&orderDirection=asc";
@@ -179,13 +179,13 @@ function mainFunction (calls){
 	let SecondaryMutations = mutationDicts[1];
 	console.log("is in main");
 	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue","Cottoncandy","Soserious"];
-	var listOfSecondaryMutations = ["Babypuke","Seafoam","Yokel","Wingtips","Onyx","Hotrod","Royalblue","Neckbeard"
+	var listOfSecondaryMutations = ["Secret_r","Onyx","Babypuke","Seafoam","Yokel","Wingtips","Hotrod","Royalblue","Neckbeard"
 	,"Manx","Buzzed","Mintmacaron"];
 
 	var targeted_traits = [];
-	var listOfTargetedTraitCombinations = ["Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm",
+	var listOfTargetedTraitCombinations = ["Daemonhorns","Daemonwings","Unknown_m","Salty","Secret_k","Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm",
 	"Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle","Patrickstarfish",
-	 "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum","Daemonwings"];
+	 "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum"];
 	listOfSecondaryMutations = Utilities.shuffle(listOfSecondaryMutations);
 	listOfTargetedTraitCombinations = Utilities.shuffle(listOfTargetedTraitCombinations);
 	var unchained = checkForUnchained(args);
@@ -228,8 +228,11 @@ function mainFunction (calls){
 
 		if(tryAllGen1){
 			console.log("In try all");
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 			for(var secondaryMutationTarget in listOfSecondaryMutations){
 				sMT = listOfSecondaryMutations[secondaryMutationTarget];
+				console.log(sMT);
+				Breeder.setupBreedingOptions(cats, SecondaryMutations[sMT], unchained, sixPercent, 1, 1);
 				Breeder.advancedBreedingLoop();
 			}
 		} else if(tryAllGen0){
@@ -388,7 +391,7 @@ function getCatsLoop(no_catArray){
 
 //Test output
 for(v = 0; v <=200; v++){
-	setTimeout(main,900000*v);
+	setTimeout(main,300000*v);
 	console.log("Scheduling: " + v);
 }
 

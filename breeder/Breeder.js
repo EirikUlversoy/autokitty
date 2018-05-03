@@ -104,6 +104,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.breedingPairs = [];
 	}
 
+	self._breedingAlgorithmMutationMaximizer = function(arrayOfScoredCats, scores, listOfListOfTargetedTraits){
+		
+	}
 	self._getSortedArrayOfScoredCatsFromDictionary = function(scores){
 		var arrayOfScoredCats = [];
 		var scoreKeys = Object.keys(scores);
@@ -117,6 +120,38 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		return arrayOfScoredCats;
 	}
 
+	self._getSortedArrayOfScoredMutaCatsFromDictionary = function(scores){
+		var arrayOfScoredCats = [];
+		var scoreKeys = Object.keys(scores);
+
+		for(var key in scoreKeys){
+			key = scoreKeys[key];
+			//arrayOfScoredCats.push(new CatWithScore(scores[score]))
+			arrayOfScoredCats.push([key,scores[key]]);
+		}
+		arrayOfScoredCats.sort(function(a,b) {return (a[1] > b[1]) ? 1 : ((b[1] > a[1]) ? -1 : 0);} ); 
+
+		//arrayOfScoredCats.sort();
+		return arrayOfScoredCats;
+	}
+	self._makeMutationScoreDictionary = function(){
+		copyOfCats = self.cats.slice();
+		scoredDictionary = {};
+		for(var catIndex in self.cats){
+			cat = self.cats[catIndex];
+			var avgMutaScore = 0.0;
+			var totalMutaScore = 0.0;
+			for(var copyOfCatIndex in copyOfCats){
+				cat_2 = copyOfCats[copyOfCatIndex];
+				totalMutaScore += GeneDecoder.mutationMatcher(cat, cat_2);
+			}
+			avgMutaScore = totalMutaScore/(copyOfCats.length-1);
+			scoredDictionary[cat] = avgMutaScore;
+		}
+
+		return scoredDictionary;
+
+	}
 	self._makeSingleTraitScoreDictionary = function(){
 		console.log("Making single scored lists for all traits and putting them in a dict...");
 		singleTraitScoreDictionary = {};
@@ -176,7 +211,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		var isRelated = (catA.matronId == catB.matronId) || (catA.sireId == catB.sireId);
 		return isRelated;
 	}
+	self._mutationFindPerfectPartner = function(cat){
 
+	}
 	self._mutationFindMatch = function(scoredCat, catDictionary, scores, treshold, missing){
 
 		if(missing == 0){
@@ -372,7 +409,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.28;
+		var treshold = 0.16;
 		if(self.sixPercent){
 			treshold = 0.06;
 		}
@@ -597,7 +634,6 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			var newKitten = GeneDecoder.simpleFilter(self.cats[cat],self.targetedTraits);
 			if(!isEmptyObject(newKitten.chanceOfTrait)){
 				newCats.push(newKitten);
-
 			}
 		}
 		console.log("Found " + newCats.length + " filtered cats!");
