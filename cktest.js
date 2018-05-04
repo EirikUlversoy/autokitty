@@ -51,7 +51,7 @@ function setTotalSupply(supply){
 }
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 100;
+var amountOfCalls = 150;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -183,9 +183,13 @@ function mainFunction (calls){
 	,"Manx","Buzzed","Mintmacaron"];
 
 	var targeted_traits = [];
-	var listOfTargetedTraitCombinations = ["Daemonhorns","Daemonwings","Unknown_m","Salty","Secret_k","Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm",
+	var listOfTargetedTraitCombinations = ["Daemonhorns","Daemonwings","Salty","Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm",
 	"Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle","Patrickstarfish",
 	 "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum"];
+
+	listOfTargetedTraitCombinations = ["Daemonhorns","Daemonwings","Salty","Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm",
+	"Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle",
+	 "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum"]; 
 	listOfSecondaryMutations = Utilities.shuffle(listOfSecondaryMutations);
 	listOfTargetedTraitCombinations = Utilities.shuffle(listOfTargetedTraitCombinations);
 	var unchained = checkForUnchained(args);
@@ -236,8 +240,9 @@ function mainFunction (calls){
 				Breeder.advancedBreedingLoop();
 			}
 		} else if(tryAllGen0){
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 			console.log("In try all gen0");
-			gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats,sixPercenters);
+			gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats,sixPercenters, Breeder);
 		} else {
 			//Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 999, 2);
 			console.log("In normal generational loop");
@@ -285,7 +290,7 @@ function checkForSixPercent(args){
 	return sixPercent;
 }
 
-function gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats, sixPercenters){
+function gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats, sixPercenters, Breeder){
 
 	for(var traitCombo in listOfTargetedTraitCombinations){
 		unchained = false;
@@ -299,9 +304,15 @@ function gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierM
 			sixPercent = true;
 		}
 		nbdList = [];
-		setTimeout(Breeder.advancedBreedingLoop, 100000*count, cats, PremierMutations[traitCombo], ck_contract, 0, unchained, sixPercent);
+
+		setTimeout(triggerGen0Breed, 100000*count, cats, PremierMutations[traitCombo], unchained, sixPercent, Breeder);
 	}
 
+}
+
+function triggerGen0Breed(cats, traitCombo, unchained, sixPercent, Breeder){
+	Breeder.setupBreedingOptions(cats, traitCombo, unchained, sixPercent, 0, 0);
+	Breeder.advancedBreedingLoop();
 }
 
 function fetch(id){
@@ -361,7 +372,7 @@ function loopGetUserKittensNAPI(err, res){
 	}
 
 	if(lowGenCatsOnly){
-		return Utilities.readKittensFromDisk("gen0Merged", 0, 2);
+		return Utilities.readKittensFromDisk("gen0Merged", 0, 3);
 		
 	} else {
 		let kittens = Utilities.readKittensFromDisk("kittensMerged",0,16); //12 is latest

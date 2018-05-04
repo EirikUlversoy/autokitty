@@ -621,23 +621,56 @@ function GeneDecoder(){
 		console.log("Done probing!");
 		return geneArrays;
 	}
-	self.b58Dict = {0:'1',1:'2',2:'3',3:'4',4:'5',5:'6',6:'7',7:'8',8:'9',9:'a',
-	10:'b',11: 'c', 12: 'd', 13: 'e', 14:'f',15:'g',16:'h',17:'i', 18:'j',19:'k'
-	20:'m',21:'n',22:'o',23:'p',24:'q',25:'r',26:'s',27:'t',28:'u', 29:'v', 30:'w'};
+	self.b58Dict = {'0':'1','1':'2','2':'3','3':'4','4':'5','5':'6','6':'7','7':'8','8':'9','9':'a',
+	'10':'b','11': 'c', '12': 'd', '13': 'e', '14':'f','15':'g','16':'h','17':'i', '18':'j','19':'k',
+	'20':'m','21':'n','22':'o','23':'p','24':'q','25':'r','26':'s','27':'t','28':'u', '29':'v', '30':'w'};
 
-	self.mutationMatcher = function(kitten_1, kitten_2, KaiGroups_1, KaiGroups_2){
+	function isEven(n) {
+	   return n % 2 == 0;
+	}
+
+	function isOdd(n) {
+	   return Math.abs(n % 2) == 1;
+	}
+	self.mutationMatcher = function(kitten_1, kitten_2){
+
+		var nameLookup = {};
+		nameLookup[0] = unknownGeneNames;
+		nameLookup[1] = secretGeneNames;
+		nameLookup[2] = environmentGeneNames;
+		nameLookup[3] = mouthGeneNames;
+		nameLookup[4] = wildGeneNames;
+		nameLookup[5] = colorTertiaryGeneNames;
+		nameLookup[6] = colorSecondaryGeneNames;
+		nameLookup[7] = colorPrimaryGeneNames;
+		nameLookup[8] = eyesGeneNames;
+		nameLookup[9] = colorEyesGeneNames;
+		nameLookup[10] = patternGeneNames;
+		nameLookup[11] = bodyGeneNames;
+
+		//geneArrays = self.getCattributes(self.getKaiGroups(kitten_1)); 
+		KaiGroups = self.getKaiGroups(kitten_1);
+		KaiGroups_2 = self.getKaiGroups(kitten_2);
 		var mutationPoints = 0.0;
 
 		for(var KaiGroupNumber in KaiGroups){
 			KaiGroup = KaiGroups[KaiGroupNumber];
-			for(var genenumber in KaiGroup){
+			geneArray = self.outputGroupAttribute(KaiGroup, nameLookup[KaiGroupNumber]);
+			for(var genenumber in geneArray){
 				gene = KaiGroup[genenumber];
 				geneInInteger = invert(self.b58Dict)[gene];
 				otherCatGene = KaiGroups_2[KaiGroupNumber][genenumber];
 				secondGeneInInteger = invert(self.b58Dict)[otherCatGene]
-				if(secondGeneInInteger == (geneInInteger+1)){
-					mutationPoints += 0.25*(1+genenumber);
+				if(isEven(geneInInteger)){
+					if(secondGeneInInteger == (geneInInteger+1)){
+						mutationPoints += 0.25*(1+genenumber);
+					}
+				} else {
+					if(secondGeneInInteger == (geneInInteger-1)){
+						mutationPoints += 0.25*(1+genenumber);
+					}
 				}
+
 			}
 		}
 
@@ -726,6 +759,17 @@ function GeneDecoder(){
 		}
 		console.log("Wall of stats:");
 		console.log(statsDictionary);
+	}
+
+	self.getKaiGroups = function(kitten){
+		var KAISequence = self.translateGenesToKai(kitten.genes);
+		var KaiGroups = [];
+		for(var x = 0; x<KAISequence.length/4; x++){
+			var nextGroup = KAISequence.substring(x*4,(x+1)*4);
+			KaiGroups.push(nextGroup);
+		}
+
+		return KaiGroups;
 	}
 	self.readKitten = function (kitten){
 		var testKaiSequence = "9ac9558524a2f4fad8185144f97c17513483441qdgdagegg";
