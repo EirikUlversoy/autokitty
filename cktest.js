@@ -51,7 +51,7 @@ function setTotalSupply(supply){
 }
 console.log(count);
 //API only provides 20 cats at a time, so we have to do count/20 calls.
-var amountOfCalls = 150;
+var amountOfCalls = 160;
 console.log(amountOfCalls);
 
 var i = 0;
@@ -179,7 +179,7 @@ function mainFunction (calls){
 	let SecondaryMutations = mutationDicts[1];
 	console.log("is in main");
 	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue","Cottoncandy","Soserious"];
-	var listOfSecondaryMutations = ["Secret_r","Onyx","Babypuke","Seafoam","Yokel","Wingtips","Hotrod","Royalblue","Neckbeard"
+	var listOfSecondaryMutations = ["Onyx","Babypuke","Seafoam","Yokel","Wingtips","Hotrod","Royalblue","Neckbeard"
 	,"Manx","Buzzed","Mintmacaron"];
 
 	var targeted_traits = [];
@@ -189,30 +189,54 @@ function mainFunction (calls){
 
 	listOfTargetedTraitCombinations = ["Daemonhorns","Daemonwings","Salty","Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm",
 	"Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle",
-	 "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum"]; 
+	 "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum","Twilightsparkle","Eclipse","Lavender","Mainecoon","Sass"];
+	 listOfTargetedTraitCombinations = ["Flamingo","Cerulian","Wolfgrey","Sweetmeloncakes","Dali","Koala","Starstruck","Cheeky","Fabulous","Daemonhorns","Daemonwings","Periwinkle","Pumpkin","Alien","Elk","Salty"];
 	listOfSecondaryMutations = Utilities.shuffle(listOfSecondaryMutations);
 	listOfTargetedTraitCombinations = Utilities.shuffle(listOfTargetedTraitCombinations);
 	var unchained = checkForUnchained(args);
 	var sixPercent = checkForSixPercent(args);
 	var tryAllGen1 = false;
 	var tryAllGen0 = false;
+	var pureMutaGen2 = false;
+	var oneGen1 = false;
+	var oneGen0 = false;
 	if(args[2] == "all-gen1"){
 		tryAllGen1 = true;
 	}
+
+	if(args[2] == "all-gen2PM"){
+		pureMutaGen2 = true;
+		targeted_traits = ["Jaguar","Lemonade"];
+
+	}
 	if(args[2] == "all-gen0"){
 		tryAllGen0 = true;
+	} else if (args[3] == "one-gen1")  {
+		oneGen1 = true;
 	}
 	targeted_traits = ["sample"];
 
-	if(args[2] != "all-gen1"){
-		if(args[3] == "gen1"){
-			targeted_traits = SecondaryMutations[args[2]];
-		} else {
-			targeted_traits = PremierMutations[args[2]];
-			targeted_traits = VernonAttempt;
-			targeted_traits = ["Jaguar","Lemonade","Azaleablush","Cloudwhite","Wild_f"];
-		}
+	if(args[3] == "one-gen0" ){
+		oneGen0 = true;
 	}
+
+	if(args[3] == "gen1" || args[3] == "one-gen1"){
+			targeted_traits = SecondaryMutations[args[2]];
+	} else if(args[3] == "gen0"){
+		targeted_traits = PremierMutations[args[2]];
+		tryAllGen0 = true;
+		//targeted_traits = VernonAttempt;
+		//targeted_traits = ["Jaguar","Lemonade","Azaleablush","Cloudwhite","Wild_f"];
+	} else {
+		targeted_traits = ["Jaguar","Lemonade"];
+	}
+
+	if(args[2] != "all-gen1"){
+	
+	} else {
+		targeted_traits = ["Jaguar","Lemonade"];
+	}
+
 
 	if(api_calls_on){
 		Utilities.saveKittenIds(cats);
@@ -226,23 +250,45 @@ function mainFunction (calls){
 	if(targeted_traits.length != 0){
 		console.log("heading into advanced breeding loop");
 		//GeneDecoder.statistics(cats);
-		let mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Fabulous","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck"];
-		let sixPercenters = ["Flamingo","Cerulian","Wolfgrey","Sweetmeloncakes","Dali","Koala","Starstruck","Cheeky"];
+		let mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Fabulous","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck","Daemonwings"];
+		let sixPercenters = ["Flamingo","Cerulian","Wolfgrey","Sweetmeloncakes","Dali","Koala","Starstruck","Cheeky","Daemonwings"];
 
 
 		if(tryAllGen1){
 			console.log("In try all");
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+			listOfSecondaryMutations = ["Onyx"];
+
 			for(var secondaryMutationTarget in listOfSecondaryMutations){
 				sMT = listOfSecondaryMutations[secondaryMutationTarget];
 				console.log(sMT);
 				Breeder.setupBreedingOptions(cats, SecondaryMutations[sMT], unchained, sixPercent, 1, 1);
 				Breeder.advancedBreedingLoop();
+
 			}
 		} else if(tryAllGen0){
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 			console.log("In try all gen0");
+			listOfTargetedTraitCombinations = ["Daemonhorns"];
+			listOfTargetedTraitCombinations = [targeted_traits];
 			gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats,sixPercenters, Breeder);
+		} else if(oneGen1) {
+			console.log("In try one");
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+			Breeder.setupBreedingOptions(cats, SecondaryMutations[args[2]], unchained, sixPercent, 1, 1);
+			Breeder.advancedBreedingLoop();
+		} else if (oneGen0){
+			console.log("In try one gen 0!");
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+			Breeder.setupBreedingOptions(cats, PremierMutations[args[2]], unchained, sixPercent, 0, 0);
+			Breeder.advancedBreedingLoop();
+
+		} else if(pureMutaGen2){
+			console.log("In gen 2 pure muta");
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+			Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 2, 2);
+			Breeder.togglePureMuta();
+			Breeder.advancedBreedingLoop();
 		} else {
 			//Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 999, 2);
 			console.log("In normal generational loop");
@@ -262,6 +308,11 @@ function mainFunction (calls){
 	cats = [];
 	allFilteredCats = [];
 
+}
+
+function triggerGen1Breed(cats, traitCombo, unchained, sixPercent, Breeder){
+	Breeder.setupBreedingOptions(cats, traitCombo, unchained, sixPercent, 0, 0);
+	Breeder.advancedBreedingLoop();
 }
 
 function checkForUnchained(args){
@@ -297,15 +348,25 @@ function gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierM
 		var count = traitCombo;
 		var sixPercent = false;
 		traitCombo = listOfTargetedTraitCombinations[traitCombo];
+		console.log(traitCombo);
 		if(mandatoryUnchain.includes(traitCombo)){
 			unchained = true;
 		}
 		if(sixPercenters.includes(traitCombo)){
 			sixPercent = true;
 		}
-		nbdList = [];
 
-		setTimeout(triggerGen0Breed, 100000*count, cats, PremierMutations[traitCombo], unchained, sixPercent, Breeder);
+		if(mandatoryUnchain.includes(args[2])){
+			unchained = true;
+		}
+
+		if(sixPercenters.includes(args[2])){
+			sixPercent = true;
+		}
+		nbdList = [];
+		//setTimeout(triggerGen0Breed, 50000*count, cats, PremierMutations[traitCombo], unchained, sixPercent, Breeder);
+		setTimeout(triggerGen0Breed, 50000*count, cats, traitCombo, unchained, sixPercent, Breeder);
+
 	}
 
 }
@@ -334,6 +395,7 @@ function loopGetUserKitties(err, res){
 function doFilterWork(cat,address){
 	if(address == upper_wallet_address){
 		allFilteredCats.push(cat);
+		console.log(cat);
 	}
 
 }
@@ -362,23 +424,46 @@ function loopGetUserKittensNAPI(err, res){
 
 	var lowGenCatsOnly = false; 
 	if(args[2] == "all-gen0"){
+		return Utilities.readKittensFromDisk("kittensGeneration",0,0);
 		console.log("low gen only!");
 		lowGenCatsOnly = true;
 	}
 
 	if(args[2] == "all-gen1"){
+		return Utilities.readKittensFromDisk("kittensGeneration",1,1);
 		console.log("low gen only!");
 		lowGenCatsOnly = true;
 	}
 
+	if(args[2] == "all-gen2PM"){
+		return Utilities.readKittensFromDisk("kittensGeneration",2,2);
+	}
+
+	if(args[3] == "low"){
+		console.log("low gen only");
+		lowGenCatsOnly = true;
+	}
+
+	if(args[3] == "one-gen1"){
+		console.log("low gen only");
+		lowGenCatsOnly = true;
+	}
+
+	if(args[3] == "one-gen0"){
+		return Utilities.readKittensFromDisk("kittensGeneration",0,0);
+	}
+
 	if(lowGenCatsOnly){
-		return Utilities.readKittensFromDisk("gen0Merged", 0, 3);
+		return Utilities.readKittensFromDisk("gen0Merged", 0, 4);
+		//return Utilities.readKittensFromDisk("kittensMerged",1,1); //12 is latest
 		
 	} else {
 		let kittens = Utilities.readKittensFromDisk("kittensMerged",0,16); //12 is latest
 		console.log("total supply is: " + totalSupply);
 
-		for(var x = 717000; x < 729402; x++){
+		//for(var x = 717000; x < 729402; x++){
+		for(var x = 1; x < 739046; x++){
+
 			kittens.push(x);
 		}
 		return kittens;
@@ -402,7 +487,7 @@ function getCatsLoop(no_catArray){
 
 //Test output
 for(v = 0; v <=200; v++){
-	setTimeout(main,300000*v);
+	setTimeout(main,10000000*v);
 	console.log("Scheduling: " + v);
 }
 

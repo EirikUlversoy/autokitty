@@ -663,11 +663,35 @@ function GeneDecoder(){
 				secondGeneInInteger = invert(self.b58Dict)[otherCatGene]
 				if(isEven(geneInInteger)){
 					if(secondGeneInInteger == (geneInInteger+1)){
-						mutationPoints += 0.25*(1+genenumber);
+						if(KaiGroupNumber >= 2){
+							if(genenumber == 0){
+								mutationPoints += 0.007;
+							} else if (genenumber == 1){
+								mutationPoints += 0.03;
+							} else if (genenumber == 2){
+								mutationPoints += 0.12;
+							} else if (genenumber == 3){
+								mutationPoints += 0.33;
+							}	
+						}
+						
+						//mutationPoints += 0.25*(1+genenumber);
 					}
 				} else {
 					if(secondGeneInInteger == (geneInInteger-1)){
-						mutationPoints += 0.25*(1+genenumber);
+						if(KaiGroupNumber >= 2){
+
+							if(genenumber == 0){
+								mutationPoints += 0.007;
+							} else if (genenumber == 1){
+								mutationPoints += 0.03;
+							} else if (genenumber == 2){
+								mutationPoints += 0.12;
+							} else if (genenumber == 3){
+								mutationPoints += 0.33;
+							}
+						}
+						//mutationPoints += 0.25*(1+genenumber);
 					}
 				}
 
@@ -743,17 +767,17 @@ function GeneDecoder(){
 		return kitten;
 	}
 
-	self.statistics = function(cats){
+	self.statistics = function(cats, place){
 		statsDictionary = {};
 		for(var cat in cats){
 			cat = cats[cat];
 			geneArrays = self.readKitten(cat);
 			for(var gArray in geneArrays){
 				gArray = geneArrays[gArray];
-				if(statsDictionary[gArray[3]]){
-					statsDictionary[gArray[3]] = statsDictionary[gArray[3]] + 1;
+				if(statsDictionary[gArray[place]]){
+					statsDictionary[gArray[place]] = statsDictionary[gArray[place]] + 1;
 				} else {
-					statsDictionary[gArray[3]] = 1;
+					statsDictionary[gArray[place]] = 1;
 				}
 			}
 		}

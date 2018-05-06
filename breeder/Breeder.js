@@ -5,6 +5,8 @@ var Utilities = require("utilities");
 function Breeder(upper_wallet_address, web3, ck_contract){
 	let self = {};
 
+	self.pureMuta = false;
+
 	//This dictionary is used for keeping cat generations
 	self.o = {};
 	self.ck_contract = ck_contract;
@@ -24,6 +26,18 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self.breedingPairs = [];
 
+	self.outputGeneration = function(generation){
+		var catIDs = [];
+		var theCats = self.o[generation];
+		for(var cat in theCats){
+			catIDs.push(theCats[cat]);
+		}
+
+		Utilities.saveKittenIdsSpecific(catIDs,generation);
+	}
+	self.togglePureMuta = function(){
+		self.pureMuta = true;
+	}
 	self.separateByGeneration = function(){
 		var filteredCatList = [];
 		for (var kitten in self.cats){
@@ -31,15 +45,22 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			if(!self.o[self.cats[kitten].generation]){
 				self.o[self.cats[kitten].generation] = [];
 			}
+			self.o[self.cats[kitten].generation].push(self.cats[kitten]);
+
 			if(self.cats[kitten].generation <= self.generations_breeding_upper_limit){
 				if(self.cats[kitten].generation >= self.generations_breeding_lower_limit){
-					self.o[self.cats[kitten].generation].push(self.cats[kitten]);
+					//self.o[self.cats[kitten].generation].push(self.cats[kitten]);
 					filteredCatList.push(self.cats[kitten]);
 				}
 
 			}
 
 		}
+
+		for(x = 0; x < 25; x++){
+			self.outputGeneration(x);
+		}
+
 		return filteredCatList;
 	}
 
@@ -53,6 +74,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.generations_breeding_upper_limit = generations_breeding_upper_limit;
 		self.generations_breeding_lower_limit = generations_breeding_lower_limit;
 		self.breedingPairScores = [];
+		self.breedingPairs = [];
 
 	}
 	self.isReadyFilter = function(){
@@ -75,6 +97,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		var filteredCatList = self.separateByGeneration();
 		console.log("Excluded generations and was left with: " + filteredCatList.length + " cats!");
 		self.cats = filteredCatList;
+		GeneDecoder.statistics(self.cats, 3);
 		var readyFilteredCatList = self.isReadyFilter(filteredCatList);
 		self.cats = readyFilteredCatList;
 		console.log("Excluded not ready cats and was left with: " + readyFilteredCatList.length + " cats!");
@@ -100,9 +123,19 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		var scores = self._scoreCatsBasedOnTraits(catsWithAnyTargetedTraits, combinedTraits);
 		var arrayOfScoredCats = self._getSortedArrayOfScoredCatsFromDictionary(scores);
 
-		self.breedingPairs = self._simpleBreedingAlgorithm(arrayOfScoredCats, scores);
+		if(self.pureMuta){
+			self.cats = readyFilteredCatList;
+			self.breedingPairs = self._simpleMutaBreedingAlgorithm();
+		} else {
+			self.breedingPairs = self._simpleBreedingAlgorithm(arrayOfScoredCats, scores);
+		}
+
+
+
+		console.log("Full breeding pairs list: ");
+		console.log(self.breedingPairs);
 		self._triggerBreedingPairs(self.breedingPairs);
-		self.breedingPairs = [];
+		//self.breedingPairs = [];
 	}
 
 	self._breedingAlgorithmMutationMaximizer = function(arrayOfScoredCats, scores, listOfListOfTargetedTraits){
@@ -136,13 +169,26 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		//arrayOfScoredCats.sort();
 		return arrayOfScoredCats;
 	}
-
-	self._makeMutationScoreDictionarySingular = function(cat){
-		copyOfCats = self.cats.slice();
+	self._makeMutationScoreDictionarySingularHC = function(cat, copyOfCats, catDictionary){
 		scoredDictionary = {};
-		for(var copyOfCat in copyOfCats){
+		for(var cat_B in copyOfCats){
+			cat_B = copyOfCats[cat_B];
 			var totalMutaScore = 0.0;
-			cat_B = copyOfCats[copyOfCat];
+			totalMutaScore += GeneDecoder.mutationMatcher(cat, cat_B);
+			scoredDictionary[cat_B.id] = totalMutaScore;
+			//console.log("??")
+
+		}
+
+		return scoredDictionary;
+
+	}
+	self._makeMutationScoreDictionarySingular = function(cat, traitScoreList, catDictionary){
+		scoredDictionary = {};
+		for(var cat_B in traitScoreList){
+			cat_B = catDictionary[traitScoreList[cat_B].id];
+
+			var totalMutaScore = 0.0;
 			totalMutaScore += GeneDecoder.mutationMatcher(cat, cat_B);
 			scoredDictionary[cat_B.id] = totalMutaScore;
 			//console.log("??")
@@ -219,27 +265,87 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 	self._eitherCatIsBriskOrBetter = function(catA, catB){
-		return ((catA.cooldownIndex <= 6) || (catB.cooldownIndex <= 6));
-		//return true;
+		//return ((catA.cooldownIndex <= 6) || (catB.cooldownIndex <= 6));
+		return true;
 	}
 
 	//Takes two cats and compares their matrons and sires. Depends on the last gotten info from calling the
 	//contracts "getKitten" function
 	self._isRelated = function(catA,catB){
-		var isRelated = (catA.matronId == catB.matronId) || (catA.sireId == catB.sireId);
+		var isRelated = ((catA.matronId == catB.matronId) || (catA.sireId == catB.sireId));
+		if(catA.generation == 0 && catB.generation == 0){
+			isRelated = false;
+		}
 		return isRelated;
 	}
 
 	self.isValidMatch = function(catA, catB){
-		if(!self._isRelated(catA, catB)){
+		if(!(self._isRelated(catA, catB))){
+
 			if(!self.usedCats.includes(catB.id)){
+
 				if(self._eitherCatIsBriskOrBetter(catA, catB)){
 					return true;
+				} else {
+					console.log("Was not either brisk or better?");
 				}
+			} else {
+				console.log("was used cat?");
 			}
+		} else {
+			console.log("was related?");
 		}
 
 		return false;
+	}
+	self._printFive = function(listToPrint){
+		for(var item in listToPrint){
+			if(item < 5){
+				console.log(listToPrint[item]);
+			}
+		}
+	}
+	self._pureMutationChaser = function(catDictionary){
+		var partner = undefined;
+
+		self.copyOfCats = self.cats.slice();
+		for(var cat in self.cats){
+			//cat = self.cats[cat];
+			console.log("At cat number:" + cat);
+			nCat = self.cats[cat];
+			mutationUnordered = self._makeMutationScoreDictionarySingularHC(catDictionary[nCat.id], self.copyOfCats, catDictionary);
+			mutationOrdered = self._getSortedArrayOfScoredMutaCatsFromDictionary(mutationUnordered);
+			self._printFive(mutationOrdered);
+			if( mutationOrdered.length != 0){
+				partner = catDictionary[mutationOrdered[0][0]];
+				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 1.3)){
+					console.log("is valid?");
+				} else {
+					partner = undefined;
+				}
+			}
+			if(partner != undefined){
+				Utilities.remove(self.copyOfCats, partner.id);
+				Utilities.remove(self.copyOfCats, nCat.id);
+				Utilities.remove(self.cats, nCat.id);
+				Utilities.remove(self.cats, partner.id);
+				self.usedCats.push(nCat.id);
+				self.usedCats.push(partner.id);
+				//self._removeBreedingPairFromAllTraitLists(nCat, partner, self.targetedTraits);
+				self._decideBreedOrderAndPush(nCat, partner, catDictionary);
+
+				console.log("Found match in PURE MUTATION mode!");
+				console.log("Match ids are: " + nCat.id + " and " + partner.id + "!");
+				//console.log("Match had the score --> : " + scoredCat.score + " , " + scores[partner.id].score);
+				/*
+				var bpscore = [];
+				bpscore.push(scoredCat.score);
+				bpscore.push(scores[partner.id].score);
+				self.breedingPairScores.push(bpscore);
+				*/
+			}
+		}
+		
 	}
 	self._mutationFindMatch = function(scoredCat, catDictionary, scores, treshold, missing){
 		var partner = undefined;
@@ -247,15 +353,17 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		if(missing == 0){
 			
 			targetTrait = self._decideTargetTrait(scoredCat, self.targetedTraits, catDictionary);
+			console.log(targetTrait);
+			console.log(catDictionary[scoredCat.id].chanceOfTrait);
 			traitScoreList = self.singleTraitScoreDictionary[targetTrait];
 			orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
-			mutationUnordered = self._makeMutationScoreDictionarySingular(catDictionary[scoredCat.id]);
+			mutationUnordered = self._makeMutationScoreDictionarySingular(catDictionary[scoredCat.id],orderedTraitScoreList, catDictionary);
 			//console.log(mutationUnordered);
 			mutationOrdered = self._getSortedArrayOfScoredMutaCatsFromDictionary(mutationUnordered);
-			partner = catDictionary[mutationOrdered[0][0]];
-			console.log(mutationOrdered);
+			//console.log(mutationOrdered);
 			if(mutationOrdered.length != 0){
-				if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 2){
+				partner = catDictionary[mutationOrdered[0][0]];
+				if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 0.0){
 
 				} else {
 					partner = undefined;
@@ -268,10 +376,18 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			
 
 		} else if (missing == 1){
-			targetTrait = self._decideTargetTrait(scoredCat, self.targetedTraits, catDictionary);
+			//targetTrait = self._decideTargetTrait(scoredCat, self.targetedTraits, catDictionary);
+			var targetTrait;
+			var real_cat = catDictionary[scoredCat.id];
+
+			if(self.targetedTraits[0] in real_cat.chanceOfTrait){
+				targetTrait = self.targetedTraits[1];
+			} else {
+				targetTrait = self.targetedTraits[0];
+			}
 			traitScoreList = self.singleTraitScoreDictionary[targetTrait];
 			orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
-			mutationUnordered = self._makeMutationScoreDictionarySingular(catDictionary[scoredCat.id]);
+			mutationUnordered = self._makeMutationScoreDictionarySingular(catDictionary[scoredCat.id], orderedTraitScoreList, catDictionary);
 			//console.log(mutationUnordered);
 			mutationOrdered = self._getSortedArrayOfScoredMutaCatsFromDictionary(mutationUnordered);
 			//console.log(mutationOrdered);
@@ -279,7 +395,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			if(mutationOrdered.length != 0){
 				partner = catDictionary[mutationOrdered[0][0]];
 
-				if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 2){
+				if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 0.0){
 
 				} else {
 					partner = undefined;
@@ -289,7 +405,6 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 			
 		}
-
 
 		
 		if(partner != undefined){
@@ -315,7 +430,8 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self._findMatchZeroMissing = function(scoredCat, catDictionary, scores, treshold){
 		console.log("no missing traits, pick top scorer!");
 		var targetTrait = self.targetedTraits[0];
-		if(self.targetedTraits.length == 2){
+		var genOne = false;
+		if(self.targetedTraits.length == 2 || !genOne){
 			self._mutationFindMatch(scoredCat, catDictionary, scores, treshold, 0);
 		} else {
 			var partnerCopy = self.potentialPartners.slice();
@@ -366,8 +482,8 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		var missingTraitScoreList = self.singleTraitScoreDictionary[missingTrait];
 		orderedMissingTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(missingTraitScoreList);
 		Utilities.remove(self.potentialPartners, scoredCat.id);
-
-		if(self.targetedTraits.length == 2){
+		var genOne = false;
+		if(self.targetedTraits.length == 2 && !genOne){
 			self._mutationFindMatch(scoredCat, catDictionary, scores, treshold, 1);
 		} else {
 
@@ -465,6 +581,20 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		}
 		
 	}
+
+	self._simpleMutaBreedingAlgorithm = function(){
+		var catDictionary = {};
+		self.usedCats = [];
+
+		for(var cat in self.cats){
+			cat = self.cats[cat];
+			catDictionary[cat.id] = cat;
+		}
+
+		self._pureMutationChaser(catDictionary);
+
+		return self.breedingPairs;
+	}
 	self._simpleBreedingAlgorithm = function(arrayOfScoredCats, scores){
 
 		var catDictionary = {};
@@ -483,7 +613,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.16;
+		var treshold = 0.06;
 		if(self.sixPercent){
 			treshold = 0.06;
 		}

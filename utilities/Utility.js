@@ -97,6 +97,21 @@ module.exports = {
 	    return e !== element;
 	});
 
+	},
+	saveKittenIdsSpecific(kittens, generation){
+		output = [];
+		for (var kitten in kittens){
+			output.push(kittens[kitten].id);
+		}
+		fs.writeFile('kittens'+'Generation'+generation+'.txt', output, (err) => {
+	  	if (err) throw err;
+	  	console.log('It\'s saved!');
+	});},
+		remove(array, element){
+		return array.filter(function(e) { 
+	    return e !== element;
+	});
+
 	}
 	
 
