@@ -664,6 +664,7 @@ function GeneDecoder(){
 				if(isEven(geneInInteger)){
 					if(secondGeneInInteger == (geneInInteger+1)){
 						if(KaiGroupNumber >= 2){
+
 							if(genenumber == 0){
 								mutationPoints += 0.007;
 							} else if (genenumber == 1){
@@ -673,10 +674,25 @@ function GeneDecoder(){
 							} else if (genenumber == 3){
 								mutationPoints += 0.33;
 							}	
+							
+							if(secondGeneInInteger > 15){
+								mutationPoints += 0.33;
+							}
+
+							if(secondGeneInInteger > 23){
+								mutationPoints += 0.33;
+							}
+
+							if(secondGeneInInteger > 27){
+								mutationPoints += 0.33;
+							}
 						}
-						
+								
 						//mutationPoints += 0.25*(1+genenumber);
 					}
+
+					
+
 				} else {
 					if(secondGeneInInteger == (geneInInteger-1)){
 						if(KaiGroupNumber >= 2){
@@ -688,6 +704,18 @@ function GeneDecoder(){
 							} else if (genenumber == 2){
 								mutationPoints += 0.12;
 							} else if (genenumber == 3){
+								mutationPoints += 0.33;
+							}
+
+							if(secondGeneInInteger > 15){
+								mutationPoints += 0.33;
+							}
+
+							if(secondGeneInInteger > 23){
+								mutationPoints += 0.33;
+							}
+
+							if(secondGeneInInteger > 27){
 								mutationPoints += 0.33;
 							}
 						}
@@ -782,7 +810,8 @@ function GeneDecoder(){
 			}
 		}
 		console.log("Wall of stats:");
-		console.log(statsDictionary);
+		//console.log(statsDictionary);
+		return statsDictionary;
 	}
 
 	self.getKaiGroups = function(kitten){

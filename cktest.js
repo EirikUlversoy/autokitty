@@ -317,7 +317,7 @@ function triggerGen1Breed(cats, traitCombo, unchained, sixPercent, Breeder){
 
 function checkForUnchained(args){
 	let unchained = false;
-	let mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Fabulous","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck"];
+	let mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck"];
 	for(let unVar in mandatoryUnchain){
 		unVar = mandatoryUnchain[unVar];
 		if(unVar == args[2]){
@@ -486,8 +486,8 @@ function getCatsLoop(no_catArray){
 
 
 //Test output
-for(v = 0; v <=200; v++){
-	setTimeout(main,10000000*v);
+for(v = 0; v <=10; v++){
+	setTimeout(main,7200000*v);
 	console.log("Scheduling: " + v);
 }
 

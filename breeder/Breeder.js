@@ -97,10 +97,28 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		var filteredCatList = self.separateByGeneration();
 		console.log("Excluded generations and was left with: " + filteredCatList.length + " cats!");
 		self.cats = filteredCatList;
-		GeneDecoder.statistics(self.cats, 3);
+
+		//GeneDecoder.statistics(self.filteredCatList, 0);
 		var readyFilteredCatList = self.isReadyFilter(filteredCatList);
 		self.cats = readyFilteredCatList;
 		console.log("Excluded not ready cats and was left with: " + readyFilteredCatList.length + " cats!");
+		var statsDict = GeneDecoder.statistics(self.cats, 0);
+		console.log("R3 stats: " + self.targetedTraits[0] + ": " + statsDict[self.targetedTraits[0]]);
+		console.log("R3 stats: " + self.targetedTraits[1] + ": " + statsDict[self.targetedTraits[1]]);
+
+		//console.log(statsDict[self.targetedTraits[1]])
+		var statsDict = GeneDecoder.statistics(self.cats, 1);
+		console.log("R2 stats: " + self.targetedTraits[0] + ": " + statsDict[self.targetedTraits[0]]);
+		console.log("R2 stats: " + self.targetedTraits[1] + ": " + statsDict[self.targetedTraits[1]]);
+
+		var statsDict = GeneDecoder.statistics(self.cats, 2);
+		console.log("R1 stats: " + self.targetedTraits[0] + ": " + statsDict[self.targetedTraits[0]]);
+		console.log("R1 stats: " + self.targetedTraits[1] + ": " + statsDict[self.targetedTraits[1]]);
+
+		var statsDict = GeneDecoder.statistics(self.cats,3);
+		console.log("D stats: " + self.targetedTraits[0] + ": " + statsDict[self.targetedTraits[0]]);
+		console.log("D stats: " + self.targetedTraits[1] + ": " + statsDict[self.targetedTraits[1]]);
+
 
 
 		//This section was used for trying to bias the breeding selection without actually putting a restriction
@@ -230,8 +248,12 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self._decideBreedOrderAndPush = function(scoredCat, partner, catDictionary){
 		if(catDictionary[partner.id].cooldownIndex < catDictionary[scoredCat.id].cooldownIndex){
 			self.breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
+			//setTimeout(self.readyToBreedCheckA,300, partner.id, scoredCat.id);
+
 		} else {
 			self.breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
+			//setTimeout(self.readyToBreedCheckA,300, partner.id, scoredCat.id);
+
 		}
 	}
 
@@ -318,7 +340,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			self._printFive(mutationOrdered);
 			if( mutationOrdered.length != 0){
 				partner = catDictionary[mutationOrdered[0][0]];
-				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 1.3)){
+				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 1.12)){
 					console.log("is valid?");
 				} else {
 					partner = undefined;
@@ -349,6 +371,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 	self._mutationFindMatch = function(scoredCat, catDictionary, scores, treshold, missing){
 		var partner = undefined;
+		var extreme = false;
 
 		if(missing == 0){
 			
@@ -362,9 +385,15 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			mutationOrdered = self._getSortedArrayOfScoredMutaCatsFromDictionary(mutationUnordered);
 			//console.log(mutationOrdered);
 			if(mutationOrdered.length != 0){
-				partner = catDictionary[mutationOrdered[0][0]];
-				if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 0.0){
 
+				partner = catDictionary[mutationOrdered[0][0]];
+				if((partner.chanceOfTrait[targetTrait] > 0.12) || extreme){
+
+					if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 0.0){
+
+					} else {
+						partner = undefined;
+					}
 				} else {
 					partner = undefined;
 				}
@@ -391,15 +420,19 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			//console.log(mutationUnordered);
 			mutationOrdered = self._getSortedArrayOfScoredMutaCatsFromDictionary(mutationUnordered);
 			//console.log(mutationOrdered);
-			console.log(mutationOrdered);
+			//console.log(mutationOrdered);
 			if(mutationOrdered.length != 0){
 				partner = catDictionary[mutationOrdered[0][0]];
+				if((partner.chanceOfTrait[targetTrait] > 0.12) || extreme ){
+					if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 0.0){
 
-				if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 0.0){
-
+					} else {
+						partner = undefined;
+					}
 				} else {
 					partner = undefined;
 				}
+
 			}
 			
 
