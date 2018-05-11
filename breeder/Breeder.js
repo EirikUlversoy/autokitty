@@ -95,6 +95,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self.advancedBreedingLoop = function(){
 		var filteredCatList = self.separateByGeneration();
+		var cFil = filteredCatList.slice();
 		console.log("Excluded generations and was left with: " + filteredCatList.length + " cats!");
 		self.cats = filteredCatList;
 
@@ -102,7 +103,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		var readyFilteredCatList = self.isReadyFilter(filteredCatList);
 		self.cats = readyFilteredCatList;
 		console.log("Excluded not ready cats and was left with: " + readyFilteredCatList.length + " cats!");
+		//var statsDict = GeneDecoder.statistics(cFil, 0);
 		var statsDict = GeneDecoder.statistics(self.cats, 0);
+		
 		console.log("R3 stats: " + self.targetedTraits[0] + ": " + statsDict[self.targetedTraits[0]]);
 		console.log("R3 stats: " + self.targetedTraits[1] + ": " + statsDict[self.targetedTraits[1]]);
 
@@ -246,7 +249,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	}
 	self._decideBreedOrderAndPush = function(scoredCat, partner, catDictionary){
-		if(catDictionary[partner.id].cooldownIndex < catDictionary[scoredCat.id].cooldownIndex){
+		if(catDictionary[partner.id].cooldownIndex >= catDictionary[scoredCat.id].cooldownIndex){
 			self.breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
 			//setTimeout(self.readyToBreedCheckA,300, partner.id, scoredCat.id);
 
@@ -340,7 +343,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			self._printFive(mutationOrdered);
 			if( mutationOrdered.length != 0){
 				partner = catDictionary[mutationOrdered[0][0]];
-				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 1.12)){
+				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 0.9)){
 					console.log("is valid?");
 				} else {
 					partner = undefined;
@@ -369,16 +372,50 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		}
 		
 	}
+	self.extremeCheck = function(){
+		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme"];
+
+		for(var trait in self.targetedTraits){
+			if(extremeList.includes(self.targetedTraits[trait])){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	self.rareCheck = function(){
+		var rareList = ["Belch","Beard","Peach","Emeraldgreen","Missmuffett","Nachocheez","Springcrocus","Violet","Serpent","Caffeine","Baddate","Forgetmenot","Camo","Calicool"];
+
+		for(var trait in self.targetedTraits){
+			if(rareList.includes(self.targetedTraits[trait])){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	self.uncommonCheck = function(){
+		var uncommonList = [""];
+	}
 	self._mutationFindMatch = function(scoredCat, catDictionary, scores, treshold, missing){
 		var partner = undefined;
 		var extreme = false;
+		var targetScore = 0.12;
+		if(self.extremeCheck()){
+			extreme = true;
+		}
 
+		if(self.rareCheck()){
+			targetScore = 0.03;
+		}
+		//targetScore = 0.03;
 		if(missing == 0){
 			
 			targetTrait = self._decideTargetTrait(scoredCat, self.targetedTraits, catDictionary);
 			console.log(targetTrait);
 			console.log(catDictionary[scoredCat.id].chanceOfTrait);
 			traitScoreList = self.singleTraitScoreDictionary[targetTrait];
+			//console.log(traitScoreList);
 			orderedTraitScoreList = self._unorderedDictionaryToOrderedArrayByScore(traitScoreList);
 			mutationUnordered = self._makeMutationScoreDictionarySingular(catDictionary[scoredCat.id],orderedTraitScoreList, catDictionary);
 			//console.log(mutationUnordered);
@@ -387,9 +424,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			if(mutationOrdered.length != 0){
 
 				partner = catDictionary[mutationOrdered[0][0]];
-				if((partner.chanceOfTrait[targetTrait] > 0.12) || extreme){
+				if((partner.chanceOfTrait[targetTrait] > targetScore) || extreme){
 
-					if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 0.0){
+					if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] >= 0.0){
 
 					} else {
 						partner = undefined;
@@ -423,8 +460,8 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			//console.log(mutationOrdered);
 			if(mutationOrdered.length != 0){
 				partner = catDictionary[mutationOrdered[0][0]];
-				if((partner.chanceOfTrait[targetTrait] > 0.12) || extreme ){
-					if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] > 0.0){
+				if((partner.chanceOfTrait[targetTrait] > targetScore) || extreme ){
+					if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] >= 0.0){
 
 					} else {
 						partner = undefined;

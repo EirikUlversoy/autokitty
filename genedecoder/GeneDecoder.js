@@ -28,7 +28,7 @@ function GeneDecoder(){
 		bodyGeneNames["Selkirk"] = "2";
 		bodyGeneNames["Non-rel_body_3"] = "3";
 		bodyGeneNames["Birman"] = "4";
-		bodyGeneNames["Non-rel_body_5"] = "5";
+		bodyGeneNames["Koladiviya"] = "5";
 		bodyGeneNames["Bobtail"] = "6";
 		bodyGeneNames["Non-rel_body_7"] = "7";
 		bodyGeneNames["Pixiebob"] = "8";
@@ -42,7 +42,7 @@ function GeneDecoder(){
 		bodyGeneNames["Ragdoll"] = "g";
 		bodyGeneNames["Norwegianforest"] = "h";
 		bodyGeneNames["Non-rel_body_i"] = "i";
-		bodyGeneNames["Non-rel_body_j"] = "j";
+		bodyGeneNames["Highlander"] = "j";
 		bodyGeneNames["Non-rel_body_k"] = "k";
 		bodyGeneNames["Non-rel_body_m"] = "m";
 		bodyGeneNames["Mainecoon"] = "n";
@@ -121,7 +121,7 @@ function GeneDecoder(){
 		colorEyesGeneNames["Non-rel_eyecolor_v"] = "v";
 		colorEyesGeneNames["Non-rel_eyecolor_w"] = "w";
 
-		eyesGeneNames["Non-rel_eyeshape_1"] = "1";
+		eyesGeneNames["Swarley"] = "1";
 		eyesGeneNames["Wonky"] = "2";
 		eyesGeneNames["Serpent"] = "3";
 		eyesGeneNames["Googly"] = "4";
@@ -137,7 +137,7 @@ function GeneDecoder(){
 		eyesGeneNames["Slyboots"] = "e";
 		eyesGeneNames["Wiley"] = "f";
 		eyesGeneNames["Stunned"] = "g";
-		eyesGeneNames["Non-rel_eyeshape_h"] = "h";
+		eyesGeneNames["Chameleon"] = "h";
 		eyesGeneNames["Alien"] = "i";
 		eyesGeneNames["Fabulous"] = "j";
 		eyesGeneNames["Raisedbrow"] = "k";
@@ -145,11 +145,11 @@ function GeneDecoder(){
 		eyesGeneNames["Non-rel_eyeshape_n"] = "n";
 		eyesGeneNames["Sass"] = "o";
 		eyesGeneNames["Sweetmeloncakes"] = "p";
-		eyesGeneNames["Non-rel_eyeshape_q"] = "q";
+		eyesGeneNames["Oceanid"] = "q";
 		eyesGeneNames["Wingtips"] = "r";
 		eyesGeneNames["Non-rel_eyeshape_s"] = "s";
 		eyesGeneNames["Buzzed"] = "t";
-		eyesGeneNames["Non-rel_eyeshape_u"] = "u";
+		eyesGeneNames["Bornwithit"] = "u";
 		eyesGeneNames["Non-rel_eyeshape_v"] = "v";
 		eyesGeneNames["Non-rel_eyeshape_w"] = "w";
 
@@ -652,7 +652,7 @@ function GeneDecoder(){
 		KaiGroups = self.getKaiGroups(kitten_1);
 		KaiGroups_2 = self.getKaiGroups(kitten_2);
 		var mutationPoints = 0.0;
-
+		var mutations = 0;
 		for(var KaiGroupNumber in KaiGroups){
 			KaiGroup = KaiGroups[KaiGroupNumber];
 			geneArray = self.outputGroupAttribute(KaiGroup, nameLookup[KaiGroupNumber]);
@@ -661,7 +661,18 @@ function GeneDecoder(){
 				geneInInteger = invert(self.b58Dict)[gene];
 				otherCatGene = KaiGroups_2[KaiGroupNumber][genenumber];
 				secondGeneInInteger = invert(self.b58Dict)[otherCatGene]
-				if(isEven(geneInInteger)){
+
+				var numberCheck = ((genenumber == 3) && (KaiGroupNumber >= 2));
+				if(secondGeneInInteger > 15 && numberCheck){
+					//mutationPoints += 0.33;
+					mutations += 1;
+				} else if(secondGeneInInteger > 23 && numberCheck){
+					//mutationPoints += 0.33;
+					mutations += 1;
+				} else if(secondGeneInInteger > 27 && numberCheck){
+					//mutationPoints += 0.33;
+					mutations += 1;
+				} else if(isEven(geneInInteger)){
 					if(secondGeneInInteger == (geneInInteger+1)){
 						if(KaiGroupNumber >= 2){
 
@@ -674,18 +685,8 @@ function GeneDecoder(){
 							} else if (genenumber == 3){
 								mutationPoints += 0.33;
 							}	
-							
-							if(secondGeneInInteger > 15){
-								mutationPoints += 0.33;
-							}
 
-							if(secondGeneInInteger > 23){
-								mutationPoints += 0.33;
-							}
 
-							if(secondGeneInInteger > 27){
-								mutationPoints += 0.33;
-							}
 						}
 								
 						//mutationPoints += 0.25*(1+genenumber);
@@ -706,21 +707,13 @@ function GeneDecoder(){
 							} else if (genenumber == 3){
 								mutationPoints += 0.33;
 							}
-
-							if(secondGeneInInteger > 15){
-								mutationPoints += 0.33;
-							}
-
-							if(secondGeneInInteger > 23){
-								mutationPoints += 0.33;
-							}
-
-							if(secondGeneInInteger > 27){
-								mutationPoints += 0.33;
-							}
 						}
 						//mutationPoints += 0.25*(1+genenumber);
 					}
+				}
+
+				if(mutations < 1 && kitten_1.generation > 0){
+					mutationPoints = 0;
 				}
 
 			}

@@ -94,6 +94,7 @@ function setupDictionaries(){
 
 	PremierMutations["Norwegianforest"] = ["Savannah","Selkirk"];
 	PremierMutations["Pumpkin"] = ["Thundergrey","Gold"];
+	PremierMutations["Chameleon"] = ["Swarley","Wonky"];
 	PremierMutations["Cloudwhite"] = ["Shadowgrey","Salmon"];
 	PremierMutations["Daffodil"] = ["Belleblue","Sandalwood"];
 	PremierMutations["Cheeky"] = ["Wasntme","Whixtensions"];
@@ -107,6 +108,7 @@ function setupDictionaries(){
 	PremierMutations["Elk"] = ["Wild_3","Wild_4"];
 	PremierMutations["Starstruck"] = ["Wuvme","Gerbil"];
 	
+	PremierMutations["Highlander"] = ["Koladiviya","Bobtail"]
 	PremierMutations["Dippedcone"] = ["Leopard","Camo"];
 	PremierMutations["Fabulous"] = ["Otaku","Simple"];
 	PremierMutations["Oldlace"] = ["Cottoncandy","Mauveover"];
@@ -149,6 +151,7 @@ function setupDictionaries(){
 
 	let	SecondaryMutations = {}
 	SecondaryMutations["Babypuke"] = ["Pumpkin","Limegreen"];
+	SecondaryMutations["Oceanid"] = ["Chameleon","Alien"];
 	SecondaryMutations["Seafoam"] = ["Daffodil","Flamingo"];
 	SecondaryMutations["Yokel"] = ["Cheeky","Starstruck"];
 
@@ -197,17 +200,28 @@ function mainFunction (calls){
 	var sixPercent = checkForSixPercent(args);
 	var tryAllGen1 = false;
 	var tryAllGen0 = false;
+	var pureMutaGen1 = false;
 	var pureMutaGen2 = false;
+	var pureMutaGen3 = false;
 	var oneGen1 = false;
 	var oneGen0 = false;
 	if(args[2] == "all-gen1"){
 		tryAllGen1 = true;
 	}
 
+	if(args[2] == "all-gen1PM"){
+		pureMutaGen1 = true;
+		targeted_traits = ["Jaguar","Lemonade"];
+	}
 	if(args[2] == "all-gen2PM"){
 		pureMutaGen2 = true;
 		targeted_traits = ["Jaguar","Lemonade"];
 
+	}
+
+	if(args[2] == "all-gen3PM"){
+		pureMutaGen3 = true;
+		targeted_traits = ["Jaguar","Lemonade"];
 	}
 	if(args[2] == "all-gen0"){
 		tryAllGen0 = true;
@@ -287,6 +301,18 @@ function mainFunction (calls){
 			console.log("In gen 2 pure muta");
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 			Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 2, 2);
+			Breeder.togglePureMuta();
+			Breeder.advancedBreedingLoop();
+		} else if(pureMutaGen3){
+			console.log("In gen 3 pure muta");
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+			Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 3, 3);
+			Breeder.togglePureMuta();
+			Breeder.advancedBreedingLoop();
+		} else if(pureMutaGen1){
+			console.log("In gen 1 pure muta");
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+			Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 1, 1);
 			Breeder.togglePureMuta();
 			Breeder.advancedBreedingLoop();
 		} else {
@@ -435,9 +461,18 @@ function loopGetUserKittensNAPI(err, res){
 		lowGenCatsOnly = true;
 	}
 
+	if(args[2] == "all-gen1PM"){
+		return Utilities.readKittensFromDisk("kittensGeneration",1,1);
+	}
+
 	if(args[2] == "all-gen2PM"){
 		return Utilities.readKittensFromDisk("kittensGeneration",2,2);
 	}
+
+	if(args[2] == "all-gen3PM"){
+		return Utilities.readKittensFromDisk("kittensGeneration",3,3);
+	}
+
 
 	if(args[3] == "low"){
 		console.log("low gen only");
