@@ -203,7 +203,7 @@ function GeneDecoder(){
 		colorSecondaryGeneNames["Coffee"] = "d";
 		colorSecondaryGeneNames["Lemonade"] = "e";
 		colorSecondaryGeneNames["Chocolate"] = "f";
-		colorSecondaryGeneNames["Non-rel_secondarycolor_g"] = "g";
+		colorSecondaryGeneNames["Butterscotch"] = "g";
 		colorSecondaryGeneNames["Non-rel_secondarycolor_h"] = "h";
 		colorSecondaryGeneNames["Safetyvest"] = "i";
 		colorSecondaryGeneNames["Turtleback"] = "j";
@@ -211,13 +211,13 @@ function GeneDecoder(){
 		colorSecondaryGeneNames["Wolfgrey"] = "m";
 		colorSecondaryGeneNames["Cerulian"] = "n";
 		colorSecondaryGeneNames["Skyblue"] = "o";
-		colorSecondaryGeneNames["Non-rel_secondarycolor_p"] = "p";
+		colorSecondaryGeneNames["Garnet"] = "p";
 		colorSecondaryGeneNames["Non-rel_secondarycolor_q"] = "q";
 		colorSecondaryGeneNames["Non-rel_secondarycolor_r"] = "r";
 		colorSecondaryGeneNames["Royalblue"] = "s";
-		colorSecondaryGeneNames["Non-rel_secondarycolor_t"] = "t";
+		colorSecondaryGeneNames["Mertail"] = "t";
 		colorSecondaryGeneNames["Non-rel_secondarycolor_u"] = "u";
-		colorSecondaryGeneNames["Non-rel_secondarycolor_v"] = "v";
+		colorSecondaryGeneNames["Pearl"] = "v";
 		colorSecondaryGeneNames["Non-rel_secondarycolor_w"] = "w";
 
 
@@ -653,6 +653,9 @@ function GeneDecoder(){
 		KaiGroups_2 = self.getKaiGroups(kitten_2);
 		var mutationPoints = 0.0;
 		var mutations = 0;
+		var possibleMutations = 0;
+
+		var mutationAmountTreshold = kitten_1.generation;
 		for(var KaiGroupNumber in KaiGroups){
 			KaiGroup = KaiGroups[KaiGroupNumber];
 			geneArray = self.outputGroupAttribute(KaiGroup, nameLookup[KaiGroupNumber]);
@@ -661,7 +664,6 @@ function GeneDecoder(){
 				geneInInteger = invert(self.b58Dict)[gene];
 				otherCatGene = KaiGroups_2[KaiGroupNumber][genenumber];
 				secondGeneInInteger = invert(self.b58Dict)[otherCatGene]
-
 				var numberCheck = ((genenumber == 3) && (KaiGroupNumber >= 2));
 				if(secondGeneInInteger > 15 && numberCheck){
 					//mutationPoints += 0.33;
@@ -684,6 +686,7 @@ function GeneDecoder(){
 								mutationPoints += 0.12;
 							} else if (genenumber == 3){
 								mutationPoints += 0.33;
+								//mutationPoints += 0;
 							}	
 
 
@@ -706,13 +709,14 @@ function GeneDecoder(){
 								mutationPoints += 0.12;
 							} else if (genenumber == 3){
 								mutationPoints += 0.33;
+								//mutationPoints += 0;
 							}
 						}
 						//mutationPoints += 0.25*(1+genenumber);
 					}
 				}
 
-				if(mutations < 1 && kitten_1.generation > 0){
+				if(mutations < mutationAmountTreshold){
 					mutationPoints = 0;
 				}
 

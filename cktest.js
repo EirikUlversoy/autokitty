@@ -145,6 +145,7 @@ function setupDictionaries(){
 	PremierMutations["Eclipse"] = ["Parakeet","Cyan"];
 	PremierMutations["Sweetmeloncakes"] = ["Wiley","Stunned"];
 	PremierMutations["Verdigris"] = ["Hintomint","Bananacream"];
+	PremierMutations["Garnet"] = ["Chocolate","Butterscotch"];
 	PremierMutations["Patrickstarfish"] = ["Morningglory","Frosting"];
 	PremierMutations["Daemonhorns"] = ["Wild_f","Wild_g"];
 	PremierMutations["Tongue"] = ["Happygokitty","Soserious"];
@@ -165,7 +166,11 @@ function setupDictionaries(){
 
 	SecondaryMutations["Manx"] = ["Laperm","Persian"];
 	SecondaryMutations["Buzzed"] = ["Sass","Sweetmeloncakes"];
+	SecondaryMutations["Mertail"] = ["Skyblue","Garnet"];
 	SecondaryMutations["Mintmacaron"] = ["Periwinkle","Patrickstarfish"];
+
+	SecondaryMutations["Bornwithit"] = ["Oceanid","Wingtips"];
+	SecondaryMutations["Pearl"] = ["Royalblue","Mertail"];
 
 	mutationDicts = [];
 	mutationDicts.push(PremierMutations);
@@ -200,6 +205,7 @@ function mainFunction (calls){
 	var sixPercent = checkForSixPercent(args);
 	var tryAllGen1 = false;
 	var tryAllGen0 = false;
+	var pureMutaGen0 = false;
 	var pureMutaGen1 = false;
 	var pureMutaGen2 = false;
 	var pureMutaGen3 = false;
@@ -207,6 +213,11 @@ function mainFunction (calls){
 	var oneGen0 = false;
 	if(args[2] == "all-gen1"){
 		tryAllGen1 = true;
+	}
+
+	if(args[2] == "all-gen0PM"){
+		pureMutaGen0 = true;
+		targeted_traits = ["Jaguar","Lemonade"];
 	}
 
 	if(args[2] == "all-gen1PM"){
@@ -313,6 +324,12 @@ function mainFunction (calls){
 			console.log("In gen 1 pure muta");
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 			Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 1, 1);
+			Breeder.togglePureMuta();
+			Breeder.advancedBreedingLoop();
+		} else if(pureMutaGen0){
+			console.log("In gen 0 pure muta");
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+			Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 0, 0);
 			Breeder.togglePureMuta();
 			Breeder.advancedBreedingLoop();
 		} else {
@@ -461,6 +478,10 @@ function loopGetUserKittensNAPI(err, res){
 		lowGenCatsOnly = true;
 	}
 
+	if(args[2] == "all-gen0PM"){
+		return Utilities.readKittensFromDisk("kittensGeneration",0,0);
+	}
+
 	if(args[2] == "all-gen1PM"){
 		return Utilities.readKittensFromDisk("kittensGeneration",1,1);
 	}
@@ -521,8 +542,8 @@ function getCatsLoop(no_catArray){
 
 
 //Test output
-for(v = 0; v <=10; v++){
-	setTimeout(main,7200000*v);
+for(v = 0; v <=100; v++){
+	setTimeout(main,600000*v);
 	console.log("Scheduling: " + v);
 }
 

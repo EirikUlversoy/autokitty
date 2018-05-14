@@ -85,7 +85,7 @@ function outputGeneration(generation){
 	Utilities.saveKittenIdsSpecific(catIDs,generation);
 }
 
-kittens = getAllKittenNumbers(747525);
+kittens = getAllKittenNumbers(749244);
 //kittens = getAllKittenNumbers(40000);
 
 

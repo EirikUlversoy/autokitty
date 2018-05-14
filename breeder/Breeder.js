@@ -343,7 +343,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			self._printFive(mutationOrdered);
 			if( mutationOrdered.length != 0){
 				partner = catDictionary[mutationOrdered[0][0]];
-				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 0.9)){
+				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 0.5)){
 					console.log("is valid?");
 				} else {
 					partner = undefined;
