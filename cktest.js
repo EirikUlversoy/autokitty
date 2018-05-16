@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
-var generations_breeding_upper_limit = 5;
+var generations_breeding_upper_limit = 25;
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
 var promiseLimit = require('promise-limit')
@@ -256,6 +256,12 @@ function mainFunction (calls){
 		targeted_traits = ["Jaguar","Lemonade"];
 	}
 
+	if(args[2] == "fancy"){
+		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Aquamarine"];
+		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Persian"];
+
+	}
+
 	if(args[2] != "all-gen1"){
 	
 	} else {
@@ -337,7 +343,7 @@ function mainFunction (calls){
 			console.log("In normal generational loop");
 			//Breeder.advancedBreedingLoop();
 			
-			for(var x = 2; x <= generations_breeding_upper_limit; x++ ){
+			for(var x = 1; x <= generations_breeding_upper_limit; x++ ){
 				var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 				Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, x, x);
 				console.log("Breeding generation number:" + x);
@@ -505,6 +511,15 @@ function loopGetUserKittensNAPI(err, res){
 		lowGenCatsOnly = true;
 	}
 
+	if(args[2] == "fancy"){
+
+		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",0,20);
+		for(var x = 750000; x < 752833; x++){
+
+			kittens.push(x);
+		}
+		return kittens;
+	}
 	if(args[3] == "one-gen0"){
 		return Utilities.readKittensFromDisk("kittensGeneration",0,0);
 	}

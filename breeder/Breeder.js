@@ -683,7 +683,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.06;
+		var treshold = 0.10;
 		if(self.sixPercent){
 			treshold = 0.06;
 		}
