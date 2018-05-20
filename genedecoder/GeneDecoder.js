@@ -292,7 +292,7 @@ function GeneDecoder(){
 		mouthGeneNames["Non-rel_mouth_5"] = "5";
 		mouthGeneNames["Non-rel_mouth_6"] = "6";
 		mouthGeneNames["Belch"] = "7";
-		mouthGeneNames["Non-rel_mouth_8"] = "8";
+		mouthGeneNames["Rollercoaster"] = "8";
 		mouthGeneNames["Beard"] = "9";
 		mouthGeneNames["Pouty"] = "a";
 		mouthGeneNames["Saycheese"] = "b";
@@ -304,7 +304,7 @@ function GeneDecoder(){
 		mouthGeneNames["Cheeky"] = "h";
 		mouthGeneNames["Starstruck"] = "i";
 		mouthGeneNames["Non-rel_mouth_j"] = "j";
-		mouthGeneNames["Non-rel_mouth_k"] = "k";
+		mouthGeneNames["Ruroh"] = "k";
 		mouthGeneNames["Dali"] = "m";
 		mouthGeneNames["Grimace"] = "n";
 		mouthGeneNames["Non-rel_mouth_o"] = "o";

@@ -120,7 +120,8 @@ function setupDictionaries(){
 	PremierMutations["Koala"] = ["Aquamarine","Nachocheez"];
 	PremierMutations["Bloodred"] = ["Kittencream","Emeraldgreen"];
 	PremierMutations["Trioculus"] = ["Wild_7","Wild_8"];
-	PremierMutations["Secret_k"] = ["Secret_7","Secret_8"]
+	PremierMutations["Secret_k"] = ["Secret_7","Secret_8"];
+	PremierMutations["Ruroh"] = ["Rollercoaster","Belch"];
 
 	PremierMutations["Tigerpunk"] = ["Calicool","Luckystripe"];
 	PremierMutations["Twilightsparkle"] = ["Sapphire","Forgetmenot"];
@@ -138,7 +139,7 @@ function setupDictionaries(){
 	PremierMutations["Laperm"] = ["Munchkin","Sphynx"];
 	PremierMutations["Sass"] = ["Chronic","Slyboots"];
 	PremierMutations["Skyblue"] = ["Coffee","Lemonade"];
-	PremierMutations["Periwinkle"] = ["Azaleablush","Missmuffet"];
+	PremierMutations["Periwinkle"] = ["Azaleablush","Missmuffett"];
 
 	PremierMutations["Persian"] = ["Ragamuffin","Ragdoll"];
 	PremierMutations["Totesbasic_p"] = ["Totesbasic_f","Totesbasic_g"];
@@ -211,6 +212,7 @@ function mainFunction (calls){
 	var pureMutaGen3 = false;
 	var oneGen1 = false;
 	var oneGen0 = false;
+	var oneGen2 = false;
 	if(args[2] == "all-gen1"){
 		tryAllGen1 = true;
 	}
@@ -245,8 +247,12 @@ function mainFunction (calls){
 		oneGen0 = true;
 	}
 
-	if(args[3] == "gen1" || args[3] == "one-gen1"){
-			targeted_traits = SecondaryMutations[args[2]];
+	if(args[3] == "one-gen2" ){
+		oneGen2 = true;
+	}
+
+	if(args[3] == "gen1" || args[3] == "one-gen1" || args[3] == "one-gen2"){
+		targeted_traits = SecondaryMutations[args[2]];
 	} else if(args[3] == "gen0"){
 		targeted_traits = PremierMutations[args[2]];
 		tryAllGen0 = true;
@@ -259,6 +265,32 @@ function mainFunction (calls){
 	if(args[2] == "fancy"){
 		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Aquamarine"];
 		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Persian"];
+
+	}
+
+	if(args[2] == "fancy2"){
+		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Aquamarine"];
+		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Persian"];
+		//targeted_traits = ["Norwegianforest","Thunderstruck","Thicccbrowz","Cyan","Cloudwhite","Skyblue","Icy"];
+		targeted_traits = ["Thunderstruck","Cloudwhite","Skyblue","Icy","Soserious","Cyan","Norwegianforest","Thicccbrowz"];
+		//targeted_traits = ["Cyan","Norwegianforest","Thicccbrowz","Icy","Soserious"];
+		targeted_traits = ["Manx","Babypuke","Onyx","Neckbeard"];
+		//targeted_traits = ["Manx","Hotrod","Babypuke","Neckbeard"];
+
+		//targeted_traits = ["Slyboots","Bloodred","Grimace","Henna","Royalblue"];
+		targeted_traits = ["Cerulian","Wolfgrey"];
+		//targeted_traits = ["Oldlace","Koala"];
+		targeted_traits = ["Henna","Tigerpunk"];
+		//targeted_traits = ["Persian","Laperm"];
+		targeted_traits = ["Camo","Onyx","Sandalwood","Soserious"];
+		targeted_traits = ["Spangled","Baddate","Cloudwhite","Scarlet","Morningglory","Starstruck"];
+		//targeted_traits = ["Stunned","Shadowgrey","Wolfgrey","Granitegrey","Belch","Thundergrey"];
+		targeted_traits = ["Manx","Hotrod","Babypuke","Neckbeard","Onyx"];
+		//targeted_traits = ["Slyboots","Bloodred","Grimace","Henna"];
+		//targeted_traits = ["Pumpkin","Limegreen"];
+		//targeted_traits = ["Dali","Grimace"];
+		//targeted_traits = ["Twilightsparkle","Onyx","Starstruck"];
+		targeted_traits = ["Chocolate","Bananacream","Dippedcone","Frosting","Strawberry"];
 
 	}
 
@@ -339,9 +371,12 @@ function mainFunction (calls){
 			Breeder.togglePureMuta();
 			Breeder.advancedBreedingLoop();
 		} else {
-			//Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 999, 2);
+			/*
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+			Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 999, 2);
+			Breeder.advancedBreedingLoop();
+			*/
 			console.log("In normal generational loop");
-			//Breeder.advancedBreedingLoop();
 			
 			for(var x = 1; x <= generations_breeding_upper_limit; x++ ){
 				var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
@@ -514,14 +549,33 @@ function loopGetUserKittensNAPI(err, res){
 	if(args[2] == "fancy"){
 
 		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",0,20);
-		for(var x = 750000; x < 752833; x++){
+		for(var x = 750000; x < (752991+offset); x++){
 
 			kittens.push(x);
 		}
 		return kittens;
 	}
+
+	if(args[2] == "fancy2"){
+
+		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",1,20);
+		
+		for(var x = 760712; x < (762362+offset); x++){
+
+			kittens.push(x);
+		}
+		return kittens;
+	}
+
 	if(args[3] == "one-gen0"){
 		return Utilities.readKittensFromDisk("kittensGeneration",0,0);
+	}
+	if(args[3] == "one-gen1"){
+		return Utilities.readKittensFromDisk("kittensGeneration",1,1);
+	}
+
+	if(args[3] == "one-gen2"){
+		return Utilities.readKittensFromDisk("kittensGeneration",2,2);
 	}
 
 	if(lowGenCatsOnly){
@@ -555,10 +609,10 @@ function getCatsLoop(no_catArray){
 	}, Promise.resolve());
 }
 
-
 //Test output
+var offset = -8;
 for(v = 0; v <=100; v++){
-	setTimeout(main,600000*v);
+	setTimeout(main,1200000*v);
 	console.log("Scheduling: " + v);
 }
 
@@ -567,6 +621,7 @@ function main(){
 	if(api_calls_on){
 		loopGetUserKitties().then(mainFunction);
 	} else {
+		offset += 8;
 		kittens = loopGetUserKittensNAPI();
 		console.log("There are: " + kittens.length + "kitten IDS stored on disk");
 		getOwnershipOfCatsLoop(kittens).then(getCatsLoop).then(mainFunction);		
