@@ -295,7 +295,7 @@ function mainFunction (calls){
 		//targeted_traits = ["Pumpkin","Limegreen"];
 		//targeted_traits = ["Dali","Grimace"];
 		//targeted_traits = ["Twilightsparkle","Onyx","Starstruck"];
-		targeted_traits = ["Chocolate","Bananacream","Dippedcone","Frosting","Strawberry"];
+		targeted_traits = ["Chocolate","Cottoncandy","Dippedcone","Belch","Strawberry","Kittencream"];
 
 	}
 
@@ -559,7 +559,7 @@ function loopGetUserKittensNAPI(err, res){
 	if(args[2] == "fancy"){
 
 		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",0,20);
-		for(var x = 750000; x < (752991+offset); x++){
+		for(var x = 750000; x < (753628+offset); x++){
 
 			kittens.push(x);
 		}
@@ -570,7 +570,7 @@ function loopGetUserKittensNAPI(err, res){
 
 		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",1,20);
 		
-		for(var x = 760712; x < (762923+offset); x++){
+		for(var x = 760712; x < (763628+offset); x++){
 
 			kittens.push(x);
 		}

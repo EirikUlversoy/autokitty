@@ -263,13 +263,13 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		return singleTraitScoreDictionary;
 
 	}
-	self._decideBreedOrderAndPush = function(scoredCat, partner, catDictionary){
+	self._decideBreedOrderAndPush = function(scoredCat, partner, catDictionary, score){
 		if(catDictionary[partner.id].cooldownIndex <= catDictionary[scoredCat.id].cooldownIndex){
-			self.breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
+			self.breedingPairs.push(new BreedingPair(partner.id, scoredCat.id, score));
 			//setTimeout(self.readyToBreedCheckA,300, partner.id, scoredCat.id);
 
 		} else {
-			self.breedingPairs.push(new BreedingPair(scoredCat.id, partner.id));
+			self.breedingPairs.push(new BreedingPair(scoredCat.id, partner.id, score));
 			//setTimeout(self.readyToBreedCheckA,300, partner.id, scoredCat.id);
 
 		}
@@ -376,10 +376,10 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 				Utilities.remove(self.copyOfCats, nCat.id);
 				Utilities.remove(self.cats, nCat.id);
 				Utilities.remove(self.cats, partner.id);
-				self.usedCats.push(nCat.id);
-				self.usedCats.push(partner.id);
+				//self.usedCats.push(nCat.id);
+				//self.usedCats.push(partner.id);
 				//self._removeBreedingPairFromAllTraitLists(nCat, partner, self.targetedTraits);
-				self._decideBreedOrderAndPush(nCat, partner, catDictionary);
+				self._decideBreedOrderAndPush(nCat, partner, catDictionary, mutationOrdered[0][1]);
 
 				console.log("Found match in PURE MUTATION mode!");
 				console.log("Match ids are: " + nCat.id + " and " + partner.id + "!");
@@ -392,6 +392,12 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 				*/
 			}
 		}
+
+		//self.breedingPairs = self._getSortedArrayOfScoredBreedingPairsFromDictionary(self.breedingPairs);
+		self.breedingPairs.sort(Comparators.keyComparator("score"));
+
+		self.breedingPairs = self.breedingPairs.slice(0,5);
+		console.log(self.breedingPairs);
 		
 	}
 	self.extremeCheck = function(){
@@ -926,9 +932,10 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	    return true;
 	}
 	//Tuple describing a breeding pair
-	function BreedingPair(id1, id2){
+	function BreedingPair(id1, id2, score){
 		this.id1 = id1;
 		this.id2 = id2;
+		this.score = score;
 	}
 
 	self.getCatsWithTargetTraits = function(){
