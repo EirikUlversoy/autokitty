@@ -502,6 +502,22 @@ function getOwnershipOfCatsLoop(cats){
 	}, Promise.resolve());
 }
 
+function doClockFilterWork(cat,address){
+	if(address == contract_address){
+		allFilteredCats.push(cat);
+		console.log(cat);
+	}
+
+}
+
+function getClockOwnershipOfCatsLoop(cats){
+	return cats.reduce(function(promise, cat) {
+		return promise.then(function(){
+			return ck_contract.methods.ownerOf(cat).call().then(doClockFilterWork.bind(null, cat));
+		});
+	}, Promise.resolve());
+}
+
 function checkOwnershipOfCats(cats_bad){
 	var promiseArray = [];
 	for(var cat in cats){
@@ -628,7 +644,10 @@ for(v = 0; v <=100; v++){
 
 
 function main(){
-	if(api_calls_on){
+
+	if(args[2] == "clock"){
+		starter();
+	}else if(api_calls_on){
 		loopGetUserKitties().then(mainFunction);
 	} else {
 		offset += 8;
@@ -636,6 +655,27 @@ function main(){
 		console.log("There are: " + kittens.length + "kitten IDS stored on disk");
 		getOwnershipOfCatsLoop(kittens).then(getCatsLoop).then(mainFunction);		
 	}
+}
+
+function buyFromClock(kittenTotal){
+	kittens = []
+
+	for(var x = 750000; x < kittenTotal; x++ ){
+		kittens.push(x);
+	}
+
+	getClockOwnershipOfCatsLoop(kittens).then(buyACat);
+
+}
+
+function buyACat(){
+	catToBidOn = allFilteredCats[0];
+//	ck_contract.methods.bid(catToBidOn)
+	ck_contract.methods.bid(catToBidOn).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.2", "ether"),gasPrice: self.web3.utils.toWei("0.000000018", "ether") });
+
+}
+function starter(){
+	ck_contract.methods.totalSupply().call().then(buyFromClock);
 }
 
 
