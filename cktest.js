@@ -213,6 +213,7 @@ function mainFunction (calls){
 	var oneGen1 = false;
 	var oneGen0 = false;
 	var oneGen2 = false;
+	var brisk = false;
 	if(args[2] == "all-gen1"){
 		tryAllGen1 = true;
 	}
@@ -249,6 +250,10 @@ function mainFunction (calls){
 
 	if(args[3] == "one-gen2" ){
 		oneGen2 = true;
+	}
+
+	if(args[4] == "-brisk"){
+		brisk = true;
 	}
 
 	if(args[3] == "gen1" || args[3] == "one-gen1" || args[3] == "one-gen2"){
@@ -338,14 +343,19 @@ function mainFunction (calls){
 		} else if(oneGen1) {
 			console.log("In try one");
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
-			Breeder.setupBreedingOptions(cats, SecondaryMutations[args[2]], unchained, sixPercent, 1, 1);
+			Breeder.setupBreedingOptions(cats, SecondaryMutations[args[2]], unchained, sixPercent, 1, 1, brisk);
 			Breeder.advancedBreedingLoop();
 		} else if (oneGen0){
 			console.log("In try one gen 0!");
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
-			Breeder.setupBreedingOptions(cats, PremierMutations[args[2]], unchained, sixPercent, 0, 0);
+			Breeder.setupBreedingOptions(cats, PremierMutations[args[2]], unchained, sixPercent, 0, 0, brisk);
 			Breeder.advancedBreedingLoop();
 
+		} else if (oneGen2){
+			console.log("In try one gen 2!");
+			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+			Breeder.setupBreedingOptions(cats, PremierMutations[args[2]], unchained, sixPercent, 2, 2, brisk);
+			Breeder.advancedBreedingLoop();
 		} else if(pureMutaGen2){
 			console.log("In gen 2 pure muta");
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
@@ -380,7 +390,7 @@ function mainFunction (calls){
 			
 			for(var x = 1; x <= generations_breeding_upper_limit; x++ ){
 				var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
-				Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, x, x);
+				Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, x, x, brisk);
 				console.log("Breeding generation number:" + x);
 				Breeder.advancedBreedingLoop();
 			}
@@ -560,7 +570,7 @@ function loopGetUserKittensNAPI(err, res){
 
 		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",1,20);
 		
-		for(var x = 760712; x < (762362+offset); x++){
+		for(var x = 760712; x < (762923+offset); x++){
 
 			kittens.push(x);
 		}
@@ -612,7 +622,7 @@ function getCatsLoop(no_catArray){
 //Test output
 var offset = -8;
 for(v = 0; v <=100; v++){
-	setTimeout(main,1200000*v);
+	setTimeout(main,600000*v);
 	console.log("Scheduling: " + v);
 }
 

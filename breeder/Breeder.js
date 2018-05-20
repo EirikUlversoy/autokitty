@@ -23,7 +23,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self.sixPercent = false;
 	self.generations_breeding_upper_limit = 999;
 	self.generations_breeding_lower_limit = 0;
-
+	self.brisk = false;
 	self.breedingPairs = [];
 
 	self.outputGeneration = function(generation){
@@ -77,7 +77,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self.setupBreedingOptions = function(cats, targetedTraits, 
 								unchained, sixPercent
-								, generations_breeding_upper_limit, generations_breeding_lower_limit){
+								, generations_breeding_upper_limit, generations_breeding_lower_limit, brisk){
 		self.cats = cats;
 		self.targetedTraits = targetedTraits;
 		self.unchained = unchained;
@@ -86,6 +86,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.generations_breeding_lower_limit = generations_breeding_lower_limit;
 		self.breedingPairScores = [];
 		self.breedingPairs = [];
+		if(brisk != undefined){
+			self.brisk = brisk;
+		}
 
 	}
 	self.isReadyFilter = function(){
@@ -261,7 +264,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	}
 	self._decideBreedOrderAndPush = function(scoredCat, partner, catDictionary){
-		if(catDictionary[partner.id].cooldownIndex >= catDictionary[scoredCat.id].cooldownIndex){
+		if(catDictionary[partner.id].cooldownIndex <= catDictionary[scoredCat.id].cooldownIndex){
 			self.breedingPairs.push(new BreedingPair(partner.id, scoredCat.id));
 			//setTimeout(self.readyToBreedCheckA,300, partner.id, scoredCat.id);
 
@@ -302,8 +305,13 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 	self._eitherCatIsBriskOrBetter = function(catA, catB){
-		//return ((catA.cooldownIndex <= 6) || (catB.cooldownIndex <= 6));
-		return true;
+		if(self.brisk){
+			return ((catA.cooldownIndex <= 6) || (catB.cooldownIndex <= 6));
+
+		} else {
+			return true;
+		}
+		//return true;
 	}
 
 	//Takes two cats and compares their matrons and sires. Depends on the last gotten info from calling the
