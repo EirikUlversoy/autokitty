@@ -127,6 +127,7 @@ function setupDictionaries(){
 	PremierMutations["Trioculus"] = ["Wild_7","Wild_8"];
 	PremierMutations["Secret_k"] = ["Secret_7","Secret_8"];
 	PremierMutations["Ruroh"] = ["Rollercoaster","Belch"];
+	PremierMutations["Tinybox"] = ["Mystery_7","Mystery_8"];
 
 	PremierMutations["Tigerpunk"] = ["Calicool","Luckystripe"];
 	PremierMutations["Twilightsparkle"] = ["Sapphire","Forgetmenot"];
@@ -300,7 +301,7 @@ function mainFunction (calls){
 		//targeted_traits = ["Pumpkin","Limegreen"];
 		//targeted_traits = ["Dali","Grimace"];
 		//targeted_traits = ["Twilightsparkle","Onyx","Starstruck"];
-		targeted_traits = ["Chocolate","Cottoncandy","Spock","Belch","Strawberry","Kittencream"];
+		targeted_traits = ["Chocolate","Dippedcone","Whixtensions","Simple","Icy","Cloudwhite"];
 
 	}
 
@@ -569,19 +570,30 @@ function loopGetUserKittensNAPI(number){
 	}
 
 	if(args[2] == "all-gen0PM"){
-		return Utilities.readKittensFromDisk("kittensGeneration",0,0);
+		kittens = Utilities.readKittensFromDisk("kittensGeneration",0,0);
+		for(var x = totalSupply-10000; x < totalSupply; x++){
+
+			kittens.push(x);
+		}
+		return kittens;
 	}
 
 	if(args[2] == "all-gen1PM"){
-		return Utilities.readKittensFromDisk("kittensGeneration",1,1);
+		kittens = Utilities.readKittensFromDisk("kittensGeneration",1,1);
+		for(var x = totalSupply-10000; x < totalSupply; x++){
+
+			kittens.push(x);
+		}
+		return kittens;
 	}
 
 	if(args[2] == "all-gen2PM"){
-		return Utilities.readKittensFromDisk("kittensGeneration",2,2);
-	}
+		kittens = Utilities.readKittensFromDisk("kittensGeneration",2,2);
+		for(var x = totalSupply-10000; x < totalSupply; x++){
 
-	if(args[2] == "all-gen3PM"){
-		return Utilities.readKittensFromDisk("kittensGeneration",3,3);
+			kittens.push(x);
+		}
+		return kittens;
 	}
 
 
@@ -609,7 +621,7 @@ function loopGetUserKittensNAPI(number){
 
 		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",1,20);
 		
-		for(var x = 760712; x < totalSupply; x++){
+		for(var x = totalSupply-10000; x < totalSupply; x++){
 
 			kittens.push(x);
 		}
@@ -617,14 +629,32 @@ function loopGetUserKittensNAPI(number){
 	}
 
 	if(args[3] == "one-gen0"){
-		return Utilities.readKittensFromDisk("kittensGeneration",0,0);
+		var kittens = Utilities.readKittensFromDisk("kittensGeneration",0,0);
+		for(var x = totalSupply-10000; x < totalSupply; x++){
+
+			kittens.push(x);
+		}
+
+		return kittens;
 	}
 	if(args[3] == "one-gen1"){
-		return Utilities.readKittensFromDisk("kittensGeneration",1,1);
+		var kittens = Utilities.readKittensFromDisk("kittensGeneration",1,1);
+				for(var x = totalSupply-10000; x < totalSupply; x++){
+
+			kittens.push(x);
+		}
+
+		return kittens;
 	}
 
 	if(args[3] == "one-gen2"){
-		return Utilities.readKittensFromDisk("kittensGeneration",2,2);
+		var kittens = Utilities.readKittensFromDisk("kittensGeneration",2,2);
+		for(var x = totalSupply-10000; x < totalSupply; x++){
+
+			kittens.push(x);
+		}
+
+		return kittens;
 	}
 
 	if(lowGenCatsOnly){
@@ -659,9 +689,9 @@ function getCatsLoop(no_catArray){
 }
 
 //Test output
-var offset = -8;
-for(v = 0; v <=100; v++){
-	setTimeout(main,600000*v);
+var offset = 0;
+for(v = 0; v <=10; v++){
+	setTimeout(main,1500000*v);
 	console.log("Scheduling: " + v);
 }
 
@@ -695,7 +725,7 @@ function buyFromClock(kittenTotal){
 
 function buyACat(){
 	catToBidOn = allFilteredCatsB[0];
-	allFilteredCatsB = allFilteredCatsB.slice(0,3);
+	//allFilteredCatsB = allFilteredCatsB.slice(0,25);
 //	ck_contract.methods.bid(catToBidOn)
 	console.log(allFilteredCatsB);
 	console.log(catToBidOn);

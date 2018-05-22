@@ -324,7 +324,7 @@ function GeneDecoder(){
 		environmentGeneNames["Non-rel_environment_5"] = "5";
 		environmentGeneNames["Mystery_6"] = "6";
 		environmentGeneNames["Mystery_7"] = "7";
-		environmentGeneNames["Non-rel_environment_8"] = "8";
+		environmentGeneNames["Mystery_8"] = "8";
 		environmentGeneNames["Non-rel_environment_9"] = "9";
 		environmentGeneNames["Mystery_a"] = "a";
 		environmentGeneNames["Non-rel_environment_b"] = "b";
@@ -336,7 +336,7 @@ function GeneDecoder(){
 		environmentGeneNames["Salty"] = "h";
 		environmentGeneNames["Non-rel_environment_i"] = "i";
 		environmentGeneNames["Non-rel_environment_j"] = "j";
-		environmentGeneNames["Non-rel_environment_k"] = "k";
+		environmentGeneNames["Tinybox"] = "k";
 		environmentGeneNames["Non-rel_environment_m"] = "m";
 		environmentGeneNames["Non-rel_environment_n"] = "n";
 		environmentGeneNames["Non-rel_environment_o"] = "o";

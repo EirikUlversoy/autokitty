@@ -276,10 +276,17 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 	self._triggerBreedingPairs = function(breedingPairs){
+		var usedBreedIds = [];
 		for(var bp in breedingPairs){
 			count = bp;
 			bp = breedingPairs[bp];
-			setTimeout(self.readyToBreedCheckA,300*count, bp.id1, bp.id2);
+			if(usedBreedIds.includes(String(bp.id1)) || usedBreedIds.includes(String(bp.id2))){
+
+			} else {
+				setTimeout(self.readyToBreedCheckA,300*count, bp.id1, bp.id2);
+				usedBreedIds.push(String(bp.id1));
+				usedBreedIds.push(String(bp.id2));
+			}
 		}
 	}
 	self._removeBreedingPairFromAllTraitLists = function(scoredCat, partner, targetedTraits){
@@ -379,6 +386,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 				//self.usedCats.push(nCat.id);
 				//self.usedCats.push(partner.id);
 				//self._removeBreedingPairFromAllTraitLists(nCat, partner, self.targetedTraits);
+				nCat = catDictionary[nCat.id];
 				self._decideBreedOrderAndPush(nCat, partner, catDictionary, mutationOrdered[0][1]);
 
 				console.log("Found match in PURE MUTATION mode!");
@@ -396,12 +404,12 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		//self.breedingPairs = self._getSortedArrayOfScoredBreedingPairsFromDictionary(self.breedingPairs);
 		self.breedingPairs.sort(Comparators.keyComparator("score"));
 
-		self.breedingPairs = self.breedingPairs.slice(0,5);
+		self.breedingPairs = self.breedingPairs.slice(0,30);
 		console.log(self.breedingPairs);
 		
 	}
 	self.extremeCheck = function(){
-		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet"];
+		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Mystery_8"];
 
 		for(var trait in self.targetedTraits){
 			if(extremeList.includes(self.targetedTraits[trait])){
@@ -718,7 +726,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.12;
+		var treshold = 0.15;
 		//if(self.generations_breeding_upper_limit < 7){
 		//	treshold -= 0.07;
 		//}
