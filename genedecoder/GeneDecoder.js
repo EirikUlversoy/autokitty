@@ -632,8 +632,22 @@ function GeneDecoder(){
 	function isOdd(n) {
 	   return Math.abs(n % 2) == 1;
 	}
+
+	self.extremeCheck = function(traitA, traitB){
+		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Mystery_8"];
+
+		return (extremeList.includes(traitA) || extremeList.includes(traitB));
+	}
+
+	self.rareCheck = function(traitA, traitB){
+		var rareList = ["Belch","Beard","Peach","Emeraldgreen","Missmuffett","Nachocheez","Springcrocus","Serpent","Caffeine","Baddate","Forgetmenot","Camo","Calicool"];
+
+		return (rareList.includes(traitA) || rareList.includes(traitB));
+	}
+
 	self.mutationMatcher = function(kitten_1, kitten_2){
 
+		var noPointers = ["Happygokitty","Soserious","Chronic","Slyboots","Cottoncandy","Mauveover","Crazy","Thicccbrowz","Wild_f","Wild_g"];
 		var nameLookup = {};
 		nameLookup[0] = unknownGeneNames;
 		nameLookup[1] = secretGeneNames;
@@ -659,8 +673,13 @@ function GeneDecoder(){
 		for(var KaiGroupNumber in KaiGroups){
 			KaiGroup = KaiGroups[KaiGroupNumber];
 			geneArray = self.outputGroupAttribute(KaiGroup, nameLookup[KaiGroupNumber]);
+			attrList = nameLookup[KaiGroupNumber];
 			for(var genenumber in geneArray){
 				gene = KaiGroup[genenumber];
+				var isValid = true;
+				if(noPointers.includes(invert(attrList)[gene])){
+					isValid = false;
+				}
 				geneInInteger = invert(self.b58Dict)[gene];
 				otherCatGene = KaiGroups_2[KaiGroupNumber][genenumber];
 				secondGeneInInteger = invert(self.b58Dict)[otherCatGene]
@@ -676,12 +695,19 @@ function GeneDecoder(){
 					mutations += 1;
 				} else if(isEven(geneInInteger)){
 					if(secondGeneInInteger == (geneInInteger+1)){
-						if(KaiGroupNumber >= 2){
+						if(KaiGroupNumber >= 2 && isValid){
+							modifier = 1;
+							if(self.extremeCheck(gene, otherCatGene)){
+								modifier = 20;
+							}
 
+							if(self.rareCheck(gene, otherCatGene)){
+								modifier = 10;
+							}
 							if(genenumber == 0){
-								mutationPoints += 0.007;
+								mutationPoints += 0.007*(modifier);
 							} else if (genenumber == 1){
-								mutationPoints += 0.03;
+								mutationPoints += 0.03*(modifier/2);
 							} else if (genenumber == 2){
 								mutationPoints += 0.12;
 							} else if (genenumber == 3){
@@ -699,12 +725,21 @@ function GeneDecoder(){
 
 				} else {
 					if(secondGeneInInteger == (geneInInteger-1)){
-						if(KaiGroupNumber >= 2){
+						if(KaiGroupNumber >= 2 && isValid){
+
+							modifier = 1;
+							if(self.extremeCheck(gene, otherCatGene)){
+								modifier = 20;
+							}
+
+							if(self.rareCheck(gene, otherCatGene)){
+								modifier = 10;
+							}
 
 							if(genenumber == 0){
-								mutationPoints += 0.007;
+								mutationPoints += 0.007*(modifier);
 							} else if (genenumber == 1){
-								mutationPoints += 0.03;
+								mutationPoints += 0.03*(modifier/2);
 							} else if (genenumber == 2){
 								mutationPoints += 0.12;
 							} else if (genenumber == 3){

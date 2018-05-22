@@ -404,7 +404,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		//self.breedingPairs = self._getSortedArrayOfScoredBreedingPairsFromDictionary(self.breedingPairs);
 		self.breedingPairs.sort(Comparators.keyComparator("score"));
 
-		self.breedingPairs = self.breedingPairs.slice(0,30);
+		self.breedingPairs = self.breedingPairs.slice(0,10);
 		console.log(self.breedingPairs);
 		
 	}
