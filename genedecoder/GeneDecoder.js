@@ -349,7 +349,7 @@ function GeneDecoder(){
 		environmentGeneNames["Non-rel_environment_v"] = "v";
 		environmentGeneNames["Non-rel_environment_w"] = "w";
 
-		secretGeneNames["Non-rel_secret_1"] = "1";
+		secretGeneNames["Secret_1"] = "1";
 		secretGeneNames["Secret_2"] = "2";
 		secretGeneNames["Non-rel_secret_3"] = "3";
 		secretGeneNames["Non-rel_secret_4"] = "4";
@@ -363,7 +363,7 @@ function GeneDecoder(){
 		secretGeneNames["Non-rel_secret_c"] = "c";
 		secretGeneNames["Non-rel_secret_d"] = "d";
 		secretGeneNames["Secret_e"] = "e";
-		secretGeneNames["Non-rel_secret_f"] = "f";
+		secretGeneNames["Secret_f"] = "f";
 		secretGeneNames["Non-rel_secret_g"] = "g";
 		secretGeneNames["Non-rel_secret_h"] = "h";
 		secretGeneNames["Non-rel_secret_i"] = "i";
@@ -648,7 +648,7 @@ function GeneDecoder(){
 	self.mutationMatcher = function(kitten_1, kitten_2){
 
 		var noPointers = ["Happygokitty","Soserious","Chronic","Slyboots","Cottoncandy","Mauveover","Crazy","Thicccbrowz","Wild_f","Wild_g"];
-		var noPointers = [];
+		//var noPointers = [];
 		var nameLookup = {};
 		nameLookup[0] = unknownGeneNames;
 		nameLookup[1] = secretGeneNames;
@@ -730,11 +730,11 @@ function GeneDecoder(){
 
 							modifier = 1;
 							if(self.extremeCheck(gene, otherCatGene)){
-								modifier = 20;
+								modifier = 50;
 							}
 
 							if(self.rareCheck(gene, otherCatGene)){
-								modifier = 10;
+								modifier = 25;
 							}
 
 							if(genenumber == 0){

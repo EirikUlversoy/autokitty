@@ -97,6 +97,7 @@ function noKittensToHandle(kittens){
 function setupDictionaries(){
 	let PremierMutations = {};
 
+	PremierMutations["Secret_h"] = ["Secret_1","Secret_2"];
 	PremierMutations["Norwegianforest"] = ["Savannah","Selkirk"];
 	PremierMutations["Pumpkin"] = ["Thundergrey","Gold"];
 	PremierMutations["Chameleon"] = ["Swarley","Wonky"];
@@ -690,8 +691,8 @@ function getCatsLoop(no_catArray){
 
 //Test output
 var offset = 0;
-for(v = 0; v <=10; v++){
-	setTimeout(main,1500000*v);
+for(v = 0; v <=100; v++){
+	setTimeout(main,600000*v);
 	console.log("Scheduling: " + v);
 }
 

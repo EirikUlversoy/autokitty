@@ -404,12 +404,12 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		//self.breedingPairs = self._getSortedArrayOfScoredBreedingPairsFromDictionary(self.breedingPairs);
 		self.breedingPairs.sort(Comparators.keyComparator("score"));
 
-		self.breedingPairs = self.breedingPairs.slice(0,30);
+		self.breedingPairs = self.breedingPairs.slice(0,5);
 		console.log(self.breedingPairs);
 		
 	}
 	self.extremeCheck = function(){
-		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Mystery_8"];
+		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Mystery_8","Secret_1"];
 
 		for(var trait in self.targetedTraits){
 			if(extremeList.includes(self.targetedTraits[trait])){
