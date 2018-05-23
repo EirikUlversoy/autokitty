@@ -104,6 +104,7 @@ function noKittensToHandle(kittens){
 function setupDictionaries(){
 	let PremierMutations = {};
 
+	PremierMutations["Secret_h"] = ["Secret_1","Secret_2"];
 	PremierMutations["Norwegianforest"] = ["Savannah","Selkirk"];
 	PremierMutations["Pumpkin"] = ["Thundergrey","Gold"];
 	PremierMutations["Chameleon"] = ["Swarley","Wonky"];
@@ -710,8 +711,8 @@ var forSireAddress = "0xC7af99Fe5513eB6710e6D5f44F9989dA40F27F26";
 
 //Test output
 var offset = 0;
-for(v = 0; v <=10; v++){
-	setTimeout(main,1500000*v);
+for(v = 0; v <=100; v++){
+	setTimeout(main,600000*v);
 	console.log("Scheduling: " + v);
 }
 
