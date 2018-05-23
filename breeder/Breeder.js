@@ -67,10 +67,10 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			}
 
 		}
-
+		/*
 		for(x = 0; x < 25; x++){
 			self.outputGeneration(x);
-		}
+		}*/
 
 		return filteredCatList;
 	}
