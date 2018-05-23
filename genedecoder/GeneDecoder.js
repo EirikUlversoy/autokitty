@@ -648,6 +648,7 @@ function GeneDecoder(){
 	self.mutationMatcher = function(kitten_1, kitten_2){
 
 		var noPointers = ["Happygokitty","Soserious","Chronic","Slyboots","Cottoncandy","Mauveover","Crazy","Thicccbrowz","Wild_f","Wild_g"];
+		var noPointers = [];
 		var nameLookup = {};
 		nameLookup[0] = unknownGeneNames;
 		nameLookup[1] = secretGeneNames;
@@ -698,11 +699,11 @@ function GeneDecoder(){
 						if(KaiGroupNumber >= 2 && isValid){
 							modifier = 1;
 							if(self.extremeCheck(gene, otherCatGene)){
-								modifier = 20;
+								modifier = 50;
 							}
 
 							if(self.rareCheck(gene, otherCatGene)){
-								modifier = 10;
+								modifier = 25;
 							}
 							if(genenumber == 0){
 								mutationPoints += 0.007*(modifier);

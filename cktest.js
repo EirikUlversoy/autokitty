@@ -630,7 +630,7 @@ function loopGetUserKittensNAPI(number){
 
 	if(args[3] == "one-gen0"){
 		var kittens = Utilities.readKittensFromDisk("kittensGeneration",0,0);
-		for(var x = totalSupply-10000; x < totalSupply; x++){
+		for(var x = totalSupply-1000; x < totalSupply; x++){
 
 			kittens.push(x);
 		}
