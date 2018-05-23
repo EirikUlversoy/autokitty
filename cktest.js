@@ -626,6 +626,15 @@ function loopGetUserKittensNAPI(number){
 		return kittens;
 	}
 
+	if(args[2] == "find_sire"){
+		var kittens = Utilities.readKittensFromDisk("kittensGeneration",0,0);
+
+		for(var x = totalSupply - 2000; x < totalSupply; x++){
+			kittens.push(x);
+		}
+
+		return kittens;
+	}
 	if(args[2] == "fancy2"){
 
 		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",1,20);
@@ -786,7 +795,66 @@ function browseSires(kittenTotal){
 function findAppropriateSires(){
 	//By this point cats should be filled with your own cats and sireCats should be filled with all sireable cats. 
 	var generation = 0;
-	
+
+	var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+	Breeder.setupBreedingOptions(sireCats, ["Lemonade","Ruroh"], unchained, sixPercent, 0, 0, false);
+	var generationZeroSires = Breeder.separateByGeneration();
+
+	var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+	Breeder.setupBreedingOptions(cats, ["Lemonade","Ruroh"], unchained, sixPercent, 0, 0, false);
+	var generationZeroMatrons = Breeder.separateByGeneration();
+
+	var GeneDecoder = require("genedecoder")();
+
+	function pureMutationChaser()){
+		var partner = undefined;
+
+		self.copyOfCats = generationZeroSires;
+		for(var cat in generationZeroMatrons){
+			//cat = self.cats[cat];
+			console.log("At cat number:" + cat);
+			nCat = generationZeroMatrons[cat]];
+			mutationUnordered = self._makeMutationScoreDictionarySingularHC(catDictionary[nCat.id], self.copyOfCats, catDictionary);
+			mutationOrdered = self._getSortedArrayOfScoredMutaCatsFromDictionary(mutationUnordered);
+			self._printFive(mutationOrdered);
+			if( mutationOrdered.length != 0){
+				partner = catDictionary[mutationOrdered[0][0]];
+				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 0.5)){
+					console.log("is valid?");
+				} else {
+					partner = undefined;
+				}
+			}
+			if(partner != undefined){
+				Utilities.remove(self.copyOfCats, partner.id);
+				Utilities.remove(self.copyOfCats, nCat.id);
+				Utilities.remove(self.cats, nCat.id);
+				Utilities.remove(self.cats, partner.id);
+				//self.usedCats.push(nCat.id);
+				//self.usedCats.push(partner.id);
+				//self._removeBreedingPairFromAllTraitLists(nCat, partner, self.targetedTraits);
+				nCat = catDictionary[nCat.id];
+				self._decideBreedOrderAndPush(nCat, partner, catDictionary, mutationOrdered[0][1]);
+
+				console.log("Found match in PURE MUTATION mode!");
+				console.log("Match ids are: " + nCat.id + " and " + partner.id + "!");
+				//console.log("Match had the score --> : " + scoredCat.score + " , " + scores[partner.id].score);
+				/*
+				var bpscore = [];
+				bpscore.push(scoredCat.score);
+				bpscore.push(scores[partner.id].score);
+				self.breedingPairScores.push(bpscore);
+				*/
+			}
+		}
+
+		//self.breedingPairs = self._getSortedArrayOfScoredBreedingPairsFromDictionary(self.breedingPairs);
+		self.breedingPairs.sort(Comparators.keyComparator("score"));
+
+		self.breedingPairs = self.breedingPairs.slice(0,30);
+		console.log(self.breedingPairs);
+		
+	}
 }
 
 
