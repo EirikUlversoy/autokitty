@@ -1,5 +1,5 @@
 var net = require('net');
-var Web3 = require("Web3");
+var Web3 = require("web3");
 var bs58 = require('bs58');
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Promise = require("bluebird");
