@@ -375,10 +375,11 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			
 			process.on('message', (message) => {
 			  console.log('BP from child');
-			  self.breedingPairs.concat(message.bp);
+			  breedingPairs.push(message.bp);
 			  count += 1;
 			  if(count == 25){
-			  	self._sortBreedingPairs(self.breedingPairs);
+			  	console.log("All reported back!");
+			  	self._sortBreedingPairs(breedingPairs.flat());
 			  }
 
 			});
@@ -398,9 +399,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 	self._sortBreedingPairs  = function(breedingPairs){
-		self.breedingPairs.sort(Comparators.keyComparator("score"));
+		breedingPairs.sort(Comparators.keyComparator("score"));
 
-		self.breedingPairs = self.breedingPairs.slice(0,10);
+		self.breedingPairs = breedingPairs.slice(0,10);
 		console.log(self.breedingPairs);
 	}
 	self._pureMutationChaser = function(catDictionary){
