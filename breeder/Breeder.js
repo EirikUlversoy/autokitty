@@ -367,7 +367,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		var portionedCats = Utilities.chunkify(copyOfCats,25);
 
 		var breedingPairs = [];
-		
+		var count = 0;
 		const { fork } = require('child_process');
 
 		for (var catPortion in portionedCats){
@@ -375,24 +375,33 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			
 			process.on('message', (message) => {
 			  console.log('BP from child');
-			  breedingPairs.concat(message.bp);
+			  self.breedingPairs.concat(message.bp);
+			  count += 1;
+			  if(count == 25){
+			  	self._sortBreedingPairs(self.breedingPairs);
+			  }
+
 			});
 			catPortion = portionedCats[catPortion];
 
 			process.send({catPortion, copyOfCats, catDictionary, GeneDecoder});
 		}
 
-		console.log(breedingPairs);
-		self.breedingPairs = breedingPairs;
+		console.log(self.breedingPairs);
+		//self.breedingPairs = breedingPairs;
 
 		// receive message from master process
 
 
+		
+		
+	}
+
+	self._sortBreedingPairs  = function(breedingPairs){
 		self.breedingPairs.sort(Comparators.keyComparator("score"));
 
 		self.breedingPairs = self.breedingPairs.slice(0,10);
 		console.log(self.breedingPairs);
-		
 	}
 	self._pureMutationChaser = function(catDictionary){
 		var partner = undefined;
