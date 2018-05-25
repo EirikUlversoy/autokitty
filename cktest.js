@@ -1,5 +1,6 @@
 var CKClient = require("ckclient")();
 var net = require('net');
+const os = require('os');
 var upper_wallet_address = "0x68b42e44079D1d0A4a037e8c6eCd62c48967e69f";
 var Web3 = require("web3");
 var fs = require("fs");
