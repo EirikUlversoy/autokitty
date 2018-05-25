@@ -8,7 +8,14 @@ var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
 var generations_breeding_upper_limit = 25;
-var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
+
+if (os.platform() == "linux") {
+    var web3 = new Web3(new Web3.providers.IpcProvider('~/.ethereum/geth.ipc', net));
+} else {
+    var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
+}
+
+//var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
 var promiseLimit = require('promise-limit')
 
