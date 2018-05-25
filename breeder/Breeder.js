@@ -379,7 +379,8 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			  count += 1;
 			  if(count == 25){
 			  	console.log("All reported back!");
-			  	self._sortBreedingPairs(breedingPairs.flat());
+			  	self._sortBreedingPairs(breedingPairs.reduce((acc, val) => acc.concat(val), []);
+			  		);
 			  }
 
 			});
