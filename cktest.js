@@ -302,7 +302,7 @@ function mainFunction (calls){
 		//targeted_traits = ["Pumpkin","Limegreen"];
 		//targeted_traits = ["Dali","Grimace"];
 		//targeted_traits = ["Twilightsparkle","Onyx","Starstruck"];
-		targeted_traits = ["Chocolate","Dippedcone","Whixtensions","Simple","Icy","Cloudwhite"];
+		targeted_traits = ["Chocolate","Dippedcone","Icy","Belch","Mintgreen"];
 
 	}
 
@@ -363,6 +363,40 @@ function mainFunction (calls){
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 			Breeder.setupBreedingOptions(cats, PremierMutations[args[2]], unchained, sixPercent, 2, 2, brisk);
 			Breeder.advancedBreedingLoop();
+		} else if(args[2] == "diamondchase"){
+			console.log("In diamond chase (random)");
+			var gen = 0;
+			if(args[3] == "1"){
+				gen = 1;
+			} else if (args[3] == "2"){
+				gen = 2;
+			} else if (args[3] == "0") {
+				gen = 0;
+			} else if (args[3] == "3"){
+				gen = 3;
+			} else if (args[3] == "4"){
+				gen = 4;
+			} else if (args[3] == "5"){
+				gen = 5;
+			} else if(args[3] == "6"){
+				gen = 6;
+			} else if (args[3] == "7"){
+				gen = 7;
+			} else if (args[3] == "8"){
+				gen = 8;
+			} else if (args[3] == "9"){
+				gen = 9;
+			}
+			console.log("Breed gen: " + gen);
+			var Breeder = require("breeder")(upper_wallet_address, web3, ck_contract);
+			var targets =  ["Non-rel_pattern_7","Spangled"]; 
+			if(args[4] != undefined){
+				targets = ["Non-rel_pattern_k","Dippedcone"];
+			}
+			Breeder.setupBreedingOptions(cats, targets, true, sixPercent, gen, gen, brisk);
+			//Breeder.togglePureMuta();
+			Breeder.advancedBreedingLoop();
+
 		} else if(pureMutaGen2){
 			console.log("In gen 2 pure muta");
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
@@ -648,9 +682,42 @@ function loopGetUserKittensNAPI(number){
 		return kittens;
 	}
 
+	if(args[2] == "diamondchase"){
+		var kittens = [];
+		if(args[3] == "0"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",0,0);
+		} else if (args[3] == "1"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",1,1);
+		} else if (args[3] == "2"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",2,2);
+		} else if (args[3] == "3"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",3,3);
+		} else if (args[3] == "4"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",4,4);
+		} else if (args[3] == "5"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",5,5);
+		} else if (args[3] == "6"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",6,6);
+
+		} else if (args[3] == "7"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",7,7);
+		} else if (args[3] == "8"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",8,8);
+		} else if (args[3] == "9"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",9,9);
+		}
+		
+		for(var x = totalSupply-2000; x < totalSupply; x++){
+			kittens.push(x);
+		}
+
+		return kittens;
+	}
+
+
 	if(args[3] == "one-gen2"){
 		var kittens = Utilities.readKittensFromDisk("kittensGeneration",2,2);
-		for(var x = totalSupply-10000; x < totalSupply; x++){
+		for(var x = totalSupply-1000; x < totalSupply; x++){
 
 			kittens.push(x);
 		}
@@ -716,7 +783,7 @@ function kittenTotalInterjection(){
 function buyFromClock(kittenTotal){
 	kittens = []
 	console.log(kittenTotal);
-	for(var x = 750000; x < kittenTotal; x++ ){
+	for(var x = kittenTotal-50; x < kittenTotal; x++ ){
 		kittens.push(x);
 	}
 
@@ -725,15 +792,15 @@ function buyFromClock(kittenTotal){
 }
 
 function buyACat(){
-	catToBidOn = allFilteredCatsB[0];
-	//allFilteredCatsB = allFilteredCatsB.slice(0,25);
+	//catToBidOn = allFilteredCatsB[0];
+	//allFilteredCatsB = allFilteredCatsB.slice(0,5);
 //	ck_contract.methods.bid(catToBidOn)
 	console.log(allFilteredCatsB);
-	console.log(catToBidOn);
+	//console.log(catToBidOn);
 	//console.log(sale_contract.methods);
 	for(var clockCat in allFilteredCatsB){
 		console.log(Object.prototype.toString.call(allFilteredCatsB[clockCat]));
-		sale_contract.methods.bid(allFilteredCatsB[clockCat]).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.2", "ether"),gasPrice: web3.utils.toWei("0.000000018", "ether"),gas:1000000 });
+		sale_contract.methods.bid(allFilteredCatsB[clockCat]).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.8", "ether"),gasPrice: web3.utils.toWei("0.000000050", "ether"),gas:1000000 });
 	}
 	//sale_contract.methods.bid(catToBidOn).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.2", "ether"),gasPrice: web3.utils.toWei("0.000000018", "ether") });
 

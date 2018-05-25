@@ -60,7 +60,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 			if(self.cats[kitten].generation <= self.generations_breeding_upper_limit){
 				if(self.cats[kitten].generation >= self.generations_breeding_lower_limit){
-					//self.o[self.cats[kitten].generation].push(self.cats[kitten]);
+					self.o[self.cats[kitten].generation].push(self.cats[kitten]);
 					filteredCatList.push(self.cats[kitten]);
 				}
 
@@ -359,6 +359,41 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			}
 		}
 	}
+
+	self._pureMutationChaserMulti = function(catDictionary){
+		var partner = undefined;
+
+		var copyOfCats = self.cats.slice();
+		var portionedCats = Utilities.chunkify(copyOfCats,25);
+
+		var breedingPairs = [];
+		
+		const { fork } = require('child_process');
+
+		for (var catPortion in portionedCats){
+			const process = fork('breeder/processCats.js');
+			
+			process.on('message', (message) => {
+			  console.log('BP from child');
+			  breedingPairs.concat(message.bp);
+			});
+			catPortion = portionedCats[catPortion];
+
+			process.send({catPortion, copyOfCats, catDictionary, GeneDecoder});
+		}
+
+		console.log(breedingPairs);
+		self.breedingPairs = breedingPairs;
+
+		// receive message from master process
+
+
+		self.breedingPairs.sort(Comparators.keyComparator("score"));
+
+		self.breedingPairs = self.breedingPairs.slice(0,10);
+		console.log(self.breedingPairs);
+		
+	}
 	self._pureMutationChaser = function(catDictionary){
 		var partner = undefined;
 
@@ -372,7 +407,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			self._printFive(mutationOrdered);
 			if( mutationOrdered.length != 0){
 				partner = catDictionary[mutationOrdered[0][0]];
-				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 0.5)){
+				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] >= 0) && (nCat.id != partner.id)){
 					console.log("is valid?");
 				} else {
 					partner = undefined;
@@ -404,12 +439,12 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		//self.breedingPairs = self._getSortedArrayOfScoredBreedingPairsFromDictionary(self.breedingPairs);
 		self.breedingPairs.sort(Comparators.keyComparator("score"));
 
-		self.breedingPairs = self.breedingPairs.slice(0,5);
+		self.breedingPairs = self.breedingPairs.slice(0,10);
 		console.log(self.breedingPairs);
 		
 	}
 	self.extremeCheck = function(){
-		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Mystery_8","Secret_1"];
+		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Mystery_8","Secret_1","Non-rel_pattern_7"];
 
 		for(var trait in self.targetedTraits){
 			if(extremeList.includes(self.targetedTraits[trait])){
@@ -696,6 +731,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 	self._simpleMutaBreedingAlgorithm = function(){
+		var multiTest = true;
 		var catDictionary = {};
 		self.usedCats = [];
 
@@ -704,7 +740,12 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			catDictionary[cat.id] = cat;
 		}
 
-		self._pureMutationChaser(catDictionary);
+		if(multiTest){
+			self._pureMutationChaserMulti(catDictionary);	
+		} else {
+			self._pureMutationChaser(catDictionary);
+		}
+		
 
 		return self.breedingPairs;
 	}
@@ -726,7 +767,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.15;
+		var treshold = 0.06;
 		//if(self.generations_breeding_upper_limit < 7){
 		//	treshold -= 0.07;
 		//}
@@ -922,7 +963,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self.triggerTransactionOnly = function(id, id2, canBreed){
 		if(canBreed){
-			self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000018", "ether") });
+			//self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000018", "ether") });
 			console.log("Breeding: " + id +" and " + id2 + " together!");
 			console.log("(((would have)))");
 		} else {
@@ -964,6 +1005,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 	self.findRandomBreedingPairs = function(){
+		self.separateByGeneration();
 		var listOfUsedCats = [];
 		var newCats = [];
 		var breedingPairs = [];
