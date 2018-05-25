@@ -376,6 +376,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			process.on('message', (message) => {
 			  console.log('BP from child');
 			  breedingPairs.push(message.bp);
+			  console.log("bp is: " message.bp);
 			  count += 1;
 			  if(count == 25){
 			  	console.log("All reported back!");
