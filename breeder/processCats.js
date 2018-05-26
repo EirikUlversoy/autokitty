@@ -115,6 +115,7 @@ async function processCats(catPortion, copyOfCats, catDictionary, GeneDecoder) {
 var internalBreedingPairs = [];
 process.on('message', async (message) => {
   console.log('told to process cats:');
-  internalBreedingPairs = processCats(message.catPortion, message.copyOfCats, message.catDictionary, message.GeneDecoder);
+  const internalBreedingPairs = await processCats(message.catPortion, message.copyOfCats, message.catDictionary, message.GeneDecoder);
+  console.log(internalBreedingPairs);
   process.send({ bp: internalBreedingPairs });
 });

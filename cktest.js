@@ -722,7 +722,18 @@ function loopGetUserKittensNAPI(number){
 		return kittens;
 	}
 
-
+	if(args[2] == "loadPairs"){
+		let text = fs.readFileSync(__dirname + '/kitten_pairs/saved_breeding_pairs.txt', 'utf8');
+		let splitText = text.split("END,");
+		var pairs = [];
+		for(var textEntry in splitText){
+			newSplit = splitText[textEntry].split(",");
+			bp = new BreedingPair(newSplit[0],newSplit[1],newSplit[2]);
+			pairs.push(bp);
+			console.log(bp);
+		}
+		return pairs;
+	}
 	if(args[3] == "one-gen2"){
 		var kittens = Utilities.readKittensFromDisk("kittensGeneration",2,2);
 		for(var x = totalSupply-1000; x < totalSupply; x++){
@@ -766,16 +777,24 @@ function getCatsLoop(no_catArray){
 
 //Test output
 var offset = 0;
-for(v = 0; v <=100; v++){
-	setTimeout(main,600000*v);
+for(v = 0; v <=1; v++){
+	setTimeout(main,60000000*v);
 	console.log("Scheduling: " + v);
 }
-
+function BreedingPair(id1, id2, score){
+	this.id1 = id1;
+	this.id2 = id2;
+	this.score = score;
+}
 
 function main(){
 
 	if(args[2] == "clock"){
 		starter();
+
+	} else if (args[2] == "loadPairs"){
+		var pairs = loopGetUserKittensNAPI(44);
+		breedOnly(pairs);
 	}else if(api_calls_on){
 		loopGetUserKitties().then(mainFunction);
 	} else {
@@ -783,6 +802,11 @@ function main(){
 		ck_contract.methods.totalSupply().call().then(loopGetUserKittensNAPI).then(getOwnershipOfCatsLoop).then(getCatsLoop).then(mainFunction);
 		//getOwnershipOfCatsLoop(kittens).then(getCatsLoop).then(mainFunction);	
 	}
+}
+
+function breedOnly(pairs){
+	var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+	Breeder.directBreedFromInput(pairs);
 }
 
 function kittenTotalInterjection(){

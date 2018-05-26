@@ -1,7 +1,7 @@
 var GeneDecoder = require("genedecoder")();
 var Comparators = require("ak-comparators");
 var Utilities = require("utilities");
-
+var fs = require("fs");
 function Breeder(upper_wallet_address, web3, ck_contract){
 	let self = {};
 
@@ -36,6 +36,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		Utilities.saveKittenIdsSpecific(catIDs,generation);
 	}
 
+	self.directBreedFromInput = function(pairs){
+		self._triggerBreedingPairs(pairs);
+	}
 	self.outputKitKats = function(kitkats){
 		var catIDs = [];
 		if(kitkats != undefined){
@@ -362,12 +365,13 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self._pureMutationChaserMulti = function(catDictionary){
 		var partner = undefined;
-
+		self.bpairs = [];
 		var copyOfCats = self.cats.slice();
 		var portionedCats = Utilities.chunkify(copyOfCats,25);
 
 		var breedingPairs = [];
 		var count = 0;
+		var bpResults = {};
 		const { fork } = require('child_process');
 
 		for (var catPortion in portionedCats){
@@ -376,11 +380,23 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			process.on('message', (message) => {
 			  console.log('BP from child');
 			  breedingPairs.push(message.bp);
-			  console.log("bp is: " message.bp);
+			  console.log("bp is: ");
+			  //console.log(message.bp);
 			  count += 1;
+			  bpResults[count] = message;
+
 			  if(count == 25){
 			  	console.log("All reported back!");
-			  	self._sortBreedingPairs(breedingPairs.reduce((acc, val) => acc.concat(val), []));
+			  	console.log(bpResults);
+			  	var keys = Object.keys(bpResults);
+			  	for(var key in keys){
+			  		let result = bpResults[keys[key]];
+			  		result = result.bp;
+			  		for(var breedingPair in result){
+			  			self.bpairs.push(result[breedingPair])
+			  		}
+			  	}
+			  	self._sortBreedingPairs(self.bpairs);
 			  }
 
 			});
@@ -389,7 +405,6 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			process.send({catPortion, copyOfCats, catDictionary, GeneDecoder});
 		}
 
-		console.log(self.breedingPairs);
 		//self.breedingPairs = breedingPairs;
 
 		// receive message from master process
@@ -404,6 +419,18 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		self.breedingPairs = breedingPairs.slice(0,10);
 		console.log(self.breedingPairs);
+
+		output = [];
+		for (var bp in self.breedingPairs){
+			bp = self.breedingPairs[bp];
+			output.push(bp.id1 + ',' + bp.id2 + ',' + bp.score + 'END' );
+		}
+		fs.writeFile('saved_breeding_pairs.txt', output, (err) => {
+	  	if (err) throw err;
+		})
+
+
+
 	}
 	self._pureMutationChaser = function(catDictionary){
 		var partner = undefined;
