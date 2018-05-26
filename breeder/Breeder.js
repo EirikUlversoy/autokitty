@@ -417,7 +417,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self._sortBreedingPairs  = function(breedingPairs){
 		breedingPairs.sort(Comparators.keyComparator("score"));
 
-		self.breedingPairs = breedingPairs.slice(0,30);
+		self.breedingPairs = breedingPairs.slice(0,100);
 		console.log(self.breedingPairs);
 
 		output = [];
@@ -425,7 +425,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			bp = self.breedingPairs[bp];
 			output.push(bp.id1 + ',' + bp.id2 + ',' + bp.score + 'END' );
 		}
-		fs.writeFile('saved_breeding_pairs.txt', output, (err) => {
+		fs.writeFile('kitten_pairs/saved_breeding_pairs.txt', output, (err) => {
 	  	if (err) throw err;
 		})
 
