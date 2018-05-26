@@ -367,7 +367,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		var partner = undefined;
 		self.bpairs = [];
 		var copyOfCats = self.cats.slice();
-		var portionedCats = Utilities.chunkify(copyOfCats,25);
+		var portionedCats = Utilities.chunkify(copyOfCats,12);
 
 		var breedingPairs = [];
 		var count = 0;
@@ -385,7 +385,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			  count += 1;
 			  bpResults[count] = message;
 
-			  if(count == 25){
+			  if(count == 12){
 			  	console.log("All reported back!");
 			  	console.log(bpResults);
 			  	var keys = Object.keys(bpResults);
