@@ -648,7 +648,7 @@ function GeneDecoder(){
 	self.mutationMatcher = function(kitten_1, kitten_2){
 
 		//var noPointers = ["Happygokitty","Soserious","Chronic","Slyboots","Cottoncandy","Mauveover","Crazy","Thicccbrowz","Wild_f","Wild_g"];
-		//var noPointers = [];
+		var noPointers = [];
 		var nameLookup = {};
 		nameLookup[0] = unknownGeneNames;
 		nameLookup[1] = secretGeneNames;
