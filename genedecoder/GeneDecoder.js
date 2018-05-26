@@ -671,6 +671,7 @@ function GeneDecoder(){
 		var possibleMutations = 0;
 
 		var mutationAmountTreshold = kitten_1.generation;
+		mutationAmountTreshold = 0;
 		for(var KaiGroupNumber in KaiGroups){
 			KaiGroup = KaiGroups[KaiGroupNumber];
 			geneArray = self.outputGroupAttribute(KaiGroup, nameLookup[KaiGroupNumber]);
@@ -686,15 +687,16 @@ function GeneDecoder(){
 				secondGeneInInteger = invert(self.b58Dict)[otherCatGene]
 				var numberCheck = ((genenumber == 3) && (KaiGroupNumber >= 2));
 				if(secondGeneInInteger > 15 && numberCheck){
-					//mutationPoints += 0.33;
-					mutations += 1;
+					mutationPoints += 0.33;
+					//mutations += 1;
 				} else if(secondGeneInInteger > 23 && numberCheck){
-					//mutationPoints += 0.33;
-					mutations += 1;
+					mutationPoints += 0.33;
+					//mutations += 1;
 				} else if(secondGeneInInteger > 27 && numberCheck){
-					//mutationPoints += 0.33;
-					mutations += 1;
-				} else if(isEven(geneInInteger)){
+					mutationPoints += 0.33;
+					//mutations += 1;
+				}
+				if(isEven(geneInInteger)){
 					if(secondGeneInInteger == (geneInInteger+1)){
 						if(KaiGroupNumber >= 2 && isValid){
 							modifier = 1;

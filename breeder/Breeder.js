@@ -1001,7 +1001,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self.triggerTransactionOnly = function(id, id2, canBreed){
 		if(canBreed){
-			//self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000018", "ether") });
+			self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000018", "ether") });
 			console.log("Breeding: " + id +" and " + id2 + " together!");
 			console.log("(((would have)))");
 		} else {
