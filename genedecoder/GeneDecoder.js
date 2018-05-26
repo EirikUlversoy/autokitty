@@ -708,9 +708,9 @@ function GeneDecoder(){
 								modifier = 25;
 							}
 							if(genenumber == 0){
-								mutationPoints += 0.007*(modifier);
+								mutationPoints += 0.007;
 							} else if (genenumber == 1){
-								mutationPoints += 0.03*(modifier/2);
+								mutationPoints += 0.03;
 							} else if (genenumber == 2){
 								mutationPoints += 0.12;
 							} else if (genenumber == 3){
@@ -740,9 +740,9 @@ function GeneDecoder(){
 							}
 
 							if(genenumber == 0){
-								mutationPoints += 0.007*(modifier);
+								mutationPoints += 0.007;
 							} else if (genenumber == 1){
-								mutationPoints += 0.03*(modifier/2);
+								mutationPoints += 0.03;
 							} else if (genenumber == 2){
 								mutationPoints += 0.12;
 							} else if (genenumber == 3){
