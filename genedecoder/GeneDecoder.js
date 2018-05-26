@@ -754,9 +754,10 @@ function GeneDecoder(){
 					}
 				}
 
+				/*
 				if(mutations < mutationAmountTreshold){
 					mutationPoints = 0;
-				}
+				}*/
 
 			}
 		}
