@@ -554,6 +554,14 @@ function GeneDecoder(){
 		}
 	}
 
+	self._isAlmostPureBred = function(geneArray){
+		if(geneArray[1] == geneArray[2] == geneArray[3]){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	self.outputCattributes = function(KaiGroups){
 		var geneArrays = [];
 		for (var group in KaiGroups){
@@ -826,6 +834,59 @@ function GeneDecoder(){
 			kitten.chanceOfTrait = traitChances;
 		}
 		return kitten;
+	}
+	self.notUnknownGroup = function(number){
+		if(number >= 2){
+			return true;
+		}
+	}
+
+	function CatDetails(id, pureScore, pureNames, semiPureScore, semiPureNames, cat){
+		this.id = id;
+		this.pureScore = pureScore;
+		this.pureNames = pureNames;
+		this.semiPureScore = semiPureScore;
+		this.semiPureNames = semiPureNames;
+		this.cat = cat;
+
+	}
+	function float2int (value) {
+	    return value | 0;
+	}
+
+	self.analyzer = function(cats){
+		statsDictionary = {};
+		var catDetailsList = [];
+		for(var cat in cats){
+			var pureBredGroupAmount = 0;
+			var semiPureBredGroupAmount = 0;
+			cat = cats[cat];
+			geneArrays = self.readKitten(cat);
+			for(var gArrayNumber in geneArrays){
+				if(self.notUnknownGroup(gArrayNumber)){
+					gArray = geneArrays[gArrayNumber];
+					if(self._isPureBred(gArray)){
+						pureBredGroupAmount += 1;
+						
+					} else if (self._isAlmostPureBred(gArray)){
+						semiPureBredGroupAmount += 1;
+					}
+				}
+				if((pureBredGroupAmount > 0) || (semiPureBredGroupAmount > 0)){
+					catDetailsList.push(cat.id, pureScore, semiPureScore, cat);
+				}
+				
+			}
+		}
+
+		//Top 10%
+		let threshold = float2int(catDetailsList.length * 0.10);
+
+		catDetailsList.sort(Comparators.keyComparator("pureScore"));
+
+		for(var x = 0; x < threshold; x++){
+			console.log("")
+		}
 	}
 
 	self.statistics = function(cats, place){
