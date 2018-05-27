@@ -1,5 +1,5 @@
 var net = require('net');
-var Web3 = require("Web3");
+var Web3 = require("web3");
 var bs58 = require('bs58');
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Promise = require("bluebird");
@@ -655,8 +655,8 @@ function GeneDecoder(){
 
 	self.mutationMatcher = function(kitten_1, kitten_2){
 
-		var noPointers = ["Happygokitty","Soserious","Chronic","Slyboots","Cottoncandy","Mauveover","Crazy","Thicccbrowz","Wild_f","Wild_g"];
-		//var noPointers = [];
+		//var noPointers = ["Happygokitty","Soserious","Chronic","Slyboots","Cottoncandy","Mauveover","Crazy","Thicccbrowz","Wild_f","Wild_g"];
+		var noPointers = [];
 		var nameLookup = {};
 		nameLookup[0] = unknownGeneNames;
 		nameLookup[1] = secretGeneNames;
@@ -679,6 +679,7 @@ function GeneDecoder(){
 		var possibleMutations = 0;
 
 		var mutationAmountTreshold = kitten_1.generation;
+		mutationAmountTreshold = 0;
 		for(var KaiGroupNumber in KaiGroups){
 			KaiGroup = KaiGroups[KaiGroupNumber];
 			geneArray = self.outputGroupAttribute(KaiGroup, nameLookup[KaiGroupNumber]);
@@ -694,15 +695,16 @@ function GeneDecoder(){
 				secondGeneInInteger = invert(self.b58Dict)[otherCatGene]
 				var numberCheck = ((genenumber == 3) && (KaiGroupNumber >= 2));
 				if(secondGeneInInteger > 15 && numberCheck){
-					//mutationPoints += 0.33;
-					mutations += 1;
+					mutationPoints += 0.33;
+					//mutations += 1;
 				} else if(secondGeneInInteger > 23 && numberCheck){
-					//mutationPoints += 0.33;
-					mutations += 1;
+					mutationPoints += 0.33;
+					//mutations += 1;
 				} else if(secondGeneInInteger > 27 && numberCheck){
-					//mutationPoints += 0.33;
-					mutations += 1;
-				} else if(isEven(geneInInteger)){
+					mutationPoints += 0.33;
+					//mutations += 1;
+				}
+				if(isEven(geneInInteger)){
 					if(secondGeneInInteger == (geneInInteger+1)){
 						if(KaiGroupNumber >= 2 && isValid){
 							modifier = 1;
@@ -714,9 +716,9 @@ function GeneDecoder(){
 								modifier = 25;
 							}
 							if(genenumber == 0){
-								mutationPoints += 0.007*(modifier);
+								mutationPoints += 0.007;
 							} else if (genenumber == 1){
-								mutationPoints += 0.03*(modifier/2);
+								mutationPoints += 0.03;
 							} else if (genenumber == 2){
 								mutationPoints += 0.12;
 							} else if (genenumber == 3){
@@ -746,9 +748,9 @@ function GeneDecoder(){
 							}
 
 							if(genenumber == 0){
-								mutationPoints += 0.007*(modifier);
+								mutationPoints += 0.007;
 							} else if (genenumber == 1){
-								mutationPoints += 0.03*(modifier/2);
+								mutationPoints += 0.03;
 							} else if (genenumber == 2){
 								mutationPoints += 0.12;
 							} else if (genenumber == 3){
@@ -760,9 +762,10 @@ function GeneDecoder(){
 					}
 				}
 
+				/*
 				if(mutations < mutationAmountTreshold){
 					mutationPoints = 0;
-				}
+				}*/
 
 			}
 		}

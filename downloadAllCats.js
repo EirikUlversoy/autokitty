@@ -1,4 +1,3 @@
-var Utilities = require("utilities");
 var Web3 = require('web3');
 var net = require('net');
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
@@ -52,7 +51,7 @@ function doWork(id, kitten){
 	kitten.id = id;
 	kitten.chanceOfTrait = {};
 	if(kitten.genes){
-		if(!Utilities.contains(cats, kitten)){
+		if(!contains(cats, kitten)){
 			cats.push(kitten);
 		}
 	}
@@ -74,6 +73,10 @@ function separateByGeneration(){
 		outputGeneration(x);
 	}
 }
+function contains(arr, x) {
+    	return arr.filter(function(elem) { return elem.id == x.id }).length > 0;
+}
+
 
 function outputGeneration(generation){
 	var catIDs = [];
@@ -82,8 +85,18 @@ function outputGeneration(generation){
 		catIDs.push(theCats[cat]);
 	}
 
-	Utilities.saveKittenIdsSpecific(catIDs,generation);
+	saveKittenIdsSpecific(catIDs,generation);
 }
+
+function saveKittenIdsSpecific(kittens, generation){
+		output = [];
+		for (var kitten in kittens){
+			output.push(kittens[kitten].id);
+		}
+		fs.writeFile('kittens'+'Generation'+generation+'.txt', output, (err) => {
+	  	if (err) throw err;
+	  	//console.log('It\'s saved!');
+	});}
 
 kittens = getAllKittenNumbers(760712);
 //kittens = getAllKittenNumbers(40000);

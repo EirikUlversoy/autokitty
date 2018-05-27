@@ -1,14 +1,22 @@
 var CKClient = require("ckclient")();
 var net = require('net');
+const os = require('os');
 var upper_wallet_address = "0x68b42e44079D1d0A4a037e8c6eCd62c48967e69f";
-var Web3 = require("Web3");
+var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
 var generations_breeding_upper_limit = 25;
-var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
+
+if (os.platform() == "linux") {
+    var web3 = new Web3(new Web3.providers.IpcProvider('/root/.ethereum/geth.ipc', net));
+} else {
+    var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
+}
+
+//var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
 var promiseLimit = require('promise-limit')
 
@@ -309,7 +317,7 @@ function mainFunction (calls){
 		//targeted_traits = ["Pumpkin","Limegreen"];
 		//targeted_traits = ["Dali","Grimace"];
 		//targeted_traits = ["Twilightsparkle","Onyx","Starstruck"];
-		targeted_traits = ["Chocolate","Dippedcone","Whixtensions","Simple","Icy","Cloudwhite"];
+		targeted_traits = ["Chocolate","Dippedcone","Icy","Belch","Mintgreen"];
 
 	}
 
@@ -370,6 +378,40 @@ function mainFunction (calls){
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 			Breeder.setupBreedingOptions(cats, PremierMutations[args[2]], unchained, sixPercent, 2, 2, brisk);
 			Breeder.advancedBreedingLoop();
+		} else if(args[2] == "diamondchase"){
+			console.log("In diamond chase (random)");
+			var gen = 0;
+			if(args[3] == "1"){
+				gen = 1;
+			} else if (args[3] == "2"){
+				gen = 2;
+			} else if (args[3] == "0") {
+				gen = 0;
+			} else if (args[3] == "3"){
+				gen = 3;
+			} else if (args[3] == "4"){
+				gen = 4;
+			} else if (args[3] == "5"){
+				gen = 5;
+			} else if(args[3] == "6"){
+				gen = 6;
+			} else if (args[3] == "7"){
+				gen = 7;
+			} else if (args[3] == "8"){
+				gen = 8;
+			} else if (args[3] == "9"){
+				gen = 9;
+			}
+			console.log("Breed gen: " + gen);
+			var Breeder = require("breeder")(upper_wallet_address, web3, ck_contract);
+			var targets =  ["Non-rel_pattern_7","Spangled"]; 
+			if(args[4] != undefined){
+				targets = ["Non-rel_pattern_k","Dippedcone"];
+			}
+			Breeder.setupBreedingOptions(cats, targets, true, sixPercent, gen, gen, brisk);
+			//Breeder.togglePureMuta();
+			Breeder.advancedBreedingLoop();
+
 		} else if(pureMutaGen2){
 			console.log("In gen 2 pure muta");
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
@@ -665,9 +707,53 @@ function loopGetUserKittensNAPI(number){
 		return kittens;
 	}
 
+	if(args[2] == "diamondchase"){
+		var kittens = [];
+		if(args[3] == "0"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",0,0);
+		} else if (args[3] == "1"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",1,1);
+		} else if (args[3] == "2"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",2,2);
+		} else if (args[3] == "3"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",3,3);
+		} else if (args[3] == "4"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",4,4);
+		} else if (args[3] == "5"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",5,5);
+		} else if (args[3] == "6"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",6,6);
+
+		} else if (args[3] == "7"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",7,7);
+		} else if (args[3] == "8"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",8,8);
+		} else if (args[3] == "9"){
+			kittens = Utilities.readKittensFromDisk("kittensGeneration",9,9);
+		}
+		
+		for(var x = totalSupply-2000; x < totalSupply; x++){
+			kittens.push(x);
+		}
+
+		return kittens;
+	}
+
+	if(args[2] == "loadPairs"){
+		let text = fs.readFileSync(__dirname + '/kitten_pairs/saved_breeding_pairs.txt', 'utf8');
+		let splitText = text.split("END,");
+		var pairs = [];
+		for(var textEntry in splitText){
+			newSplit = splitText[textEntry].split(",");
+			bp = new BreedingPair(newSplit[0],newSplit[1],newSplit[2]);
+			pairs.push(bp);
+			console.log(bp);
+		}
+		return pairs;
+	}
 	if(args[3] == "one-gen2"){
 		var kittens = Utilities.readKittensFromDisk("kittensGeneration",2,2);
-		for(var x = totalSupply-10000; x < totalSupply; x++){
+		for(var x = totalSupply-1000; x < totalSupply; x++){
 
 			kittens.push(x);
 		}
@@ -720,11 +806,15 @@ var forSireAddress = "0xC7af99Fe5513eB6710e6D5f44F9989dA40F27F26";
 
 //Test output
 var offset = 0;
-for(v = 0; v <=100; v++){
-	setTimeout(main,600000*v);
+for(v = 0; v <=1; v++){
+	setTimeout(main,60000000*v);
 	console.log("Scheduling: " + v);
 }
-
+function BreedingPair(id1, id2, score){
+	this.id1 = id1;
+	this.id2 = id2;
+	this.score = score;
+}
 
 function main(){
 
@@ -734,6 +824,9 @@ function main(){
 	} else if (args[2] == "find_sire"){
 		ck_contract.methods.totalSupply().call().then(loopGetUserKittensNAPI).then(getOwnershipOfCatsLoop).then(getCatsLoop).then(starter_siring);
 
+	} else if (args[2] == "loadPairs"){
+		var pairs = loopGetUserKittensNAPI(44);
+		breedOnly(pairs);
 	}else if(api_calls_on){
 		loopGetUserKitties().then(mainFunction);
 	} else {
@@ -743,13 +836,18 @@ function main(){
 	}
 }
 
+function breedOnly(pairs){
+	var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+	Breeder.directBreedFromInput(pairs);
+}
+
 function kittenTotalInterjection(){
 
 }
 function buyFromClock(kittenTotal){
 	kittens = []
 	console.log(kittenTotal);
-	for(var x = 750000; x < kittenTotal; x++ ){
+	for(var x = kittenTotal-50; x < kittenTotal; x++ ){
 		kittens.push(x);
 	}
 
@@ -758,15 +856,15 @@ function buyFromClock(kittenTotal){
 }
 
 function buyACat(){
-	catToBidOn = allFilteredCatsB[0];
-	//allFilteredCatsB = allFilteredCatsB.slice(0,25);
+	//catToBidOn = allFilteredCatsB[0];
+	//allFilteredCatsB = allFilteredCatsB.slice(0,5);
 //	ck_contract.methods.bid(catToBidOn)
 	console.log(allFilteredCatsB);
-	console.log(catToBidOn);
+	//console.log(catToBidOn);
 	//console.log(sale_contract.methods);
 	for(var clockCat in allFilteredCatsB){
 		console.log(Object.prototype.toString.call(allFilteredCatsB[clockCat]));
-		sale_contract.methods.bid(allFilteredCatsB[clockCat]).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.2", "ether"),gasPrice: web3.utils.toWei("0.000000018", "ether"),gas:1000000 });
+		sale_contract.methods.bid(allFilteredCatsB[clockCat]).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.8", "ether"),gasPrice: web3.utils.toWei("0.000000050", "ether"),gas:1000000 });
 	}
 	//sale_contract.methods.bid(catToBidOn).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.2", "ether"),gasPrice: web3.utils.toWei("0.000000018", "ether") });
 

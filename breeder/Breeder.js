@@ -1,7 +1,7 @@
 var GeneDecoder = require("genedecoder")();
 var Comparators = require("ak-comparators");
 var Utilities = require("utilities");
-
+var fs = require("fs");
 function Breeder(upper_wallet_address, web3, ck_contract){
 	let self = {};
 
@@ -36,6 +36,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		Utilities.saveKittenIdsSpecific(catIDs,generation);
 	}
 
+	self.directBreedFromInput = function(pairs){
+		self._triggerBreedingPairs(pairs);
+	}
 	self.outputKitKats = function(kitkats){
 		var catIDs = [];
 		if(kitkats != undefined){
@@ -60,7 +63,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 			if(self.cats[kitten].generation <= self.generations_breeding_upper_limit){
 				if(self.cats[kitten].generation >= self.generations_breeding_lower_limit){
-					//self.o[self.cats[kitten].generation].push(self.cats[kitten]);
+					self.o[self.cats[kitten].generation].push(self.cats[kitten]);
 					filteredCatList.push(self.cats[kitten]);
 				}
 
@@ -359,6 +362,76 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			}
 		}
 	}
+
+	self._pureMutationChaserMulti = function(catDictionary){
+		var partner = undefined;
+		self.bpairs = [];
+		var copyOfCats = self.cats.slice();
+		var portionedCats = Utilities.chunkify(copyOfCats,12);
+
+		var breedingPairs = [];
+		var count = 0;
+		var bpResults = {};
+		const { fork } = require('child_process');
+
+		for (var catPortion in portionedCats){
+			const process = fork('breeder/processCats.js');
+			
+			process.on('message', (message) => {
+			  console.log('BP from child');
+			  breedingPairs.push(message.bp);
+			  console.log("bp is: ");
+			  //console.log(message.bp);
+			  count += 1;
+			  bpResults[count] = message;
+
+			  if(count == 12){
+			  	console.log("All reported back!");
+			  	console.log(bpResults);
+			  	var keys = Object.keys(bpResults);
+			  	for(var key in keys){
+			  		let result = bpResults[keys[key]];
+			  		result = result.bp;
+			  		for(var breedingPair in result){
+			  			self.bpairs.push(result[breedingPair])
+			  		}
+			  	}
+			  	self._sortBreedingPairs(self.bpairs);
+			  }
+
+			});
+			catPortion = portionedCats[catPortion];
+
+			process.send({catPortion, copyOfCats, catDictionary, GeneDecoder});
+		}
+
+		//self.breedingPairs = breedingPairs;
+
+		// receive message from master process
+
+
+		
+		
+	}
+
+	self._sortBreedingPairs  = function(breedingPairs){
+		breedingPairs.sort(Comparators.keyComparator("score"));
+
+		self.breedingPairs = breedingPairs.slice(0,300);
+		console.log(self.breedingPairs);
+
+		output = [];
+		for (var bp in self.breedingPairs){
+			bp = self.breedingPairs[bp];
+			output.push(bp.id1 + ',' + bp.id2 + ',' + bp.score + 'END' );
+		}
+		fs.writeFile('kitten_pairs/saved_breeding_pairs.txt', output, (err) => {
+	  	if (err) throw err;
+		})
+
+
+
+	}
 	self._pureMutationChaser = function(catDictionary){
 		var partner = undefined;
 
@@ -372,7 +445,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			self._printFive(mutationOrdered);
 			if( mutationOrdered.length != 0){
 				partner = catDictionary[mutationOrdered[0][0]];
-				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] > 0.5)){
+				if((self.isValidMatch(nCat, partner)) && (mutationOrdered[0][1] >= 0) && (nCat.id != partner.id)){
 					console.log("is valid?");
 				} else {
 					partner = undefined;
@@ -404,12 +477,14 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		//self.breedingPairs = self._getSortedArrayOfScoredBreedingPairsFromDictionary(self.breedingPairs);
 		self.breedingPairs.sort(Comparators.keyComparator("score"));
 
-		self.breedingPairs = self.breedingPairs.slice(0,30);
+		let threshold = float2int(catDetailsList.length * 0.10);
+
+		self.breedingPairs = self.breedingPairs.slice(0,threshold);
 		console.log(self.breedingPairs);
 		
 	}
 	self.extremeCheck = function(){
-		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Mystery_8"];
+		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Mystery_8","Secret_1","Non-rel_pattern_7"];
 
 		for(var trait in self.targetedTraits){
 			if(extremeList.includes(self.targetedTraits[trait])){
@@ -696,6 +771,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 	self._simpleMutaBreedingAlgorithm = function(){
+		var multiTest = true;
 		var catDictionary = {};
 		self.usedCats = [];
 
@@ -704,7 +780,12 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			catDictionary[cat.id] = cat;
 		}
 
-		self._pureMutationChaser(catDictionary);
+		if(multiTest){
+			self._pureMutationChaserMulti(catDictionary);	
+		} else {
+			self._pureMutationChaser(catDictionary);
+		}
+		
 
 		return self.breedingPairs;
 	}
@@ -726,7 +807,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.15;
+		var treshold = 0.06;
 		//if(self.generations_breeding_upper_limit < 7){
 		//	treshold -= 0.07;
 		//}
@@ -964,6 +1045,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 	self.findRandomBreedingPairs = function(){
+		self.separateByGeneration();
 		var listOfUsedCats = [];
 		var newCats = [];
 		var breedingPairs = [];
