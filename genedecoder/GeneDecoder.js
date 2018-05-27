@@ -547,7 +547,8 @@ function GeneDecoder(){
 	}
 
 	self._isPureBred = function(geneArray){
-		if(geneArray[0] == geneArray[1] == geneArray[2] == geneArray[3]){
+		let target = geneArray[0];
+		if((target == geneArray[1]) && (target == geneArray[2]) && (target == geneArray[3])){
 			return true;
 		} else {
 			return false;
@@ -555,7 +556,8 @@ function GeneDecoder(){
 	}
 
 	self._isAlmostPureBred = function(geneArray){
-		if(geneArray[1] == geneArray[2] == geneArray[3]){
+		let target = geneArray[1];
+		if((target == geneArray[2]) && (target == geneArray[3])){
 			return true;
 		} else {
 			return false;
@@ -841,6 +843,8 @@ function GeneDecoder(){
 	self.notUnknownGroup = function(number){
 		if(number >= 2){
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -873,30 +877,42 @@ function GeneDecoder(){
 		nameLookup[11] = bodyGeneNames;
 
 		var catDetailsList = [];
+		console.log("Entering cat analyze loop")
 		for(var cat in cats){
+			console.log("At cat: " + cat);
 			var pureBredGroupAmount = 0;
 			var pureBredNames = [];
 			var semiPureBredGroupAmount = 0;
 			var semiPureBredNames = [];
 			cat = cats[cat];
-			geneArrays = self.readKitten(cat);
-			for(var gArrayNumber in geneArrays){
-				if(self.notUnknownGroup(gArrayNumber)){
-					gArray = geneArrays[gArrayNumber];
-					var textualGeneArray = self.outputGroupAttribute(gArray, nameLookup[gArrayNumber] );
-					if(self._isPureBred(gArray)){
+			//geneArrays = self.readKitten(cat);
+			KaiGroups = self.getKaiGroups(cat);
+
+			for(var KaiGroupNumber in KaiGroups){
+				if(KaiGroupNumber >= 2){
+
+					KaiGroup = KaiGroups[KaiGroupNumber];
+					geneArray = self.outputGroupAttribute(KaiGroup, nameLookup[KaiGroupNumber]);
+					attrList = nameLookup[KaiGroupNumber];
+
+
+					//gene = KaiGroup[genenumber];
+					//var textualGeneArray = self.outputGroupAttribute(gArrayNumber, nameLookup[gArrayNumber] );
+					console.log(geneArray);
+					if(self._isPureBred(geneArray)){
 						pureBredGroupAmount += 1;
-						pureBredNames.push(textualGeneArray[0]);
-					} else if (self._isAlmostPureBred(gArray)){
+						pureBredNames.push(geneArray[3]);
+					} else if (self._isAlmostPureBred(geneArray)){
 						semiPureBredGroupAmount += 1;
-						semiPureBredNames.push(textualGeneArray[0]);
+						semiPureBredNames.push(geneArray[2]);
 
 					}
 				}
-				if((pureBredGroupAmount > 0) || (semiPureBredGroupAmount > 0)){
-					catDetailsList.push(cat.id, pureScore, pureBredNames, semiPureScore, semiPureBredNames, cat);
-				}
-				
+			}
+
+			if((pureBredGroupAmount > 0) ){//|| (semiPureBredGroupAmount > 0)){
+				console.log("pushing?");
+				catDetailsList.push(new CatDetails(cat.id, pureBredGroupAmount, pureBredNames, semiPureBredGroupAmount, semiPureBredNames, cat));
 			}
 		}
 
@@ -905,7 +921,7 @@ function GeneDecoder(){
 
 		catDetailsList.sort(Comparators.keyComparator("pureScore"));
 
-
+		console.log("Semipure or better: " + catDetailsList.length);
 		for(var x = 0; x < threshold; x++){
 			cat = catDetailsList[x];
 			console.log("Cat id: " + cat.id + "\n Pscore: " + cat.pureScore + "\n Pnames: " + cat.pureBredNames

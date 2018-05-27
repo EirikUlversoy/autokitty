@@ -337,7 +337,12 @@ function mainFunction (calls){
 	console.log("There are " + allFilteredCats.length + " cats in the filtered list!");
 	//cats = allFilteredCats;
 	//findAuctionItems(cats);
-	if(targeted_traits.length != 0){
+	if (args[2] == "analyze") {
+		var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+		Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, cats[0].generation, cats[0].generation);
+		cats = Breeder.separateByGeneration();
+		GeneDecoder.analyzer(cats);
+	} else if(targeted_traits.length != 0){
 		console.log("heading into advanced breeding loop");
 		//GeneDecoder.statistics(cats);
 		let mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Fabulous","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck","Daemonwings"];
@@ -436,6 +441,7 @@ function mainFunction (calls){
 			Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 0, 0);
 			Breeder.togglePureMuta();
 			Breeder.advancedBreedingLoop();
+
 		} else {
 			/*
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
@@ -608,6 +614,17 @@ function loopGetUserKittensNAPI(number){
 	var totalSupply = number;
 	console.log("total supply is: " + totalSupply);
 	var lowGenCatsOnly = false;
+
+	if(args[2] == "analyze"){
+		let gen = parseInt(args[3],10);
+		console.log("gen is: " + gen)
+		let kittens =  Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
+		for(var x = totalSupply-10000; x < totalSupply; x++){
+			kittens.push(x);
+		}
+
+		return kittens;
+	}
 	if(args[2] == "all-gen0"){
 		return Utilities.readKittensFromDisk("kittensGeneration",0,0);
 		console.log("low gen only!");
@@ -827,6 +844,8 @@ function main(){
 	} else if (args[2] == "loadPairs"){
 		var pairs = loopGetUserKittensNAPI(44);
 		breedOnly(pairs);
+	} else if( args[2] == "analyze"){
+		ck_contract.methods.totalSupply().call().then(loopGetUserKittensNAPI).then(getOwnershipOfCatsLoop).then(getCatsLoop).then(mainFunction);
 	}else if(api_calls_on){
 		loopGetUserKitties().then(mainFunction);
 	} else {
@@ -904,14 +923,14 @@ function findAppropriateSires(){
 
 	var GeneDecoder = require("genedecoder")();
 
-	function pureMutationChaser()){
+	function pureMutationChaser(){
 		var partner = undefined;
 
 		self.copyOfCats = generationZeroSires;
 		for(var cat in generationZeroMatrons){
 			//cat = self.cats[cat];
 			console.log("At cat number:" + cat);
-			nCat = generationZeroMatrons[cat]];
+			nCat = generationZeroMatrons[cat];
 			mutationUnordered = self._makeMutationScoreDictionarySingularHC(catDictionary[nCat.id], self.copyOfCats, catDictionary);
 			mutationOrdered = self._getSortedArrayOfScoredMutaCatsFromDictionary(mutationUnordered);
 			self._printFive(mutationOrdered);
