@@ -4,7 +4,7 @@ var bs58 = require('bs58');
 var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Promise = require("bluebird");
 var hexToBinary = require('hex-to-binary');
-
+var Comparators = require("ak-comparators");
 
 function GeneDecoder(){
 	let self = {};
@@ -844,12 +844,12 @@ function GeneDecoder(){
 		}
 	}
 
-	function CatDetails(id, pureScore, pureNames, semiPureScore, semiPureNames, cat){
+	function CatDetails(id, pureScore, pureBredNames, semiPureScore, semiPureBredNames, cat){
 		this.id = id;
 		this.pureScore = pureScore;
-		this.pureNames = pureNames;
+		this.pureBredNames = pureBredNames;
 		this.semiPureScore = semiPureScore;
-		this.semiPureNames = semiPureNames;
+		this.semiPureBredNames = semiPureBredNames;
 		this.cat = cat;
 
 	}
@@ -858,25 +858,43 @@ function GeneDecoder(){
 	}
 
 	self.analyzer = function(cats){
-		statsDictionary = {};
+		var nameLookup = {};
+		nameLookup[0] = unknownGeneNames;
+		nameLookup[1] = secretGeneNames;
+		nameLookup[2] = environmentGeneNames;
+		nameLookup[3] = mouthGeneNames;
+		nameLookup[4] = wildGeneNames;
+		nameLookup[5] = colorTertiaryGeneNames;
+		nameLookup[6] = colorSecondaryGeneNames;
+		nameLookup[7] = colorPrimaryGeneNames;
+		nameLookup[8] = eyesGeneNames;
+		nameLookup[9] = colorEyesGeneNames;
+		nameLookup[10] = patternGeneNames;
+		nameLookup[11] = bodyGeneNames;
+
 		var catDetailsList = [];
 		for(var cat in cats){
 			var pureBredGroupAmount = 0;
+			var pureBredNames = [];
 			var semiPureBredGroupAmount = 0;
+			var semiPureBredNames = [];
 			cat = cats[cat];
 			geneArrays = self.readKitten(cat);
 			for(var gArrayNumber in geneArrays){
 				if(self.notUnknownGroup(gArrayNumber)){
 					gArray = geneArrays[gArrayNumber];
+					var textualGeneArray = self.outputGroupAttribute(gArray, nameLookup[gArrayNumber] );
 					if(self._isPureBred(gArray)){
 						pureBredGroupAmount += 1;
-						
+						pureBredNames.push(textualGeneArray[0]);
 					} else if (self._isAlmostPureBred(gArray)){
 						semiPureBredGroupAmount += 1;
+						semiPureBredNames.push(textualGeneArray[0]);
+
 					}
 				}
 				if((pureBredGroupAmount > 0) || (semiPureBredGroupAmount > 0)){
-					catDetailsList.push(cat.id, pureScore, semiPureScore, cat);
+					catDetailsList.push(cat.id, pureScore, pureBredNames, semiPureScore, semiPureBredNames, cat);
 				}
 				
 			}
@@ -887,8 +905,11 @@ function GeneDecoder(){
 
 		catDetailsList.sort(Comparators.keyComparator("pureScore"));
 
+
 		for(var x = 0; x < threshold; x++){
-			console.log("")
+			cat = catDetailsList[x];
+			console.log("Cat id: " + cat.id + "\n Pscore: " + cat.pureScore + "\n Pnames: " + cat.pureBredNames
+				+ "\n SPscore: " + cat.semiPureScore + "\n SPNames: " + cat.semiPureBredNames);
 		}
 	}
 
