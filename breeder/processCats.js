@@ -76,7 +76,7 @@ async function processCats(catPortion, copyOfCats, catDictionary, GeneDecoder) {
 		_printFive(mutationOrdered);
 		if( mutationOrdered.length != 0){
 			partner = catDictionary[mutationOrdered[0][0]];
-			if((isValidMatch(nCat, partner)) && (mutationOrdered[0][1] >= 0) && (nCat.id != partner.id)){
+			if((isValidMatch(nCat, partner)) && (mutationOrdered[0][1] >= 0.38) && (nCat.id != partner.id)){
 				console.log("is valid?");
 			} else {
 				partner = undefined;
