@@ -414,10 +414,14 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		
 	}
 
+	function float2int (value) {
+	    return value | 0;
+	}
+
 	self._sortBreedingPairs  = function(breedingPairs){
 		breedingPairs.sort(Comparators.keyComparator("score"));
 
-		let threshold = float2int(self.breedingPairs.length * 0.10);
+		let threshold = float2int(breedingPairs.length * 0.10);
 
 		self.breedingPairs = breedingPairs.slice(0,threshold);
 		console.log(self.breedingPairs);
@@ -513,7 +517,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self._mutationFindMatch = function(scoredCat, catDictionary, scores, treshold, missing){
 		var partner = undefined;
 		var extreme = false;
-		var targetScore = 0.09;
+		var targetScore = 0.06;
 		if(self.extremeCheck()){
 			extreme = true;
 		}
