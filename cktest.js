@@ -866,7 +866,7 @@ function kittenTotalInterjection(){
 function buyFromClock(kittenTotal){
 	kittens = []
 	console.log(kittenTotal);
-	for(var x = kittenTotal-50; x < kittenTotal; x++ ){
+	for(var x = kittenTotal-2000; x < kittenTotal; x++ ){
 		kittens.push(x);
 	}
 
@@ -878,12 +878,12 @@ function buyACat(){
 	//catToBidOn = allFilteredCatsB[0];
 	//allFilteredCatsB = allFilteredCatsB.slice(0,5);
 //	ck_contract.methods.bid(catToBidOn)
-	console.log(allFilteredCatsB);
+	console.log(allFilteredCatsB.length);
 	//console.log(catToBidOn);
 	//console.log(sale_contract.methods);
 	for(var clockCat in allFilteredCatsB){
-		console.log(Object.prototype.toString.call(allFilteredCatsB[clockCat]));
-		sale_contract.methods.bid(allFilteredCatsB[clockCat]).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.8", "ether"),gasPrice: web3.utils.toWei("0.000000050", "ether"),gas:1000000 });
+		//console.log(Object.prototype.toString.call(allFilteredCatsB[clockCat]));
+		sale_contract.methods.bid(allFilteredCatsB[clockCat]).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.25", "ether"),gasPrice: web3.utils.toWei("0.000000015", "ether"),gas:1000000 });
 	}
 	//sale_contract.methods.bid(catToBidOn).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.2", "ether"),gasPrice: web3.utils.toWei("0.000000018", "ether") });
 
@@ -983,12 +983,13 @@ function doSireFilterWork(cat,address){
 	}
 }
 
+/*
 function doSaleFilterWork(cat,address){
 	if(address == forSireAddress){
 		allFilteredCats.push(cat);
 		console.log(cat);
 	}
-}
+}*/
 
 function doWorkSire(id, kitten){
 	kitten.id = id;
