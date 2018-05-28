@@ -164,6 +164,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		if(self.pureMuta){
 			self.cats = readyFilteredCatList;
+			//self.cats = filteredCatList;
 			self.breedingPairs = self._simpleMutaBreedingAlgorithm();
 		} else {
 			self.breedingPairs = self._simpleBreedingAlgorithm(arrayOfScoredCats, scores);
