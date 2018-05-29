@@ -814,7 +814,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.06;
+		var treshold = 0.15;
 		//if(self.generations_breeding_upper_limit < 7){
 		//	treshold -= 0.07;
 		//}

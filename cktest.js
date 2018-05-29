@@ -317,7 +317,10 @@ function mainFunction (calls){
 		//targeted_traits = ["Pumpkin","Limegreen"];
 		//targeted_traits = ["Dali","Grimace"];
 		//targeted_traits = ["Twilightsparkle","Onyx","Starstruck"];
-		targeted_traits = ["Chocolate","Dippedcone","Icy","Belch","Mintgreen"];
+		//targeted_traits = ["Chocolate","Dippedcone","Icy","Belch","Mintgreen"];
+		targetedTraits = ["Spock","Wonky","Forgetmenot","Greymatter","Poisonberry","Bloodred","Grim","Unknown_m","Secret_r","Tinybox"];
+		targetedTraits = Utilities.shuffle(targetedTraits);
+		targetedTraits = targetedTraits.slice(0,4);
 
 	}
 
@@ -449,8 +452,9 @@ function mainFunction (calls){
 			Breeder.advancedBreedingLoop();
 			*/
 			console.log("In normal generational loop");
-
-			for(var x = 1; x <= generations_breeding_upper_limit; x++ ){
+			let gen = parseInt(args[3],10);
+			generations_breeding_upper_limit = gen;
+			for(var gen = 1; x <= generations_breeding_upper_limit; x++ ){
 				var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 				Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, x, x, brisk);
 				console.log("Breeding generation number:" + x);
@@ -695,10 +699,11 @@ function loopGetUserKittensNAPI(number){
 		return kittens;
 	}
 	if(args[2] == "fancy2"){
+		let gen = parseInt(args[3],10);
 
-		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",1,20);
+		var kittens =  Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
 
-		for(var x = totalSupply-10000; x < totalSupply; x++){
+		for(var x = totalSupply-2500; x < totalSupply; x++){
 
 			kittens.push(x);
 		}
