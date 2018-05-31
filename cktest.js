@@ -5,18 +5,20 @@ var upper_wallet_address = "0x68b42e44079D1d0A4a037e8c6eCd62c48967e69f";
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
+
+//Other modules from this repository
 var AdvancedBreeder = require('./advKittenBreedingFunctions');
 var GeneDecoder = require("genedecoder")();
 var Auctioneer = require("auctioneer")(upper_wallet_address, web3);
 var generations_breeding_upper_limit = 25;
 
+//Different IPC location on linux and Windows
 if (os.platform() == "linux") {
     var web3 = new Web3(new Web3.providers.IpcProvider('/root/.ethereum/geth.ipc', net));
 } else {
     var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 }
 
-//var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 var Utilities = require("utilities");
 var promiseLimit = require('promise-limit')
 
@@ -36,19 +38,20 @@ var kitty_abi =
 var sale_abi = [{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"},{"name":"_startingPrice","type":"uint256"},{"name":"_endingPrice","type":"uint256"},{"name":"_duration","type":"uint256"},{"name":"_seller","type":"address"}],"name":"createAuction","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"bid","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"lastGen0SalePrices","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdrawBalance","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"getAuction","outputs":[{"name":"seller","type":"address"},{"name":"startingPrice","type":"uint256"},{"name":"endingPrice","type":"uint256"},{"name":"duration","type":"uint256"},{"name":"startedAt","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"ownerCut","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"isSaleClockAuction","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"cancelAuctionWhenPaused","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"gen0SaleCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"cancelAuction","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"getCurrentPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"nonFungibleContract","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"averageGen0SalePrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_nftAddr","type":"address"},{"name":"_cut","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokenId","type":"uint256"},{"indexed":false,"name":"startingPrice","type":"uint256"},{"indexed":false,"name":"endingPrice","type":"uint256"},{"indexed":false,"name":"duration","type":"uint256"}],"name":"AuctionCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokenId","type":"uint256"},{"indexed":false,"name":"totalPrice","type":"uint256"},{"indexed":false,"name":"winner","type":"address"}],"name":"AuctionSuccessful","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokenId","type":"uint256"}],"name":"AuctionCancelled","type":"event"},{"anonymous":false,"inputs":[],"name":"Pause","type":"event"},{"anonymous":false,"inputs":[],"name":"Unpause","type":"event"}];
 
 var sire_abi = [{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"},{"name":"_startingPrice","type":"uint256"},{"name":"_endingPrice","type":"uint256"},{"name":"_duration","type":"uint256"},{"name":"_seller","type":"address"}],"name":"createAuction","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"bid","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdrawBalance","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"isSiringClockAuction","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"getAuction","outputs":[{"name":"seller","type":"address"},{"name":"startingPrice","type":"uint256"},{"name":"endingPrice","type":"uint256"},{"name":"duration","type":"uint256"},{"name":"startedAt","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"ownerCut","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"cancelAuctionWhenPaused","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"cancelAuction","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"getCurrentPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"nonFungibleContract","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_nftAddr","type":"address"},{"name":"_cut","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokenId","type":"uint256"},{"indexed":false,"name":"startingPrice","type":"uint256"},{"indexed":false,"name":"endingPrice","type":"uint256"},{"indexed":false,"name":"duration","type":"uint256"}],"name":"AuctionCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokenId","type":"uint256"},{"indexed":false,"name":"totalPrice","type":"uint256"},{"indexed":false,"name":"winner","type":"address"}],"name":"AuctionSuccessful","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokenId","type":"uint256"}],"name":"AuctionCancelled","type":"event"},{"anonymous":false,"inputs":[],"name":"Pause","type":"event"},{"anonymous":false,"inputs":[],"name":"Unpause","type":"event"}];
-//Linking to the contract itself
-var sale_contract_address = "0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C";
 
+//Sale contract information
+var sale_contract_address = "0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C";
 var sale_contract = new web3.eth.Contract(sale_abi, sale_contract_address);
 
+//Siring contract information
 var sire_contract_address = "0xC7af99Fe5513eB6710e6D5f44F9989dA40F27F26";
-
 var sire_contract = new web3.eth.Contract(sire_abi, sire_contract_address);
 var ck_contract = new web3.eth.Contract(kitty_abi,cryptokitties_contract_address);
-var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
-//Breeder = Breeder(generations_breeding_upper_limit);
 
-//Owned cats API call template for illustration
+//Breeder module import
+var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
+
+//Owned cats API call template for illustration - not used at the moment
 var api_call = "https://api.cryptokitties.co/kitties?offset=60&limit=64&owner_wallet_address=" + owner_wallet_address + "&sorting=cheap&orderBy=current_price&orderDirection=asc";
 
 var kittenID = 1;
@@ -69,8 +72,8 @@ ck_contract.methods.totalSupply().call().then(setTotalSupply);
 function setTotalSupply(supply){
 	totalSupply = supply;
 }
-console.log(count);
-//API only provides 20 cats at a time, so we have to do count/20 calls.
+
+//API only provides 20 cats at a time, so we have to do count/20 calls. Not used anymore.
 var amountOfCalls = 160;
 console.log(amountOfCalls);
 
@@ -108,6 +111,8 @@ function noKittensToHandle(kittens){
 }
 
 
+//setupDictionaries contains all mutation combos. This can probably be replaced with some constant rule instead, as the mutation rules are the same for every trait either way. It is done explicitly here just so it would work quickly
+//and be less confusing
 
 function setupDictionaries(){
 	let PremierMutations = {};
@@ -202,18 +207,23 @@ function setupDictionaries(){
 	return mutationDicts;
 }
 
+//Read in arguments. The script takes up to 3 arguments. Typically "mode" "generation" "-brisk"(true/false)
 const args = process.argv;
 console.log(args);
+
+//Where most of the script logic is.
 function mainFunction (calls){
 	mutationDicts = setupDictionaries();
 	let PremierMutations = mutationDicts[0];
 	let SecondaryMutations = mutationDicts[1];
 	console.log("is in main");
-	var VernonAttempt = ["Amur","Springcrocus","Fabulous","Belleblue","Cottoncandy","Soserious"];
+
+	//This list can be used if iterating through all mutations - considered too inaccurate and wasteful, not used anymore
 	var listOfSecondaryMutations = ["Onyx","Babypuke","Seafoam","Yokel","Wingtips","Hotrod","Royalblue","Neckbeard"
 	,"Manx","Buzzed","Mintmacaron"];
 
-	var targeted_traits = [];
+	
+	//These lists can be used if iterating through all mutations - considered too inaccurate and wasteful, not used anymore
 	var listOfTargetedTraitCombinations = ["Daemonhorns","Daemonwings","Salty","Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm",
 	"Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle","Patrickstarfish",
 	 "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum"];
@@ -221,21 +231,41 @@ function mainFunction (calls){
 	listOfTargetedTraitCombinations = ["Daemonhorns","Daemonwings","Salty","Pumpkin","Fabulous","Cheeky","Starstruck","Cheeky","Flamingo","Koala","Laperm",
 	"Persian","Tigerpunk","Sweetmeloncakes","Dali","Wolfgrey","Cerulian","Periwinkle",
 	 "Alien","Trioculus","Elk","Dippedcone","Thunderstruck","Verdigris","Bubblegum","Twilightsparkle","Eclipse","Lavender","Mainecoon","Sass"];
+
 	 listOfTargetedTraitCombinations = ["Flamingo","Cerulian","Wolfgrey","Sweetmeloncakes","Dali","Koala","Starstruck","Cheeky","Fabulous","Daemonhorns","Daemonwings","Periwinkle","Pumpkin","Alien","Elk","Salty"];
+
+	var targeted_traits = [];
+
+	//Shuffling is mostly relevant only when building towards a fancy, to get a diverse foundation of cats. Can probably be removed.
 	listOfSecondaryMutations = Utilities.shuffle(listOfSecondaryMutations);
 	listOfTargetedTraitCombinations = Utilities.shuffle(listOfTargetedTraitCombinations);
+
+	/////////////////////////////////
+	//Argument parsing and mode decisions
+
+	//Unchained checks if the trait in question is R3/H3. Only useful for Gen 0s but used for all currently (should be changed)
 	var unchained = checkForUnchained(args);
 	var sixPercent = checkForSixPercent(args);
+
+	//These were used for looping through all mutations - considered too inaccurate, not used anymore
 	var tryAllGen1 = false;
 	var tryAllGen0 = false;
+
+	//Pure mutation mode -  a mode that crunches cats to find the ones with the most mutation possibilities.
 	var pureMutaGen0 = false;
 	var pureMutaGen1 = false;
 	var pureMutaGen2 = false;
 	var pureMutaGen3 = false;
+
+	//Modes that target single traits - can be modified to take a generation as argument instead, but since most of the breeding is lowgen having it explicit is fine.
 	var oneGen1 = false;
 	var oneGen0 = false;
 	var oneGen2 = false;
+
+	//If Brisk is set the pair is only bred if at least one of the two cats have a brisk cooldown.
 	var brisk = false;
+
+	//The following is command parsing to set the modes/options above
 	if(args[2] == "all-gen1"){
 		tryAllGen1 = true;
 	}
@@ -283,8 +313,6 @@ function mainFunction (calls){
 	} else if(args[3] == "gen0"){
 		targeted_traits = PremierMutations[args[2]];
 		tryAllGen0 = true;
-		//targeted_traits = VernonAttempt;
-		//targeted_traits = ["Jaguar","Lemonade","Azaleablush","Cloudwhite","Wild_f"];
 	} else {
 		targeted_traits = ["Jaguar","Lemonade"];
 	}
@@ -292,44 +320,16 @@ function mainFunction (calls){
 	if(args[2] == "fancy"){
 		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Aquamarine"];
 		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Persian"];
-
 	}
 
 	if(args[2] == "fancy2"){
-		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Aquamarine"];
-		targeted_traits = ["Violet","Tongue","Raisedbrow","Spock","Persian"];
-		//targeted_traits = ["Norwegianforest","Thunderstruck","Thicccbrowz","Cyan","Cloudwhite","Skyblue","Icy"];
-		targeted_traits = ["Thunderstruck","Cloudwhite","Skyblue","Icy","Soserious","Cyan","Norwegianforest","Thicccbrowz"];
-		//targeted_traits = ["Cyan","Norwegianforest","Thicccbrowz","Icy","Soserious"];
-		targeted_traits = ["Manx","Babypuke","Onyx","Neckbeard"];
-		//targeted_traits = ["Manx","Hotrod","Babypuke","Neckbeard"];
-
-		//targeted_traits = ["Slyboots","Bloodred","Grimace","Henna","Royalblue"];
-		targeted_traits = ["Cerulian","Wolfgrey"];
-		//targeted_traits = ["Oldlace","Koala"];
-		targeted_traits = ["Henna","Tigerpunk"];
-		//targeted_traits = ["Persian","Laperm"];
-		targeted_traits = ["Camo","Onyx","Sandalwood","Soserious"];
-		targeted_traits = ["Spangled","Baddate","Cloudwhite","Scarlet","Morningglory","Starstruck"];
-		//targeted_traits = ["Stunned","Shadowgrey","Wolfgrey","Granitegrey","Belch","Thundergrey"];
-		targeted_traits = ["Manx","Hotrod","Babypuke","Neckbeard","Onyx"];
-		//targeted_traits = ["Slyboots","Bloodred","Grimace","Henna"];
-		//targeted_traits = ["Pumpkin","Limegreen"];
-		//targeted_traits = ["Dali","Grimace"];
-		//targeted_traits = ["Twilightsparkle","Onyx","Starstruck"];
-		//targeted_traits = ["Chocolate","Dippedcone","Icy","Belch","Mintgreen"];
 		targeted_traits = ["Spock","Wonky","Forgetmenot","Greymatter","Poisonberry","Bloodred","Grim","Unknown_m","Secret_r","Tinybox"];
-		//targeted_traits = ["Spock","Wonky","Forgetmenot","Greymatter","Poisonberry","Bloodred","Grim","Unknown_m","Secret_r"];
 
 		targeted_traits = Utilities.shuffle(targeted_traits);
 		targeted_traits = ["Secret_r","Tinybox","Unknown_m","Forgetmenot"];
-		//targeted_traits = targeted_traits.slice(0,3);
 
+		//Tinybox mutation:
 		//targeted_traits = ["Mystery_7","Mystery_8"];
-		//targeted_traits = ["Kittencream","Emeraldgreen"];
-		//targeted_traits = ["Unknown_9","Unknown_a"];
-
-
 
 	}
 
@@ -339,16 +339,11 @@ function mainFunction (calls){
 		targeted_traits = ["Jaguar","Lemonade"];
 	}
 
-
-	if(api_calls_on){
-		Utilities.saveKittenIds(cats);
-	}
 	console.log("Looking for " + args[2] + "!");
-
 	console.log("There are " + cats.length + " cats in the list!");
 	console.log("There are " + allFilteredCats.length + " cats in the filtered list!");
-	//cats = allFilteredCats;
-	//findAuctionItems(cats);
+
+	//Analyze is a mode that counts purebred and semipurebred categories of traits. Takes a generation argument only. "node cktest.js analyze 2"
 	if (args[2] == "analyze") {
 		var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 		Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, cats[0].generation, cats[0].generation);
@@ -357,6 +352,8 @@ function mainFunction (calls){
 	} else if(targeted_traits.length != 0){
 		console.log("heading into advanced breeding loop");
 		//GeneDecoder.statistics(cats);
+
+		//Unchained attributes are H2/H3 and needs a lower breeding treshold
 		let mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Fabulous","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck","Daemonwings"];
 		let sixPercenters = ["Flamingo","Cerulian","Wolfgrey","Sweetmeloncakes","Dali","Koala","Starstruck","Cheeky","Daemonwings"];
 
@@ -398,35 +395,15 @@ function mainFunction (calls){
 		} else if(args[2] == "diamondchase"){
 			console.log("In diamond chase (random)");
 			var gen = 0;
-			if(args[3] == "1"){
-				gen = 1;
-			} else if (args[3] == "2"){
-				gen = 2;
-			} else if (args[3] == "0") {
-				gen = 0;
-			} else if (args[3] == "3"){
-				gen = 3;
-			} else if (args[3] == "4"){
-				gen = 4;
-			} else if (args[3] == "5"){
-				gen = 5;
-			} else if(args[3] == "6"){
-				gen = 6;
-			} else if (args[3] == "7"){
-				gen = 7;
-			} else if (args[3] == "8"){
-				gen = 8;
-			} else if (args[3] == "9"){
-				gen = 9;
-			}
-			console.log("Breed gen: " + gen);
+			gen = parseInt(args[3],10);
+
+			console.log("Breeding gen: " + gen);
 			var Breeder = require("breeder")(upper_wallet_address, web3, ck_contract);
 			var targets =  ["Non-rel_pattern_7","Spangled"]; 
 			if(args[4] != undefined){
 				targets = ["Non-rel_pattern_k","Dippedcone"];
 			}
 			Breeder.setupBreedingOptions(cats, targets, true, sixPercent, gen, gen, brisk);
-			//Breeder.togglePureMuta();
 			Breeder.advancedBreedingLoop();
 
 		} else if(pureMutaGen2){
@@ -455,11 +432,15 @@ function mainFunction (calls){
 			Breeder.advancedBreedingLoop();
 
 		} else {
+
+			//For breeding across generations. Wasteful, should not generally be used
 			/*
 			var Breeder = require("breeder")(upper_wallet_address, web3,ck_contract);
 			Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, 999, 2);
 			Breeder.advancedBreedingLoop();
 			*/
+
+			//Breeding argument generation only
 			console.log("In normal generational loop");
 			let gen = parseInt(args[3],10);
 			generations_breeding_upper_limit = gen;
@@ -484,6 +465,7 @@ function triggerGen1Breed(cats, traitCombo, unchained, sixPercent, Breeder){
 	Breeder.advancedBreedingLoop();
 }
 
+//Check if the threshold needs to be low (H2/H3 genes)
 function checkForUnchained(args){
 	let unchained = false;
 	let mandatoryUnchain = ["Alien","Koala","Verdigris","Trioculus","Wolfgrey","Dali","Flamingo","Dippedcone","Cheeky","Dippedcone","Starstruck"];
@@ -497,6 +479,7 @@ function checkForUnchained(args){
 	return unchained;
 }
 
+//This decides whether using H1 is allowed or not. If false, only dominant should be used. Can be overriden in other ways later on.
 function checkForSixPercent(args){
 	let sixPercent = false;
 	let sixPercenters = ["Flamingo","Cerulian","Wolfgrey","Sweetmeloncakes","Dali","Koala","Starstruck","Cheeky"];
@@ -510,6 +493,7 @@ function checkForSixPercent(args){
 	return sixPercent;
 }
 
+//Not really used anymore, was used for breeding multiple gen 0 combos in a loop
 function gen0Breeder(listOfTargetedTraitCombinations, mandatoryUnchain, PremierMutations, cats, sixPercenters, Breeder){
 
 	for(var traitCombo in listOfTargetedTraitCombinations){
@@ -545,12 +529,14 @@ function triggerGen0Breed(cats, traitCombo, unchained, sixPercent, Breeder){
 	Breeder.advancedBreedingLoop();
 }
 
+//Interaction with CKClient API, not used anymore.
 function fetch(id){
 	console.log("Fetching " + id);
 	return Promise.delay(2000, id).then(CKClient.getUserKitties(owner_wallet_address,64,id*20)
 		.then(handleKittensWithContract, noKittensToHandle));
 }
 
+//Interaction with CKClient API, not used anymore.
 function loopGetUserKitties(err, res){
 	var promiseArray = []
 	array = new Array();
@@ -561,6 +547,7 @@ function loopGetUserKitties(err, res){
 	return Promise.map(array, fetch, {concurrency: 2});
 }
 
+//Pushes cats that match the user address into the filtered cats list. Needs to use the bind method in order to keep both cat ID and the address.
 function doFilterWork(cat,address){
 	if(address == upper_wallet_address){
 		allFilteredCats.push(cat);
@@ -569,6 +556,7 @@ function doFilterWork(cat,address){
 
 }
 
+//Loop that checks for ownership of the cat
 function getOwnershipOfCatsLoop(cats){
 	return cats.reduce(function(promise, cat) {
 		return promise.then(function(){
@@ -577,10 +565,12 @@ function getOwnershipOfCatsLoop(cats){
 	}, Promise.resolve());
 }
 
+//Variables used for buying from kitty clock (and potentially other auctions)
 var allFilteredAuctions = [];
 var allFilteredCatsB = [];
 var forSaleAddress = "0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C";
 
+//If the seller address is the CK contract address this is a clock cat, so push it to filtered cats (for clock cats)
 function doClockFilterWork(cat,address){
 	if(address['seller'] == cryptokitties_contract_address){
 		allFilteredCatsB.push(cat);
@@ -588,6 +578,7 @@ function doClockFilterWork(cat,address){
 	}
 }
 
+//If the owner address is the sale contract address, this cat is for sale so push it to filtered cats
 function doSaleFilterWork(cat,address){
 	if(address == forSaleAddress){
 		allFilteredCats.push(cat);
@@ -595,6 +586,7 @@ function doSaleFilterWork(cat,address){
 	}
 }
 
+//Gets auctions first, then checks for ownership
 function getClockOwnershipOfCatsLoop(no_cats){
 	return allFilteredCats.reduce(function(promise, cat) {
 		return promise.then(function(){
@@ -603,6 +595,7 @@ function getClockOwnershipOfCatsLoop(no_cats){
 	}, Promise.resolve());
 }
 
+//Gets ownerof Address first, then checks if the cat is for sale
 function getCatForSaleLoop(cats){
 	return cats.reduce(function(promise, cat) {
 		return promise.then(function(){
@@ -611,18 +604,8 @@ function getCatForSaleLoop(cats){
 	}, Promise.resolve());
 }
 
-function checkOwnershipOfCats(cats_bad){
-	var promiseArray = [];
-	for(var cat in cats){
-		counter = cat;
-		cat = cats[cat];
-		promiseArray[counter] = ck_contract.methods.ownerOf(cat.id).call().then(doFilterWork.bind(null,cat));
-	}
-	return Promise.all(promiseArray).catch(console.log("Cat owner lookup failed somewhere:("));
-}
-
-
-
+//Reads kitten ids from disk instead of using GETH to find them 
+//Each mode requires different files etc.
 function loopGetUserKittensNAPI(number){
 	var totalSupply = number;
 	console.log("total supply is: " + totalSupply);
@@ -740,28 +723,10 @@ function loopGetUserKittensNAPI(number){
 
 	if(args[2] == "diamondchase"){
 		var kittens = [];
-		if(args[3] == "0"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",0,0);
-		} else if (args[3] == "1"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",1,1);
-		} else if (args[3] == "2"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",2,2);
-		} else if (args[3] == "3"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",3,3);
-		} else if (args[3] == "4"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",4,4);
-		} else if (args[3] == "5"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",5,5);
-		} else if (args[3] == "6"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",6,6);
 
-		} else if (args[3] == "7"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",7,7);
-		} else if (args[3] == "8"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",8,8);
-		} else if (args[3] == "9"){
-			kittens = Utilities.readKittensFromDisk("kittensGeneration",9,9);
-		}
+		let gen = parseInt(args[3],10);
+
+		kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
 		
 		for(var x = totalSupply-2000; x < totalSupply; x++){
 			kittens.push(x);
@@ -770,6 +735,8 @@ function loopGetUserKittensNAPI(number){
 		return kittens;
 	}
 
+	//Loads preset pairs and breeds them directly
+	//The order is sometimes wrong here (bug)
 	if(args[2] == "loadPairs"){
 		let text = fs.readFileSync(__dirname + '/kitten_pairs/saved_breeding_pairs.txt', 'utf8');
 		let splitText = text.split("END,");
@@ -811,7 +778,6 @@ function loopGetUserKittensNAPI(number){
 	return splitText;
 }
 
-//var totalSupply = 717000;
 
 var allFilteredCats = [];
 
@@ -831,6 +797,7 @@ function getSireCatsLoop(no_catArray){
 	}, Promise.resolve());
 }
 
+//Siring variables
 var allFilteredSireAuctions = [];
 var allFilteredCatsB = [];
 var forSireAddress = "0xC7af99Fe5513eB6710e6D5f44F9989dA40F27F26";
@@ -849,6 +816,7 @@ function BreedingPair(id1, id2, score){
 
 function main(){
 
+	//Clock mode, sire mode, loadpairs, analyze or "normal" mode
 	if(args[2] == "clock"){
 		starter();
 
@@ -865,7 +833,6 @@ function main(){
 	} else {
 		offset += 8;
 		ck_contract.methods.totalSupply().call().then(loopGetUserKittensNAPI).then(getOwnershipOfCatsLoop).then(getCatsLoop).then(mainFunction);
-		//getOwnershipOfCatsLoop(kittens).then(getCatsLoop).then(mainFunction);
 	}
 }
 
@@ -889,17 +856,10 @@ function buyFromClock(kittenTotal){
 }
 
 function buyACat(){
-	//catToBidOn = allFilteredCatsB[0];
-	//allFilteredCatsB = allFilteredCatsB.slice(0,5);
-//	ck_contract.methods.bid(catToBidOn)
 	console.log(allFilteredCatsB.length);
-	//console.log(catToBidOn);
-	//console.log(sale_contract.methods);
 	for(var clockCat in allFilteredCatsB){
-		//console.log(Object.prototype.toString.call(allFilteredCatsB[clockCat]));
 		sale_contract.methods.bid(allFilteredCatsB[clockCat]).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.25", "ether"),gasPrice: web3.utils.toWei("0.000000015", "ether"),gas:1000000 });
 	}
-	//sale_contract.methods.bid(catToBidOn).send({from: web3.eth.defaultAccount, value: web3.utils.toWei("0.2", "ether"),gasPrice: web3.utils.toWei("0.000000018", "ether") });
 
 }
 function starter(){
@@ -923,6 +883,8 @@ function browseSires(kittenTotal){
 	getCatForSireLoop(kittens).then(getSireCatsLoop).then(getCatsLoop).then(findAppropriateSires);
 }
 
+
+//Placeholder, not finished
 function findAppropriateSires(){
 	//By this point cats should be filled with your own cats and sireCats should be filled with all sireable cats. 
 	var generation = 0;
