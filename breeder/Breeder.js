@@ -281,6 +281,13 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self._triggerBreedingPairs = function(breedingPairs){
 		var usedBreedIds = [];
+
+		if(breedingPairs.length > 30){
+			let threshold = float2int(breedingPairs.length * 0.25);
+			breedingPairs = breedingPairs.slice(0,threshold);
+		}
+
+		//breedingPairs = breedingPairs.slice(0,20)
 		for(var bp in breedingPairs){
 			count = bp;
 			bp = breedingPairs[bp];
@@ -316,6 +323,18 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	}
 
 	self._eitherCatIsBriskOrBetter = function(catA, catB){
+		return true;
+		if(self.brisk){
+			return ((catA.cooldownIndex <= 7) || (catB.cooldownIndex <= 7));
+
+		} else {
+			return true;
+		}
+		//return true;
+	}
+
+	self._bothCatsAreBriskOrBetter = function(catA, catB){
+		return true;
 		if(self.brisk){
 			return ((catA.cooldownIndex <= 6) || (catB.cooldownIndex <= 6));
 
@@ -343,6 +362,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			if(!self.usedCats.includes(catB.id)){
 
 				if(self._eitherCatIsBriskOrBetter(catA, catB)){
+				//if(self._bothCatsAreBriskOrBetter(catA, catB)){
 					return true;
 				} else {
 					console.log("Was not either brisk or better?");
@@ -491,7 +511,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		
 	}
 	self.extremeCheck = function(){
-		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Mystery_8","Secret_1","Non-rel_pattern_7"];
+		var extremeList = ["Chartreux","Otaku","Harbourfog","Hintomint","Dragonfruit","Butterscotch","Wild_7","Wild_a","Wasntme","Violet","Secret_1","Non-rel_pattern_7"];
 
 		for(var trait in self.targetedTraits){
 			if(extremeList.includes(self.targetedTraits[trait])){
@@ -518,7 +538,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self._mutationFindMatch = function(scoredCat, catDictionary, scores, treshold, missing){
 		var partner = undefined;
 		var extreme = false;
-		var targetScore = 0.06;
+		var targetScore = 0.03;
 		if(self.extremeCheck()){
 			extreme = true;
 		}
@@ -814,7 +834,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.15;
+		var treshold = 0.13+(self.generations_breeding_upper_limit*0.010);
 		//if(self.generations_breeding_upper_limit < 7){
 		//	treshold -= 0.07;
 		//}
@@ -1010,7 +1030,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	self.triggerTransactionOnly = function(id, id2, canBreed){
 		if(canBreed){
-			self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000018", "ether") });
+			self.ck_contract.methods.breedWithAuto(id, id2).send({from: self.web3.eth.defaultAccount, value: self.web3.utils.toWei("0.008", "ether"),gasPrice: self.web3.utils.toWei("0.000000025", "ether") });
 			console.log("Breeding: " + id +" and " + id2 + " together!");
 			console.log("(((would have)))");
 		} else {

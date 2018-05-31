@@ -944,7 +944,7 @@ function GeneDecoder(){
 			}
 		}
 		console.log("Wall of stats:");
-		//console.log(statsDictionary);
+		console.log(statsDictionary);
 		return statsDictionary;
 	}
 
