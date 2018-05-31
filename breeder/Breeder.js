@@ -153,7 +153,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		var catsWithAnyTargetedTraits = self.getCatsWithTargetTraits(self.cats, combinedTraits);
 		self.cats = catsWithAnyTargetedTraits;
-		self.outputKitKats(self.cats);
+		//self.outputKitKats(self.cats);
 		console.log('Fitting kittens found: %d', catsWithAnyTargetedTraits.length);
 		console.log("Account used to breed: " + self.web3.eth.defaultAccount);
 

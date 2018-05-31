@@ -838,7 +838,7 @@ var forSireAddress = "0xC7af99Fe5513eB6710e6D5f44F9989dA40F27F26";
 //Test output
 var offset = 0;
 for(v = 0; v <=150; v++){
-	setTimeout(main,300000*v);
+	setTimeout(main,900000*v);
 	console.log("Scheduling: " + v);
 }
 function BreedingPair(id1, id2, score){
