@@ -545,6 +545,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		if(self.rareCheck()){
 			targetScore = 0.03;
+			console.log("is rare");
 		}
 		//targetScore = 0.03;
 		if(missing == 0){
@@ -597,17 +598,23 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			//console.log(mutationOrdered);
 			//console.log(mutationOrdered);
 			if(mutationOrdered.length != 0){
-				partner = catDictionary[mutationOrdered[0][0]];
-				if((partner.chanceOfTrait[targetTrait] > targetScore) || extreme ){
-					if(self.isValidMatch(scoredCat, partner) && mutationOrdered[0][1] >= 0.0){
-
+				for(var part in mutationOrdered){
+					partner = catDictionary[mutationOrdered[part][0]];
+					console.log("Checking for valid match..");
+					console.log(targetScore);
+					console.log(partner.chanceOfTrait);
+					if((partner.chanceOfTrait[targetTrait] > targetScore) || extreme ){
+						if(self.isValidMatch(scoredCat, partner) && mutationOrdered[part][1] >= 0.0){
+							break;
+						} else {
+							partner = undefined;
+						}
 					} else {
 						partner = undefined;
 					}
-				} else {
-					partner = undefined;
-				}
 
+				}
+				
 			}
 			
 
@@ -834,7 +841,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.13+(self.generations_breeding_upper_limit*0.010);
+		var treshold = 0.06;
 		//if(self.generations_breeding_upper_limit < 7){
 		//	treshold -= 0.07;
 		//}

@@ -150,7 +150,7 @@ function setupDictionaries(){
 	PremierMutations["Ruroh"] = ["Rollercoaster","Belch"];
 	PremierMutations["Tinybox"] = ["Mystery_7","Mystery_8"];
 
-	PremierMutations["Tigerpunk"] = ["Calicool","Luckystripe"];
+	PremierMutations["Tigerpunk"] = ["Luckystripe","Calicool"];
 	PremierMutations["Twilightsparkle"] = ["Sapphire","Forgetmenot"];
 	PremierMutations["Lavender"] = ["Harbourfog","Cinderella"];
 	PremierMutations["Wolfgrey"] = ["Swampgreen","Violet"];
@@ -635,7 +635,7 @@ function loopGetUserKittensNAPI(number){
 
 	if(args[2] == "all-gen0PM"){
 		kittens = Utilities.readKittensFromDisk("kittensGeneration",0,0);
-		for(var x = totalSupply-10000; x < totalSupply; x++){
+		for(var x = totalSupply-2000; x < totalSupply; x++){
 
 			kittens.push(x);
 		}
@@ -644,7 +644,7 @@ function loopGetUserKittensNAPI(number){
 
 	if(args[2] == "all-gen1PM"){
 		kittens = Utilities.readKittensFromDisk("kittensGeneration",1,1);
-		for(var x = totalSupply-10000; x < totalSupply; x++){
+		for(var x = totalSupply-2000; x < totalSupply; x++){
 
 			kittens.push(x);
 		}
@@ -653,7 +653,7 @@ function loopGetUserKittensNAPI(number){
 
 	if(args[2] == "all-gen2PM"){
 		kittens = Utilities.readKittensFromDisk("kittensGeneration",2,2);
-		for(var x = totalSupply-10000; x < totalSupply; x++){
+		for(var x = totalSupply-2000; x < totalSupply; x++){
 
 			kittens.push(x);
 		}
