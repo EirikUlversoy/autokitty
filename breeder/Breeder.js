@@ -282,7 +282,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self._triggerBreedingPairs = function(breedingPairs){
 		var usedBreedIds = [];
 
-		if(breedingPairs.length > 30){
+		if(breedingPairs.length > 3000){
 			let threshold = float2int(breedingPairs.length * 0.25);
 			breedingPairs = breedingPairs.slice(0,threshold);
 		}
