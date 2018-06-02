@@ -141,6 +141,7 @@ function setupDictionaries(){
 	PremierMutations["Turtleback"] = ["Lilac","Apricot"];
 	PremierMutations["Secret_j"] = ["Secret_5","Secret_6"];
 
+	PremierMutations["Highsociety"] = ["Rorschach","Spangled"];
 	PremierMutations["Bubblegum"] = ["Chestnut","Strawberry"];
 	PremierMutations["Raisedbrow"] = ["Crazy","Thicccbrowz"];
 	PremierMutations["Koala"] = ["Aquamarine","Nachocheez"];
@@ -160,6 +161,7 @@ function setupDictionaries(){
 
 	PremierMutations["Mainecoon"] = ["Chartreux","Himalayan"];
 	PremierMutations["Henna"] = ["Amur","Jaguar"];
+	PremierMutations["Palejade"] = ["Dahlia","Coralsunrise"];
 	PremierMutations["Cerulian"] = ["Scarlet","Barkbrown"];
 	PremierMutations["Grimace"] = ["Saycheese","Grim"];
 
@@ -167,6 +169,7 @@ function setupDictionaries(){
 	PremierMutations["Sass"] = ["Chronic","Slyboots"];
 	PremierMutations["Skyblue"] = ["Coffee","Lemonade"];
 	PremierMutations["Periwinkle"] = ["Azaleablush","Missmuffett"];
+	PremierMutations["Flapflap"] = ["Wild_d","Wild_e"];
 
 	PremierMutations["Persian"] = ["Ragamuffin","Ragdoll"];
 	PremierMutations["Totesbasic_p"] = ["Totesbasic_f","Totesbasic_g"];
@@ -184,6 +187,7 @@ function setupDictionaries(){
 	SecondaryMutations["Seafoam"] = ["Daffodil","Flamingo"];
 	SecondaryMutations["Yokel"] = ["Cheeky","Starstruck"];
 
+	SecondaryMutations["Razzledazzle"] = ["Dippedcone","Highsociety"];
 	SecondaryMutations["Wingtips"] = ["Fabulous","Raisedbrow"]
 	SecondaryMutations["Onyx"] = ["Oldlace","Koala"];
 	SecondaryMutations["Secret_r"] = ["Secret_j","Secret_k"];
@@ -191,14 +195,17 @@ function setupDictionaries(){
 	SecondaryMutations["Hotrod"] = ["Tigerpunk","Henna"];
 	SecondaryMutations["Royalblue"] = ["Wolfgrey","Cerulian"];
 	SecondaryMutations["Neckbeard"] = ["Dali","Grimace"];
+	SecondaryMutations["Autumnmoon"] = ["Twilightsparkle","Palejade"];
 
 	SecondaryMutations["Manx"] = ["Laperm","Persian"];
 	SecondaryMutations["Buzzed"] = ["Sass","Sweetmeloncakes"];
 	SecondaryMutations["Mertail"] = ["Skyblue","Garnet"];
 	SecondaryMutations["Mintmacaron"] = ["Periwinkle","Patrickstarfish"];
+	SecondaryMutations["Unicorn"] = ["Flapflap","Daemonhorns"];
 
 	SecondaryMutations["Bornwithit"] = ["Oceanid","Wingtips"];
 	SecondaryMutations["Pearl"] = ["Royalblue","Mertail"];
+
 
 	mutationDicts = [];
 	mutationDicts.push(PremierMutations);
@@ -658,7 +665,16 @@ function loopGetUserKittensNAPI(number){
 			kittens.push(x);
 		}
 		return kittens;
-	}
+	}       
+	 if(args[2] == "all-gen3PM"){
+                kittens = Utilities.readKittensFromDisk("kittensGeneration",3,3);
+                for(var x = totalSupply-2000; x < totalSupply; x++){
+
+                        kittens.push(x);
+                }
+                return kittens;
+        }
+
 
 
 	if(args[3] == "low"){

@@ -268,12 +268,17 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 	}
 	self._decideBreedOrderAndPush = function(scoredCat, partner, catDictionary, score){
-		if(catDictionary[partner.id].cooldownIndex <= catDictionary[scoredCat.id].cooldownIndex){
+		//console.log(catDictionary);
+		if(parseInt(catDictionary[""+partner.id].cooldownIndex,10) <= parseInt(catDictionary[""+scoredCat.id].cooldownIndex,10)){
+
 			self.breedingPairs.push(new BreedingPair(partner.id, scoredCat.id, score));
+			console.log("Picked Cat 2 as mother!");
 			//setTimeout(self.readyToBreedCheckA,300, partner.id, scoredCat.id);
 
 		} else {
 			self.breedingPairs.push(new BreedingPair(scoredCat.id, partner.id, score));
+			console.log("Picked Cat 1 as mother!");
+
 			//setTimeout(self.readyToBreedCheckA,300, partner.id, scoredCat.id);
 
 		}
@@ -388,7 +393,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		var partner = undefined;
 		self.bpairs = [];
 		var copyOfCats = self.cats.slice();
-		var portionedCats = Utilities.chunkify(copyOfCats,12);
+		var portionedCats = Utilities.chunkify(copyOfCats,32);
 
 		var breedingPairs = [];
 		var count = 0;
@@ -406,7 +411,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			  count += 1;
 			  bpResults[count] = message;
 
-			  if(count == 12){
+			  if(count == 32){
 			  	console.log("All reported back!");
 			  	console.log(bpResults);
 			  	var keys = Object.keys(bpResults);
