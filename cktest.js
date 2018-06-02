@@ -334,7 +334,7 @@ function mainFunction (calls){
 
 		targeted_traits = Utilities.shuffle(targeted_traits);
 		targeted_traits = ["Secret_r","Tinybox","Unknown_m","Forgetmenot"];
-
+		targeted_traits = ["Rascal","Wasntme","Peach"];
 		//Tinybox mutation:
 		//targeted_traits = ["Mystery_7","Mystery_8"];
 
