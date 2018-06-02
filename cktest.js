@@ -658,7 +658,16 @@ function loopGetUserKittensNAPI(number){
 			kittens.push(x);
 		}
 		return kittens;
-	}
+	}       
+	 if(args[2] == "all-gen3PM"){
+                kittens = Utilities.readKittensFromDisk("kittensGeneration",3,3);
+                for(var x = totalSupply-2000; x < totalSupply; x++){
+
+                        kittens.push(x);
+                }
+                return kittens;
+        }
+
 
 
 	if(args[3] == "low"){
