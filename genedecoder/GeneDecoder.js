@@ -101,23 +101,6 @@ function GeneDecoder(){
 		geneGroupNames[10] = "Pattern";
 		geneGroupNames[11] = "Body";
 
-	
-
-		geneGroupNames[0] = "Unknown";
-		geneGroupNames[1] = "Unknown";
-		geneGroupNames[2] = "Unknown";
-		geneGroupNames[3] = "Mouth";
-		geneGroupNames[4] = "Wild";
-		geneGroupNames[5] = "Color";
-		geneGroupNames[6] = "Pattern Color";
-		geneGroupNames[7] = "Body Color";
-		geneGroupNames[8] = "Eye Type";
-		geneGroupNames[9] = "Eye Color";
-		geneGroupNames[10] = "Pattern";
-		geneGroupNames[11] = "Body";
-
-
-
 		bodyGeneNames["Savannah"] = "1";
 		bodyGeneNames["Selkirk"] = "2";
 		bodyGeneNames["Non-rel_body_3"] = "3";
@@ -282,7 +265,7 @@ function GeneDecoder(){
 		colorPrimaryGeneNames["Non-rel_primarycolor_w"] = "w";
 
 
-		colorSecondaryGeneNames["Non-rel_secondarycolor_1"] = "1";
+		colorSecondaryGeneNames["Cyborg"] = "1";
 		colorSecondaryGeneNames["Springcrocus"] = "2";
 		colorSecondaryGeneNames["Egyptiankohl"] = "3";
 		colorSecondaryGeneNames["Poisonberry"] = "4";
@@ -298,7 +281,7 @@ function GeneDecoder(){
 		colorSecondaryGeneNames["Lemonade"] = "e";
 		colorSecondaryGeneNames["Chocolate"] = "f";
 		colorSecondaryGeneNames["Butterscotch"] = "g";
-		colorSecondaryGeneNames["Non-rel_secondarycolor_h"] = "h";
+		colorSecondaryGeneNames["Ooze"] = "h";
 		colorSecondaryGeneNames["Safetyvest"] = "i";
 		colorSecondaryGeneNames["Turtleback"] = "j";
 		colorSecondaryGeneNames["Rosequartz"] = "k";
@@ -306,13 +289,13 @@ function GeneDecoder(){
 		colorSecondaryGeneNames["Cerulian"] = "n";
 		colorSecondaryGeneNames["Skyblue"] = "o";
 		colorSecondaryGeneNames["Garnet"] = "p";
-		colorSecondaryGeneNames["Non-rel_secondarycolor_q"] = "q";
+		colorSecondaryGeneNames["Peppermint"] = "q";
 		colorSecondaryGeneNames["Universe"] = "r";
 		colorSecondaryGeneNames["Royalblue"] = "s";
 		colorSecondaryGeneNames["Mertail"] = "t";
-		colorSecondaryGeneNames["Non-rel_secondarycolor_u"] = "u";
+		colorSecondaryGeneNames["Inflatablepool"] = "u";
 		colorSecondaryGeneNames["Pearl"] = "v";
-		colorSecondaryGeneNames["Non-rel_secondarycolor_w"] = "w";
+		colorSecondaryGeneNames["Prairierose"] = "w";
 
 
 		colorTertiaryGeneNames["Belleblue"] = "1";
@@ -358,7 +341,7 @@ function GeneDecoder(){
 		wildGeneNames["Wild_9"] = "9";
 		wildGeneNames["Wild_a"] = "a";
 		wildGeneNames["Non-rel_wild_b"] = "b";
-		wildGeneNames["Non-rel_wild_c"] = "c";
+		wildGeneNames["Wild_c"] = "c";
 		wildGeneNames["Wild_d"] = "d";
 		wildGeneNames["Wild_e"] = "e";
 		wildGeneNames["Wild_f"] = "f";

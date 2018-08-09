@@ -75,6 +75,10 @@ function MutationDictionaries(){
 		PremierMutations["Tongue"] = ["Happygokitty","Soserious"];
 		PremierMutations["Rosequartz"] = ["Royalpurple","Padparadscha"];
 		PremierMutations["Splat"] = ["Vigilante","Tiger"];
+		PremierMutations["Ooze"] = ["Cyborg","Springcrocus"];
+		PremierMutations["Samwise"] = ["Confuzzled","Impish"];
+		PremierMutations["Juju"] = ["Environment_5","Environment_6"];
+
 		let	SecondaryMutations = {}
 		SecondaryMutations["Babypuke"] = ["Pumpkin","Limegreen"];
 		SecondaryMutations["Oceanid"] = ["Chameleon","Alien"];
@@ -104,8 +108,20 @@ function MutationDictionaries(){
 		SecondaryMutations["Sully"] = ["Seafoam","Cobalt"];
 		SecondaryMutations["Dioscuri"] = ["Autumnmoon","Oasis"];
 
+		SecondaryMutations["Oasis"] = ["Pinefresh","Eclipse"];
+		SecondaryMutations["Walrus"] = ["Yokel","Topoftheworld"];
 		SecondaryMutations["Martian"] = ["Verdigris","Redvelvet"];
 		SecondaryMutations["Universe"] = ["Turtleback","Rosequartz"];
+		SecondaryMutations["Peppermint"] = ["Ooze","Safetyvest"];
+
+		SecondaryMutations["Inflatablepool"] = ["Peppermint","Universe"];
+		SecondaryMutations["Prairierose"] = ["Inflatablepool","Pearl"];
+
+		SecondaryMutations["Topoftheworld"] = ["Samwise","Ruhroh"];
+		SecondaryMutations["Scorpius"] = ["Splat","Thunderstruck"];
+		SecondaryMutations["Avatar"] = ["Scorpius","Razzledazzle"];
+		SecondaryMutations["Frozen"] = ["Juju","Tinybox"];
+
 		mutationDicts = [];
 		mutationDicts.push(PremierMutations);
 		mutationDicts.push(SecondaryMutations);
