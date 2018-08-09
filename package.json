@@ -1,0 +1,39 @@
+{
+  "name": "autokitty",
+  "version": "1.0.0",
+  "description": "",
+  "main": "startKittenManager.js",
+  "scripts": {
+    "test": "getKitten"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
+    "utilities": "file:utilities",
+    "web3": "^1.0.0-beta.33",
+    "mutation-dictionaries": "file:mutation-dictionary-module",
+    "simple-mutation-module": "file:simple-mutation-module",
+    "pure-mutation-module": "file:pure-mutation-module",
+    "show-available-mutations-module": "file:show-available-mutations-module",
+    "make-fancy-cat-module": "file:make-fancy-cat-module",
+    "kitten-loader": "file:kitten-loader",
+    "buy-clock-cats-module": "file:buy-clock-cats-module",
+    "config": "file:config-module",
+    "send-cats-module": "file:send-cats-module",
+    "list-auctions-module": "file:list-auctions-module",
+    "trait-search-module": "file:trait-search-module",
+    "bs58": "^4.0.1",
+    "hex-to-binary": "^1.0.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EirikUlversoy/autokitty.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EirikUlversoy/autokitty/issues"
+  },
+  "homepage": "https://github.com/EirikUlversoy/autokitty#readme"
+}

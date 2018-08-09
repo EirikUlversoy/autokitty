@@ -1,0 +1,14 @@
+{
+  "name": "fancyfier",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Fancyfier.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "js-combinatorics": "^0.5.3"
+  }
+}

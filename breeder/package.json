@@ -1,0 +1,11 @@
+{
+  "name": "breeder",
+  "version": "1.0.0",
+  "description": "Crypto Kitty Breeder",
+  "main": "Breeder.js",
+  "scripts": {
+    "test": "self.breedingLoop"
+  },
+  "author": "",
+  "license": "ISC"
+}
