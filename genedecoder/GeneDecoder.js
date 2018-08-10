@@ -829,6 +829,8 @@ function GeneDecoder(){
 								mutationPoints += 0.03;
 							}
 
+						} else if (KaiGroupNumber >= 2){
+							mutationPoints += 0.0005;
 						}
 
 						//mutationPoints += 0.25*(1+genenumber);
@@ -849,6 +851,8 @@ function GeneDecoder(){
 								mutationPoints += 0.03;
 							}
 
+						} else if (KaiGroupNumber >= 2){
+							mutationPoints += 0.0005;
 						}
 						//mutationPoints += 0.25*(1+genenumber);
 					}

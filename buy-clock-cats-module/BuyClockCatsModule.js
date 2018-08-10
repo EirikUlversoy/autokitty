@@ -318,7 +318,7 @@ function BuyClockCatsModule(){
 					catID = catIdsToBuy[clockCat].id;
 				}
 				console.log("Trying to buy for: " + price_roof);
-				sale_contract.methods.bid(catID).send({from: web3.eth.defaultAccount, value: web3.utils.toWei(price_roof, "ether"),gasPrice: web3.utils.toWei("0.000000040", "ether"),gas:1000000 });
+				sale_contract.methods.bid(catID).send({from: web3.eth.defaultAccount, value: web3.utils.toWei(price_roof, "ether"),gasPrice: web3.utils.toWei("0.000000012", "ether"),gas:1000000 });
 				console.log("Bought cat number: " + catID);
 			} else {
 				console.log("Bought all cats specified");

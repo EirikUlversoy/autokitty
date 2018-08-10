@@ -57,10 +57,15 @@ function SimpleMutationModule(){
 	function performAllMutations(){
 		gen = parseInt(args[3],10);
 		let MutationMappings = {};
-		if(gen > 0){
-			MutationMappings = mutationDicts[1];
-		} else {
+		if(gen == 0){
 			MutationMappings = mutationDicts[0];
+		} else if (gen == 1) {
+			MutationMappings = mutationDicts[1];
+		} else if(gen == 2){
+			MutationMappings = mutationDicts[2];
+		} else {
+			//Default as tier 2 mutations
+			MutationMappings = mutationDicts[1];
 		}
 
 		delete MutationMappings['Manx'];

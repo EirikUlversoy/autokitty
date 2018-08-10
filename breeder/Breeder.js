@@ -267,10 +267,10 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self._sortBreedingPairs  = function(breedingPairs){
 		breedingPairs.sort(Comparators.keyComparator("score"));
 
-		let threshold = Utilities.float2int(breedingPairs.length * 0.10);
+//		let threshold = Utilities.float2int(breedingPairs.length * 0.10);
+		let threshold = Utilities.float2int(breedingPairs.length * 1);
 
 		self.breedingPairs = breedingPairs.slice(0,threshold);
-		console.log(self.breedingPairs);
 
 		output = [];
 		for (var bp in self.breedingPairs){
@@ -282,7 +282,8 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		fs.writeFile('kitten_pairs/saved_breeding_pairs.txt', output, (err) => {
 	  	if (err) throw err;
 		})
-
+		console.log(self.breedingPairs);
+		
 	}
 
 	self._pureMutationChaser = function(catDictionary){
