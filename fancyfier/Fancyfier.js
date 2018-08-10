@@ -234,32 +234,19 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 					missingTraits = getMissingTraits(cat.cat, this.current_targeted_traits);    
 					//Here the first missing trait is used to make a toplist of the copy of the cat list that we made earlier. For now it picks the first one, optimally it should choose the best missing trait or
 					//account for both.
+					var reagentList = [];
 					if(missingTraits.length != 0){
 						topList = createSingleTopList(potentialCatPartners, missingTraits[0]);
 						let firstReagent = undefined;
 						let secondReagent = undefined;
 						let mutationDicts = require('../mutation-dictionary-module')();
 
-						var invert = function (obj) {
-
-							  var new_obj = {};
-
-							  for (var prop in obj) {
-							    if(obj.hasOwnProperty(prop)) {
-							      new_obj[obj[prop]] = prop;
-							    }
-							  }
-
-							  return new_obj;
-							};
-
 						for(let m in mutationDicts){
 							dictionary = mutationDicts[m];
-							invDictionary = invert(dictionary);
 							if(dictionary[missingTraits[0]] != undefined){
 								firstReagent = dictionary[missingTraits[0]][0];
 								secondReagent = dictionary[missingTraits[0]][1];
-								mutation = dictionary[]
+								mutation = missingTraits[0];
 							}
 
 						}
@@ -269,6 +256,13 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							var reagentTwoScoredCats = scoreAllCats(this.cats, this.threshold_modified, [secondReagent])
 							var scoreOne = scoreCat(cat, 0.30, firstReagent);
 							var scoreTwo = scoreCat(cat, 0.30, secondReagent);
+							if(scoreOne > 0 || scoreTwo > 0){
+								if(scoreOne >= scoreTwo){
+									reagentList = reagentTwoScoredCats;
+								} else {
+									reagentList = reagentOneScoredCats;
+								}
+							}
 
 							
 						}
@@ -336,7 +330,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							partnerCat = reagentList[partnerCat];
 							targeted_traits = [];
 							targeted_traits = this.current_targeted_traits.slice();
-							delete targeted_traits[]
+							delete targeted_traits[mutation];
 							targeted_traits.push(firstReagent);
 							targeted_traits.push(secondReagent);
 
@@ -351,7 +345,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 
 									//Picks the correct (fastest) mother
 									var breedingPair = decideParentRoles(cat.cat, partnerCat, self.catDictionary);
-									chanceOfFancy = scoreCatPair(cat.cat, partnerCat, this.total_targeted_traits)*0.25;
+									chanceOfFancy = scoreCatPair(cat.cat, partnerCat, targeted_traits)*0.25;
 
 									if(self.catOutput){
 										//Output for the breeding pair
