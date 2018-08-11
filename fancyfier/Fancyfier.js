@@ -134,7 +134,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			var listOfTargetedTraitCombinations = selectTargetTraits(traitLevel+2);
 			
 			//Threshold, increases with gen number. 
-			var threshold = 0.10;
+			var threshold = 0.30;
 			console.log(x);
 			if(x > 4){
 				threshold = 0.30;
@@ -234,109 +234,59 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 					missingTraits = getMissingTraits(cat.cat, this.current_targeted_traits);    
 					//Here the first missing trait is used to make a toplist of the copy of the cat list that we made earlier. For now it picks the first one, optimally it should choose the best missing trait or
 					//account for both.
-					var reagentList = [];
+					var reagentLists = [];
+					var topLists = [];
 					if(missingTraits.length != 0){
-						topList = createSingleTopList(potentialCatPartners, missingTraits[0]);
-						let firstReagent = undefined;
-						let secondReagent = undefined;
-						let mutationDicts = require('../mutation-dictionary-module')();
+						var firstReagents = [];
+						var secondReagents = [];
+						var mutations = [];
 
-						for(let m in mutationDicts){
-							dictionary = mutationDicts[m];
-							if(dictionary[missingTraits[0]] != undefined){
-								firstReagent = dictionary[missingTraits[0]][0];
-								secondReagent = dictionary[missingTraits[0]][1];
-								mutation = missingTraits[0];
+						for(var mTrait in missingTraits){
+							topList = createSingleTopList(potentialCatPartners, missingTraits[mTrait]);
+							topLists.push(topList);
+							let mutationDicts = require('../mutation-dictionary-module')();
+
+							for(let m in mutationDicts){
+								dictionary = mutationDicts[m];
+								if(dictionary[missingTraits[mTrait]] != undefined){
+									firstReagents.push(dictionary[missingTraits[mTrait]][0]);
+									secondReagents.push(dictionary[missingTraits[mTrait]][1]);
+									mutations.push(missingTraits[mTrait]);
+								}
+
 							}
 
-						}
-
-						if(firstReagent != undefined && secondReagent != undefined){
-							var reagentOneScoredCats = scoreAllCats(this.cats, this.threshold_modified, [firstReagent])
-							var reagentTwoScoredCats = scoreAllCats(this.cats, this.threshold_modified, [secondReagent])
-							var scoreOne = scoreCat(cat, 0.30, firstReagent);
-							var scoreTwo = scoreCat(cat, 0.30, secondReagent);
-							if(scoreOne > 0 || scoreTwo > 0){
-								if(scoreOne >= scoreTwo){
-									reagentList = reagentTwoScoredCats;
-								} else {
-									reagentList = reagentOneScoredCats;
-								}
-							}
-
-							
-						}
-					} else {
-						topList = potentialCatPartners;
-					}
-					//Iterating over the toplist we just made trying to find a suitable partner
-					for(var partnerCat in topList){
-						if(missingTraits.length != 0){
-							partnerCat = topList[partnerCat];
-
-						} else {
-							partnerCat = topList[partnerCat].cat;
-						}
-
-						// Two checks on this line, both checks if traits requirements are met (for each trait, either cat is over the threshold, if not -> false)
-						//Second check is a check for whether each cat has at least two dominant traits of the targeted traits
-						if(traitRequirementsMet(cat.cat, partnerCat, this.current_targeted_traits, this.threshold_modified) && noFancyOnFancyRequirement(cat.cat, partnerCat, this.total_targeted_traits, this.threshold_modified)){
-							
-							//This function call does three checks, for speed, relation and whether either cat is already used. Lots of cats are filtered out here.
-							let swift = false;
-							var specific_fancy = ["Ganado","Wiley","Cerulian","Rollercoaster"];
-							if(isValidMatch(cat.cat, partnerCat, self.usedCats, swift) && notSpecificFancyCheck(cat.cat, partnerCat, specific_fancy)){
-
-								//Picks the correct (fastest) mother
-								var breedingPair = decideParentRoles(cat.cat, partnerCat, self.catDictionary);
-								chanceOfFancy = scoreCatPair(cat.cat, partnerCat, this.total_targeted_traits);
-
-								if(self.catOutput){
-									//Output for the breeding pair
-									console.log("Cat 1: ");
-									console.log(cat.cat.chanceOfTrait);
-									console.log(cat.id);
-									console.log("Cat 2:");
-									console.log(partnerCat.chanceOfTrait);
-									console.log(partnerCat.id);
-									console.log("CHANCE OF FANCY: " + chanceOfFancy);
-								}
-								
-
-								//Using the multiplicative threshold as a second check
-								if(chanceOfFancy >= this.multiplicative_threshold){
-
-									this.breedingPairs.push(breedingPair);
-									self.usedCats.push(cat.id);
-									self.usedCats.push(partnerCat.id);
-									break;
-								} else {
-									if(self.catOutput){
-										console.log("Did not pass multiplicative_threshold!");
-										console.log(chanceOfFancy);
+							if(firstReagents[mTrait] != undefined && secondReagents[mTrait] != undefined){
+								var reagentOneScoredCats = scoreAllCats(this.cats, this.threshold_modified, [firstReagents[mTrait]])
+								var reagentTwoScoredCats = scoreAllCats(this.cats, this.threshold_modified, [secondReagents[mTrait]])
+								var scoreOne = scoreCat(cat, 0.30, firstReagents[mTrait]);
+								var scoreTwo = scoreCat(cat, 0.30, secondReagents[mTrait]);
+								if(scoreOne > 0 || scoreTwo > 0){
+									if(scoreOne >= scoreTwo){
+										reagentLists.push(reagentTwoScoredCats);
+									} else {
+										reagentLists.push(reagentOneScoredCats);
 									}
 								}
-								if(self.catOutput){
-									console.log("------------------------------------------------------");
-								}
-
-								
 							}
-						} else {
-
 						}
-
-						for(var partnerCat in reagentList){
-							partnerCat = reagentList[partnerCat];
-							targeted_traits = [];
-							targeted_traits = this.current_targeted_traits.slice();
-							delete targeted_traits[mutation];
-							targeted_traits.push(firstReagent);
-							targeted_traits.push(secondReagent);
+						
+					} else {
+						topLists.push(potentialCatPartners);
+					}
+					//Iterating over the toplist we just made trying to find a suitable partner
+					for(var tList in topLists){
+						topList = topLists[tList];
+						for(var partnerCat in topList){
+							if(missingTraits.length != 0){
+								partnerCat = topList[partnerCat];
+							} else {
+								partnerCat = topList[partnerCat].cat;
+							}
 
 							// Two checks on this line, both checks if traits requirements are met (for each trait, either cat is over the threshold, if not -> false)
 							//Second check is a check for whether each cat has at least two dominant traits of the targeted traits
-							if(traitRequirementsMet(cat.cat, partnerCat, targeted_traits, this.threshold_modified) && noFancyOnFancyRequirement(cat.cat, partnerCat, this.total_targeted_traits, this.threshold_modified)){
+							if(traitRequirementsMet(cat.cat, partnerCat, this.current_targeted_traits, this.threshold_modified) && noFancyOnFancyRequirement(cat.cat, partnerCat, this.total_targeted_traits, this.threshold_modified)){
 								
 								//This function call does three checks, for speed, relation and whether either cat is already used. Lots of cats are filtered out here.
 								let swift = false;
@@ -345,7 +295,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 
 									//Picks the correct (fastest) mother
 									var breedingPair = decideParentRoles(cat.cat, partnerCat, self.catDictionary);
-									chanceOfFancy = scoreCatPair(cat.cat, partnerCat, targeted_traits)*0.25;
+									chanceOfFancy = scoreCatPair(cat.cat, partnerCat, this.total_targeted_traits);
 
 									if(self.catOutput){
 										//Output for the breeding pair
@@ -381,10 +331,17 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							} else {
 
 							}
+
+							
 						}
 					}
+					
 
 				}
+			}
+
+			for(var rList in reagentLists){
+				reagentLoop(reagentLists[rList], firstReagents[rList], secondReagents[rList], mutations[rList]);
 			}
 
 			if(this.stopOnNext){
@@ -413,12 +370,70 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 		}
 	}
 
-	function eitherCatIsSwiftOrBetter(catA, catB){
-			if(parseInt(catA.generation,10) > 20){
-				return true;
+	function reagentLoop(reagentList, firstReagent, secondReagent, mutation){
+		for(var partnerCat in reagentList){
+			partnerCat = reagentList[partnerCat];
+			targeted_traits = [];
+			targeted_traits = this.current_targeted_traits.slice();
+			targeted_traits.push(firstReagent);
+			targeted_traits.push(secondReagent);
+			targeted_traits = Utilities.remove(mutation);
+			console.log("reagent in reagentlist");	
+			// Two checks on this line, both checks if traits requirements are met (for each trait, either cat is over the threshold, if not -> false)
+			//Second check is a check for whether each cat has at least two dominant traits of the targeted traits
+			if(traitRequirementsMet(cat.cat, partnerCat.cat, targeted_traits, this.threshold_modified) && noFancyOnFancyRequirement(cat.cat, partnerCat.cat, this.total_targeted_traits, this.threshold_modified)){
+				console.log("traitreq met for muta?");
+				//This function call does three checks, for speed, relation and whether either cat is already used. Lots of cats are filtered out here.
+				let swift = false;
+				var specific_fancy = ["Ganado","Wiley","Cerulian","Rollercoaster"];
+				if(isValidMatch(cat.cat, partnerCat.cat, self.usedCats, swift) && notSpecificFancyCheck(cat.cat, partnerCat, specific_fancy)){
+
+					//Picks the correct (fastest) mother
+					var breedingPair = decideParentRoles(cat.cat, partnerCat, self.catDictionary);
+					chanceOfFancy = scoreCatPair(cat.cat, partnerCat.cat, targeted_traits)*0.25;
+
+					if(self.catOutput){
+						//Output for the breeding pair
+						console.log("Cat 1: ");
+						console.log(cat.cat.chanceOfTrait);
+						console.log(cat.id);
+						console.log("Cat 2:");
+						console.log(partnerCat.chanceOfTrait);
+						console.log(partnerCat.id);
+						console.log("CHANCE OF FANCY: " + chanceOfFancy);
+					}
+					
+
+					//Using the multiplicative threshold as a second check
+					if(chanceOfFancy >= this.multiplicative_threshold){
+
+						this.breedingPairs.push(breedingPair);
+						self.usedCats.push(cat.id);
+						self.usedCats.push(partnerCat.id);
+						break;
+					} else {
+						if(self.catOutput){
+							console.log("Did not pass multiplicative_threshold!");
+							console.log(chanceOfFancy);
+						}
+					}
+					if(self.catOutput){
+						console.log("------------------------------------------------------");
+					}
+
+					
+				}
 			} else {
-				return ((parseInt(catA.cooldownIndex,10) <= 5) || (parseInt(catB.cooldownIndex,10) <= 5));
+
 			}
+		}
+	}
+	function eitherCatIsSwiftOrBetter(catA, catB){
+		if(parseInt(catA.generation,10) > 20){
+			return true;
+		} else {
+			return ((parseInt(catA.cooldownIndex,10) <= 5) || (parseInt(catB.cooldownIndex,10) <= 5));
+		}
 	}
 
 	//Picks the correct mother (fastest)
@@ -491,9 +506,14 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 		var missingTraits = [];
 		for(var trait in targeted_traits){
 			trait = targeted_traits[trait];
-			if(cat.chanceOfTrait[trait] < 0.20){
+			if(cat.chanceOfTrait[trait] != undefined){
+				if(cat.chanceOfTrait[trait] < 0.20){
+					missingTraits.push(trait);
+				}
+			} else {
 				missingTraits.push(trait);
 			}
+
 		}
 		return missingTraits;
 	}
