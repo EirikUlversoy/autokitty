@@ -258,16 +258,17 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 								}
 
 							}
-
-							if(firstReagents[mTrait] != undefined && secondReagents[mTrait] != undefined){
+						}
+						for(var mutationNr in mutations){
+							if(firstReagents[mutationNr] != undefined && secondReagents[mutationNr] != undefined){
 								targeted_traits = [];
 								targeted_traits = this.current_targeted_traits.slice();
-								targeted_traits.push(firstReagents[mTrait]);
-								targeted_traits.push(secondReagents[mTrait]);
-								targeted_traits = Utilities.remove(targeted_traits, mutations[mTrait]);
+								targeted_traits.push(firstReagents[mutationNr]);
+								targeted_traits.push(secondReagents[mutationNr]);
+								targeted_traits = Utilities.remove(targeted_traits, mutations[mutationNr]);
 
-								var reagentOneScoredCats = createSingleTopList(potentialCatPartners, firstReagents[mTrait]);
-								var reagentTwoScoredCats = createSingleTopList(potentialCatPartners, secondReagents[mTrait]);
+								var reagentOneScoredCats = createSingleTopList(potentialCatPartners, firstReagents[mutationNr]);
+								var reagentTwoScoredCats = createSingleTopList(potentialCatPartners, secondReagents[mutationNr]);
 								//reagentOneScoredCats = [];
 								//reagentTwoScoredCats = [];
 								//var scoreOne = scoreCat(cat.cat, 0.30, [firstReagents[mTrait]]);
@@ -276,15 +277,15 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 								//scoreTwo = 1;
 								var scoreOne = 0;
 								var scoreTwo = 0;
-								if(cat.cat.chanceOfTrait[firstReagents[mTrait]] != undefined){
-									scoreOne = cat.cat.chanceOfTrait[firstReagents[mTrait]];
+								if(cat.cat.chanceOfTrait[firstReagents[mutationNr]] != undefined){
+									scoreOne = cat.cat.chanceOfTrait[firstReagents[mutationNr]];
 								}
 
-								if(cat.cat.chanceOfTrait[secondReagents[mTrait]] != undefined){
-									scoreTwo = cat.cat.chanceOfTrait[secondReagents[mTrait]];
+								if(cat.cat.chanceOfTrait[secondReagents[mutationNr]] != undefined){
+									scoreTwo = cat.cat.chanceOfTrait[secondReagents[mutationNr]];
 								}
 								if( scoreOne > 0.30 || scoreTwo > 0.30){
-									if(scoreOne >= scoreTwo){
+									if(scoreOne > scoreTwo){
 										reagentLists.push(reagentTwoScoredCats);
 									} else {
 
@@ -293,6 +294,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 								}
 							}
 						}
+						
 						
 					} else {
 						topLists.push(potentialCatPartners);
@@ -372,13 +374,17 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							targeted_traits.push(secondReagent);
 							targeted_traits = Utilities.remove(targeted_traits, mutation);
 							if(String(cat.id) == "713586" && String(partnerCat.id) == "680079"){
+								console.log(reagentList);
+								console.log(firstReagent);
+								console.log(secondReagent);
+								console.log(mutation);
 								console.log(cat);
 								console.log(partnerCat);
 								console.log(traitRequirementsMet(cat.cat, partnerCat, targeted_traits,0));
 								console.log(targeted_traits);
 								console.log(noFancyOnFancyRequirement(cat.cat,partnerCat, self.total_targeted_traits, 0));
 								for(var trait in targeted_traits){
-									trait = current_targeted_traits[trait];
+									trait = targeted_traits[trait];
 									if(cat.cat.chanceOfTrait[trait] > 0.02 || partnerCat.chanceOfTrait[trait] > 0.02){
 										console.log("Success for trait: " + trait);
 										console.log(cat.cat.chanceOfTrait[trait]);
@@ -396,6 +402,8 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							//Second check is a check for whether each cat has at least two dominant traits of the targeted traits
 							if(traitRequirementsMet(cat.cat, partnerCat, targeted_traits, 0) && noFancyOnFancyRequirement(cat.cat, partnerCat, self.total_targeted_traits, 0)){
 								console.log("traitreq met for muta?");
+								console.log(cat.cat.id);
+								console.log(partnerCat.id);
 								//This function call does three checks, for speed, relation and whether either cat is already used. Lots of cats are filtered out here.
 								let swift = false;
 								var specific_fancy = ["Ganado","Wiley","Cerulian","Rollercoaster"];
@@ -404,6 +412,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 									//Picks the correct (fastest) mother
 									var breedingPair = decideParentRoles(cat.cat, partnerCat, self.catDictionary);
 									chanceOfFancy = scoreCatPair(cat.cat, partnerCat, targeted_traits);
+									console.log("Found muta pair?");
 
 									if(self.catOutput){
 										//Output for the breeding pair
