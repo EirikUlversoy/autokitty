@@ -134,7 +134,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			var listOfTargetedTraitCombinations = selectTargetTraits(traitLevel+2);
 			
 			//Threshold, increases with gen number. 
-			var threshold = 0.30;
+			var threshold = 0.10;
 			console.log(x);
 			if(x > 4){
 				threshold = 0.30;
@@ -244,7 +244,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 						for(var mTrait in missingTraits){
 							topList = createSingleTopList(potentialCatPartners, missingTraits[mTrait]);
 							topLists.push(topList);
-							let mutationDicts = require('../mutation-dictionary-module')();
+							let mutationDicts = require('../mutation-dictionary-module')().setupDictionaries();
 
 							for(let m in mutationDicts){
 								dictionary = mutationDicts[m];
@@ -252,11 +252,14 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 									firstReagents.push(dictionary[missingTraits[mTrait]][0]);
 									secondReagents.push(dictionary[missingTraits[mTrait]][1]);
 									mutations.push(missingTraits[mTrait]);
+									
 								}
+								console.log(dictionary[missingTraits[mTrait]]);
 
 							}
 
 							if(firstReagents[mTrait] != undefined && secondReagents[mTrait] != undefined){
+								console.log("making reagents");
 								var reagentOneScoredCats = scoreAllCats(this.cats, this.threshold_modified, [firstReagents[mTrait]])
 								var reagentTwoScoredCats = scoreAllCats(this.cats, this.threshold_modified, [secondReagents[mTrait]])
 								var scoreOne = scoreCat(cat, 0.30, firstReagents[mTrait]);
