@@ -76,6 +76,7 @@ function GeneDecoder(){
 		self.highest_gene_positions["Savannah"] = "R1";
 		
 		self.highest_gene_positions["Vigilante"] = "R3";
+		self.highest_gene_positions["Cyborg"] = "R3";
 
 		self.highest_gene_positions["Unknown_9"] = "D";
 		self.highest_gene_positions["Unknown_a"] = "D";
@@ -829,6 +830,8 @@ function GeneDecoder(){
 								mutationPoints += 0.03;
 							}
 
+						} else if (KaiGroupNumber >= 2){
+							mutationPoints += 0.0005;
 						}
 
 						//mutationPoints += 0.25*(1+genenumber);
@@ -849,6 +852,8 @@ function GeneDecoder(){
 								mutationPoints += 0.03;
 							}
 
+						} else if (KaiGroupNumber >= 2){
+							mutationPoints += 0.0005;
 						}
 						//mutationPoints += 0.25*(1+genenumber);
 					}
@@ -1226,27 +1231,39 @@ function GeneDecoder(){
 		}
 		return chanceOfTrait;
 	}
+	self.chanceOfTraitNoFilter = function(geneArray){
+		var chanceOfTrait = 0.0;
+		for (var gene in geneArray){
+			chanceOfTrait += genePercentages[gene];
 
+		}
+
+		return chanceOfTrait;
+	}
 	function isEmptyObject( obj ) {
 	    for ( var name in obj ) {
 	        return false;
 	    }
 	    return true;
 	}
+
 	self.simpleFilter = function(kitten, targetedTraits){
 		geneArrays = self.readKitten(kitten);
 		var traitChances = {};
-		for(var trait in targetedTraits){
-			for(var gArray in geneArrays){
-				var chance = self.simpleChanceOfTrait(geneArrays[gArray],targetedTraits[trait]);
-				if(chance != 0.0){
-					traitChances[targetedTraits[trait]] = chance;
+		for(var gArray in geneArrays){
+			gArray = geneArrays[gArray];
+			for(var gene in gArray){
+				if(traitChances[gArray[gene]] != undefined){
+					traitChances[gArray[gene]] += genePercentages[gene];
+				} else {
+					traitChances[gArray[gene]] = genePercentages[gene];
 				}
 			}
+
+		}
 			//if(!isEmptyObject(traitChances)){
 			//	console.log(traitChances);
 			//}
-		}
 		kitten.chanceOfTrait = traitChances;
 
 		return kitten;

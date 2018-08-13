@@ -198,7 +198,7 @@ module.exports = {
 	    return value | 0;
 	},
 	anyTraitInListIsExtreme(targetedTraits){
-		var extremeList = ["Otaku","Peach","Chartreux","Harbourfog","Hintomint","Dragonfruit","Wild_7","Wild_a","Wasntme","Violet","Secret_1","Non-rel_pattern_7","Mystery_8","Butterscotch","Vigilante"];
+		var extremeList = ["Otaku","Peach","Chartreux","Harbourfog","Hintomint","Dragonfruit","Wild_7","Wild_a","Wasntme","Violet","Secret_1","Non-rel_pattern_7","Mystery_8","Butterscotch","Vigilante","Cyborg"];
 
 		for(var trait in targetedTraits){
 			if(extremeList.includes(targetedTraits[trait])){
@@ -208,7 +208,7 @@ module.exports = {
 		return false;
 	},
 	anyTraitInListIsRare(targetedTraits){
-		var rareList = ["Manul","Belch","Beard","Peach","Emeraldgreen","Missmuffett","Nachocheez","Springcrocus","Serpent","Caffeine","Baddate","Forgetmenot","Camo","Calicool","Environment_b"];
+		var rareList = ["Manul","Belch","Beard","Peach","Emeraldgreen","Missmuffett","Nachocheez","Springcrocus","Serpent","Caffeine","Baddate","Forgetmenot","Camo","Calicool","Environment_b","Wild_2"];
 
 		for(var trait in targetedTraits){
 			if(rareList.includes(targetedTraits[trait])){

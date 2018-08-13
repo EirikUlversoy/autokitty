@@ -115,6 +115,7 @@ function MakeFancyCatModule(){
 	}
 
 	function fancify(){
+		cats = [];
 		var kittenLoader = require("kitten-loader")(args);
 		ck_contract.methods.totalSupply().call()
 		.then(kittenLoader.loadKittens)
