@@ -208,7 +208,7 @@ function SimpleMutationModule(){
 
 
 	function mutate(){
-
+		cats = [];
 		if(args[2] == "load-pairs"){
 			var kittenLoader = require("../kitten-loader")(args);
 			var pairs = kittenLoader.loadPairs();
@@ -221,6 +221,7 @@ function SimpleMutationModule(){
 			.then(getCatsFromContract)
 			.then(startMutationProcess);
 		}
+
 	}
 
 	function breedOnly(pairs){

@@ -78,6 +78,7 @@ function MutationDictionaries(){
 		PremierMutations["Ooze"] = ["Cyborg","Springcrocus"];
 		PremierMutations["Samwise"] = ["Confuzzled","Impish"];
 		PremierMutations["Juju"] = ["Environment_5","Environment_6"];
+		PremierMutations["Littlefoot"] = ["Wild_1","Wild_2"];
 
 		let	SecondaryMutations = {}
 		SecondaryMutations["Babypuke"] = ["Pumpkin","Limegreen"];
@@ -109,7 +110,7 @@ function MutationDictionaries(){
 		SecondaryMutations["Dioscuri"] = ["Autumnmoon","Oasis"];
 		SecondaryMutations["Walrus"] = ["Yokel","Topoftheworld"];
 		SecondaryMutations["Inflatablepool"] = ["Peppermint","Universe"];
-
+		SecondaryMutations["Dragontail"] = ["Elk","Littlefoot"];
 
 		SecondaryMutations["Oasis"] = ["Pinefresh","Eclipse"];
 		SecondaryMutations["Martian"] = ["Verdigris","Redvelvet"];

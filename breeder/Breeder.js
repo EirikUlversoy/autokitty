@@ -607,6 +607,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		self.usedCats = [];
 		var treshold = 0.15;
+		if(self.targetedTraits[0] == "Rollercoaster"){
+			treshold = 0.05;
+		}
 		if(self.sixPercent){
 			treshold = 0.03;
 		}

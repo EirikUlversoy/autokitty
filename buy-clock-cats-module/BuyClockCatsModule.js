@@ -35,8 +35,8 @@ function BuyClockCatsModule(){
 	var allFilteredCatsC = [];
 
 	var pureBred = false;
-	var optimizedR1 = false;
-	var optimizedR2 = false;
+	var optimizedR1 = true;
+	var optimizedR2 = true;
 
 	var desired_traits_dictionary = {};
 
@@ -141,7 +141,7 @@ function BuyClockCatsModule(){
 			if (rarity == "R1"){
 				
 				if(optimizedR1){
-					if((gene_array[1] == trait) && (gene_array[0] == trait)){
+					if((gene_array[1] == gene_array[2]) && (gene_array[0] == gene_array[2])){
 						return 2;
 					} else {
 						return 0;
@@ -157,7 +157,7 @@ function BuyClockCatsModule(){
 		if(gene_number == 1){
 			if(rarity == "R2"){
 				if(optimizedR2){
-					if(gene_array[0] == trait){
+					if(gene_array[0] == gene_array[1]){
 						return 2;
 					} else {
 						return 1;

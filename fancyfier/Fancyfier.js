@@ -13,9 +13,9 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	self.fancyOnFancyBanned = true;
 	self.useDefaultDict = true;
 	self.defaultDict = {};
-	self.defaultDict[1] = 0.005;
-	self.defaultDict[2] = 0.02;
-	self.defaultDict[3] = 0.03;
+	self.defaultDict[1] = 0.0001;
+	self.defaultDict[2] = 0.01;
+	self.defaultDict[3] = 0.02;
 	self.defaultDict[4] = 0.05;
 	self.defaultDict[5] = 0.10;
 	self.defaultDict[6] = 0.25;
@@ -27,6 +27,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 
 	//Needed to call the starting function from outside while still keeping the other functions internal
 	self.mainStarter = function(gen_from, gen_to, cats){
+		cats = isReadyFilter(cats);
 		for (var cat in cats){
 			self.catDict[cats[cat].id] = cats[cat];
 		}
@@ -145,7 +146,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			}
 
 			//Multi threshold
-			var multiplicative_threshold = 0.05;//(0.005*counter);
+			var multiplicative_threshold = 0.50;//(0.005*counter);
 			
 			//One stage for each of the traitcombinations
 			for(var y = 0; y < listOfTargetedTraitCombinations.length; y++){
@@ -438,9 +439,6 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							// Two checks on this line, both checks if traits requirements are met (for each trait, either cat is over the threshold, if not -> false)
 							//Second check is a check for whether each cat has at least two dominant traits of the targeted traits
 							if(traitRequirementsMet(cat.cat, partnerCat, targeted_traits, 0) && noFancyOnFancyRequirement(cat.cat, partnerCat, self.total_targeted_traits, 0)){
-								console.log("traitreq met for muta?");
-								console.log(cat.cat.id);
-								console.log(partnerCat.id);
 								//This function call does three checks, for speed, relation and whether either cat is already used. Lots of cats are filtered out here.
 								let swift = false;
 								var specific_fancy = ["Ganado","Wiley","Cerulian","Rollercoaster"];
@@ -449,8 +447,6 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 									//Picks the correct (fastest) mother
 									var breedingPair = decideParentRoles(cat.cat, partnerCat, self.catDictionary);
 									chanceOfFancy = scoreCatPair(cat.cat, partnerCat, targeted_traits)*0.25;
-									console.log(chanceOfFancy);
-									console.log("Found muta pair?");
 
 									if(self.catOutput){
 										//Output for the breeding pair
@@ -465,7 +461,6 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 									
 
 									//Using the multiplicative threshold as a second check
-									console.log(multiplicative_threshold);
 									if(chanceOfFancy >= multiplicative_threshold){
 										self.usedCats.push(cat.id);
 										self.usedCats.push(partnerCat.id);
@@ -506,7 +501,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 				return this.breedingPairs;
 			}
 			//This is the final result of solving the stage
-			if(this.breedingPairs.length > 0 || this.multiplicative_threshold < 0.001){
+			if(this.breedingPairs.length > 0 || this.multiplicative_threshold < 0.002){
 				return this.breedingPairs;
 				this.stopOnNext = true;
 				let toReduce = (this.multiplicative_threshold * 0.20);

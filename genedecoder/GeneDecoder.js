@@ -76,6 +76,7 @@ function GeneDecoder(){
 		self.highest_gene_positions["Savannah"] = "R1";
 		
 		self.highest_gene_positions["Vigilante"] = "R3";
+		self.highest_gene_positions["Cyborg"] = "R3";
 
 		self.highest_gene_positions["Unknown_9"] = "D";
 		self.highest_gene_positions["Unknown_a"] = "D";
