@@ -1,10 +1,20 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import './global';
+var net = require('net');
+const Web3 = require('web3');
+
+
+
 
 class App extends Component {
   render() {
-    return (
+      var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
+
+      web3.eth.getBlock('latest').then(console.log);
+      
+        return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
