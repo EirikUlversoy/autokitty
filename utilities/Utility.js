@@ -192,6 +192,9 @@ module.exports = {
 		if(catA.generation == 0 && catB.generation == 0){
 			isRelated = false;
 		}
+		if(catA.id == catB.id){
+			isRelated = true;
+		}
 		return isRelated;
 	},
 	float2int (value) {

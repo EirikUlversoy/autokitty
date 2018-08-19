@@ -73,7 +73,9 @@ function KittenLoader(args){
 			let to_gen = parseInt(args[4],10);
 
 			kittens = Utilities.readKittensFromDisk("kittensGeneration",from_gen,to_gen);
-			
+			if(args[7] == "X"){
+				kittens = Utilities.fancyReadKittensFromDisk("squid/kittensGeneration",from_gen,to_gen);
+			}
 
 			for(var x = totalCatCount-5000; x <totalCatCount; x++){
 			  kittens.push(x);

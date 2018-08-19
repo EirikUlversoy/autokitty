@@ -68,6 +68,7 @@ function SimpleMutationModule(){
 			MutationMappings = mutationDicts[1];
 		}
 
+
 		delete MutationMappings['Manx'];
 		console.log(MutationMappings);
 		targeted_traits = ["Jaguar","Lemonade"];
