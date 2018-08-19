@@ -118,7 +118,7 @@ function PureMutationModule(){
 	
 
 	self.start = function (){
-		let timePerIteration = 600000;
+		let timePerIteration = 3000000;
 
 		if(parseInt(config.time_per_iteration,10) != 0){
 			timePerIteration = config.time_per_iteration;
