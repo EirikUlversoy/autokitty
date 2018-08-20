@@ -244,7 +244,7 @@ function GeneDecoder(){
 		colorPrimaryGeneNames["Harbourfog"] = "9";
 		colorPrimaryGeneNames["Cinderella"] = "a";
 		colorPrimaryGeneNames["Greymatter"] = "b";
-		colorPrimaryGeneNames["Non-rel_primarycolor_c"] = "c";
+		colorPrimaryGeneNames["Tundra"] = "c";
 		colorPrimaryGeneNames["Brownies"] = "d";
 		colorPrimaryGeneNames["Dragonfruit"] = "e";
 		colorPrimaryGeneNames["Hintomint"] = "f";
@@ -254,15 +254,15 @@ function GeneDecoder(){
 		colorPrimaryGeneNames["Oldlace"] = "j";
 		colorPrimaryGeneNames["Koala"] = "k";
 		colorPrimaryGeneNames["Lavender"] = "m";
-		colorPrimaryGeneNames["Non-rel_primarycolor_n"] = "n";
+		colorPrimaryGeneNames["Glacier"] = "n";
 		colorPrimaryGeneNames["Redvelvet"] = "o";
 		colorPrimaryGeneNames["Verdigris"] = "p";
 		colorPrimaryGeneNames["Non-rel_primarycolor_q"] = "q";
 		colorPrimaryGeneNames["Onyx"] = "r";
-		colorPrimaryGeneNames["Non-rel_primarycolor_s"] = "s";
+		colorPrimaryGeneNames["Hyacinth"] = "s";
 		colorPrimaryGeneNames["Martian"] = "t";
 		colorPrimaryGeneNames["Non-rel_primarycolor_u"] = "u";
-		colorPrimaryGeneNames["Non-rel_primarycolor_v"] = "v";
+		colorPrimaryGeneNames["Shamrock"] = "v";
 		colorPrimaryGeneNames["Non-rel_primarycolor_w"] = "w";
 
 
@@ -410,7 +410,7 @@ function GeneDecoder(){
 		environmentGeneNames["Environment_d"] = "d";
 		environmentGeneNames["Non-rel_environment_e"] = "e";
 		environmentGeneNames["Environment_f"] = "f";
-		environmentGeneNames["Non-rel_environment_g"] = "g";
+		environmentGeneNames["Enivonment_g"] = "g";
 		environmentGeneNames["Salty"] = "h";
 		environmentGeneNames["Non-rel_environment_i"] = "i";
 		environmentGeneNames["Juju"] = "j";
@@ -418,7 +418,7 @@ function GeneDecoder(){
 		environmentGeneNames["Non-rel_environment_m"] = "m";
 		environmentGeneNames["Finalfrontier"] = "n";
 		environmentGeneNames["Non-rel_environment_o"] = "o";
-		environmentGeneNames["Non-rel_environment_p"] = "p";
+		environmentGeneNames["Drift"] = "p";
 		environmentGeneNames["Non-rel_environment_q"] = "q";
 		environmentGeneNames["Frozen"] = "r";
 		environmentGeneNames["Non-rel_environment_s"] = "s";

@@ -275,7 +275,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		output = [];
 		for (var bp in self.breedingPairs){
 			bp = self.breedingPairs[bp];
-			if(bp.score >= 0.067){
+			if(bp.score >= 0.060){
 				output.push(bp.id1 + ',' + bp.id2 + ',' + bp.score + 'END' );
 			}
 		}
@@ -438,11 +438,16 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		XorderedTraitScoreList = RankingModule.unorderedDictionaryToOrderedArrayByScore(traitScoreList);
 		orderedTraitScoreList = [];
-		for(x in XorderedTraitScoreList){
-			if(XorderedTraitScoreList[x].score > 0.30){
-				orderedTraitScoreList.push(XorderedTraitScoreList[x]);
+		if(parseInt(catDictionary[scoredCat.id].generation,10) > 0){
+			for(x in XorderedTraitScoreList){
+				if(XorderedTraitScoreList[x].score > 0.30){
+					orderedTraitScoreList.push(XorderedTraitScoreList[x]);
+				}
 			}
+		} else {
+			orderedTraitScoreList = XorderedTraitScoreList;
 		}
+
 		mutationUnordered = RankingModule.makeMutationScoreDictionarySingular(catDictionary[scoredCat.id],orderedTraitScoreList, catDictionary);
 		mutationOrdered = RankingModule.getSortedArrayOfScoredMutaCatsFromDictionary(mutationUnordered, self.cats);
 
@@ -613,8 +618,8 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		self.usedCats = [];
 		var treshold = 0.15;
-		if(self.sixPercent){
-			treshold = 0.03;
+		if(self.sixPercent || Utilities.contains(self.targetedTraits,"Cyborg")){
+			treshold = 0.015;
 		}
 		for(var scoredCat in arrayOfScoredCats){
 			scoredCat = arrayOfScoredCats[scoredCat];

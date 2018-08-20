@@ -40,6 +40,8 @@ function MutationDictionaries(){
 		PremierMutations["Secret_k"] = ["Secret_7","Secret_8"];
 		PremierMutations["Ruhroh"] = ["Rollercoaster","Belch"];
 		PremierMutations["Tinybox"] = ["Mystery_7","Mystery_8"];
+		PremierMutations["Pinefresh"] = ["Olive","Doridnudibranch"];
+		PremierMutations["Drift"] = ["Environment_f","Environment_g"];
 
 		PremierMutations["Tigerpunk"] = ["Luckystripe","Calicool"];
 		PremierMutations["Twilightsparkle"] = ["Sapphire","Forgetmenot"];
@@ -57,7 +59,7 @@ function MutationDictionaries(){
 		PremierMutations["Cerulian"] = ["Scarlet","Barkbrown"];
 		PremierMutations["Grimace"] = ["Saycheese","Grim"];
 		PremierMutations["Finalfrontier"] = ["Environment_b","Environment_c"];
-
+		PremierMutations["Glacier"] = ["Tundra","Greymatter"];
 		PremierMutations["Laperm"] = ["Munchkin","Sphynx"];
 		PremierMutations["Sass"] = ["Chronic","Slyboots"];
 		PremierMutations["Skyblue"] = ["Coffee","Lemonade"];
@@ -104,7 +106,7 @@ function MutationDictionaries(){
 		SecondaryMutations["Oceanid"] = ["Chameleon","Alien"];
 		SecondaryMutations["Seafoam"] = ["Daffodil","Flamingo"];
 		SecondaryMutations["Yokel"] = ["Cheeky","Starstruck"];
-
+		SecondaryMutations["Hyacinth"] = ["Glacier","Lavender"];
 		SecondaryMutations["Razzledazzle"] = ["Dippedcone","Highsociety"];
 		SecondaryMutations["Wingtips"] = ["Fabulous","Raisedbrow"]
 		SecondaryMutations["Onyx"] = ["Oldlace","Koala"];
@@ -154,6 +156,7 @@ function MutationDictionaries(){
 		TierThreeMutations["Walrus"] = ["Yokel","Topoftheworld"];
 		TierThreeMutations["Inflatablepool"] = ["Peppermint","Universe"];
 		TierThreeMutations["Avatar"] = ["Scorpius","Razzledazzle"];
+		TierThreeMutations["Shamrock"] = ["Hyacinth","Martian"];
 
 
 		mutationDicts = [];
