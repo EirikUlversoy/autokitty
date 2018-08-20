@@ -119,6 +119,7 @@ function PureMutationModule(){
 
 	self.start = function (){
 		mutate();
+
 	}
 
 	function mutate(){
