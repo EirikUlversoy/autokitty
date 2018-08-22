@@ -642,15 +642,40 @@ function GeneDecoder(){
 			return false;
 		}
 	}
+	self.findCatsWithTraitCombination = function(cats, targetedTraits, cooldown, dominant){
+		var new_cats = [];
+		for(var cat in cats){
+			cat = cats[cat];
+			new_cat = self.simpleFilter(cat, targetedTraits);
+			let valid = true;
+			for(var trait in targetedTraits){
+				trait = targetedTraits[trait];
 
-	self.newDiamondPrototypeFunction = function(cats, targetedTraits, cooldown){
+				if(new_cat.chanceOfTrait[trait] != undefined){
+					if(dominant){
+						if(new_cat.chanceOfTrait[trait] > 0.30){
+						} else {
+							valid = false;
+						}
+					}
+				} else {
+					valid = false;
+				}
+			}
+			if(valid){
+				new_cats.push(cat);
+			}
+		}
+		return new_cats;
+	}
+	self.newDiamondPrototypeFunction = function(cats, targetedTrait, cooldown){
 		let new_cats = [];
 		console.log(cats);
 		for(var cat in cats){
 			cat = cats[cat];
-			new_cat = self.simpleFilter(cat, targetedTraits);
+			new_cat = self.simpleFilter(cat, targetedTrait);
 
-			if(new_cat.chanceOfTrait[targetedTraits] != undefined){
+			if(new_cat.chanceOfTrait[targetedTrait] != undefined){
 				
 					new_cats.push(new_cat);
 			}
@@ -668,7 +693,7 @@ function GeneDecoder(){
 		}
 
 		var RankingModule = require('../ranking-module')(); 
-		let scores = RankingModule.scoreCatsBasedOnTraits(new_cats, targetedTraits, targetedTraits);
+		let scores = RankingModule.scoreCatsBasedOnTraits(new_cats, targetedTrait, targetedTrait);
 		let sorted_scores = RankingModule.getSortedArrayOfScoredCatsFromDictionary(scores);
 
 		return sorted_scores;
@@ -1026,6 +1051,37 @@ function GeneDecoder(){
 		return filteredCats;
 	}
 
+	self.filterOutFancies = function(cats, fancyTraitCombinations){
+		var new_cats = [];
+		for(var cat in cats){
+			if(self._catIsFancy(cats[cat], fancyTraitCombinations)){
+
+			} else {
+				new_cats.push(cats[cat]);
+			}
+		}
+
+		return new_cats;
+
+	}
+
+	self._catIsFancy = function(cat, fancyTraitCombinations){
+		for(var traitCombo in fancyTraitCombinations){
+			var catCount = 0;
+			current_targeted_traits = fancyTraitCombinations[traitCombo];
+			for(var trait in current_targeted_traits){
+				trait = current_targeted_traits[trait];
+				if(cat.chanceOfTrait[trait] > 0.30){
+					catCount += 1;
+				}
+			}
+			if(catCount == fancyTraitCombinations[traitCombo].length){
+				return true;
+			}
+		}
+
+		return false;
+	}
 	self.findRarestTraitCombinations = function(cats){
 
 		var afterEasterTraits = ["Caffeine", "Daemonwings", "Parakeet", "Eclipse", "Shale", "Daemonhorns", "Salty", "Cinderella", "Lavender","Swarley", "Oceanid", "Chameleon", "Bornwithit", "Highlander", "Koladiviya", "Pearl", "Mertail", "Garnet", "Butterscotch", "Tinybox", "Razzledazzle", "Rorschach", "Highsociety", "Dahlia", "Palejade", "Autumnmoon", "Flapflap", "Unicorn", "Manul", "Balinese", "Kurilian", "Cobalt", "Cashewmilk", "Buttercup", "Finalfrontier", "Impish", "Wowza", "Tendertears", "Brownies", "Redvelvet", "Martian", "Universe", "Rosequartz", "Padparadscha", "Littlefoot", "Dragontail"];

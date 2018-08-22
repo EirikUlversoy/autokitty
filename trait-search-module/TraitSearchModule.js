@@ -52,7 +52,26 @@ function TraitSearchModule(){
 			console.log(cats[cat]);
 		}
 
-		Utilities.saveKittenIds(cats, "matching_cats" + 0);
+		Utilities.saveKittenIds(cats, "t_search_results" + 0);
+	}
+
+	function searchForMultipleTraits(){
+		var traitFileName = args[3];
+		//get traits here
+		var kittenLoader = require("kitten-loader")(args);
+		targetedTraits = kittenLoader.loadTraits(traitFileName);
+		console.log(targetedTraits);
+		var gen = parseInt(args[4],10);
+		var cooldown = args[5];
+		var includeFancySet = (args[6] == 'true');
+		var dominantOnlySet = (args[7] == 'true');
+		cats = Utilities.separateByGeneration(cats, gen, gen);
+		cats = GeneDecoder.findCatsWithTraitCombination(cats, targetedTraits, cooldown, dominantOnlySet);
+		if(!includeFancySet){
+			cats = GeneDecoder.filterOutFancies(cats, fancyTraitCombinations);
+		}
+		console.log("found: " + cats.length + "cats!");
+		Utilities.saveKittenIds(cats, "t_search_results_multiple" + 0);
 	}
 
 
@@ -95,12 +114,22 @@ function TraitSearchModule(){
 	}
 
 	function main(){
-		var kittenLoader = require("kitten-loader")(args);
-		ck_contract.methods.totalSupply().call()
-		.then(kittenLoader.loadKittens)
-		.then(getOwnershipOfCatsFromContract)
-		.then(getCatsFromContract)
-		.then(searchForTrait);
+		if(args[2] == "trait-search-multiple"){
+			var kittenLoader = require("kitten-loader")(args);
+			ck_contract.methods.totalSupply().call()
+			.then(kittenLoader.loadKittens)
+			.then(getOwnershipOfCatsFromContract)
+			.then(getCatsFromContract)
+			.then(searchForMultipleTraits);
+		} else {
+			var kittenLoader = require("kitten-loader")(args);
+			ck_contract.methods.totalSupply().call()
+			.then(kittenLoader.loadKittens)
+			.then(getOwnershipOfCatsFromContract)
+			.then(getCatsFromContract)
+			.then(searchForTrait);
+		}
+
 	}
 
 

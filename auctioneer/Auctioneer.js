@@ -27,7 +27,7 @@ function Auctioneer(upper_wallet_address, web3, ck_contract, price){
 			console.log(address);
 
 		} else {
-			ck_contract.methods.createSaleAuction(id,web3.utils.toWei(self.price, "ether"),web3.utils.toWei(self.price, "ether"), 86400).send({from: web3.eth.defaultAccount, gas: 900000, gasPrice: web3.utils.toWei("0.000000010", "ether")});
+			ck_contract.methods.createSaleAuction(id,web3.utils.toWei(self.price, "ether"),web3.utils.toWei(self.price, "ether"), 86400).send({from: web3.eth.defaultAccount, gas: 900000, gasPrice: web3.utils.toWei("0.000000005", "ether")});
 			console.log("(((would have)))");
 			console.log("created auction for cat: %d", id);
 		}

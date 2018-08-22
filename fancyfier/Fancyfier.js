@@ -10,16 +10,16 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	self.current_targeted_traits = self.total_targeted_traits;
 	self.allBreedingPairLists = [];
 	self.catOutput = false;
-	self.fancyOnFancyBanned = false;
-	self.useDefaultDict = false;
+	self.fancyOnFancyBanned = true;
+	self.useDefaultDict = true;
 	self.defaultDict = {};
-	self.defaultDict[1] = 0.01;
-	self.defaultDict[2] = 0.01;
-	self.defaultDict[3] = 0.01;
-	self.defaultDict[4] = 0.03;
-	self.defaultDict[5] = 0.03;
-	self.defaultDict[6] = 0.03;
-	self.longshotMutations = false;
+	self.defaultDict[1] = 0.002;
+	self.defaultDict[2] = 0.005;
+	self.defaultDict[3] = 0.03;
+	self.defaultDict[4] = 0.05;
+	self.defaultDict[5] = 0.08;
+	self.defaultDict[6] = 0.18;
+	self.longshotMutations = true;
 	//Needs to be global to avoid conflicts
 	self.usedCats = [];
 	var Breeder = require("../breeder")(upper_wallet_address, web3, ck_contract);
@@ -32,8 +32,8 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 		for (var cat in cats){
 			self.catDict[cats[cat].id] = cats[cat];
 		}
-		cats = GeneDecoder.filterByDominantCount(cats, self.total_targeted_traits, self.dominantCount);
-		//cats = GeneDecoder.filterByR1Count(cats, self.total_targeted_traits, self.dominantCount);
+		//cats = GeneDecoder.filterByDominantCount(cats, self.total_targeted_traits, self.dominantCount);
+		cats = GeneDecoder.filterByR1Count(cats, self.total_targeted_traits, self.dominantCount);
 		main(gen_from, gen_to, cats);
 
 	}
@@ -147,12 +147,12 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			}
 
 			//Multi threshold
-			var multiplicative_threshold = 0.80;//(0.005*counter);
+			var multiplicative_threshold = 0.10;//(0.005*counter);
 			
 			//One stage for each of the traitcombinations
 			for(var y = 0; y < listOfTargetedTraitCombinations.length; y++){
 				var generationFilteredCats = catGenerationFilter(cats, x);
-				generationFilteredCats = cats;
+				//generationFilteredCats = cats;
 				var stage = new Stage(x, generationFilteredCats, listOfTargetedTraitCombinations[y], threshold, self.total_targeted_traits, multiplicative_threshold);
 				stageList.push(stage);
 
@@ -171,7 +171,6 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			//counter += 1;
 
 		}
-		stageList = [stageList[0]];
 		return stageList;
 	}
 

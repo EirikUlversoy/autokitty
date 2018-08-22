@@ -621,6 +621,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		if(self.sixPercent || Utilities.contains(self.targetedTraits,"Cyborg")){
 			treshold = 0.015;
 		}
+		if(Utilities.contains(self.targetedTraits,"Rollercoaster")){
+			treshold = 0.05;
+		}
 		for(var scoredCat in arrayOfScoredCats){
 			scoredCat = arrayOfScoredCats[scoredCat];
 			if(self._isSuitableCat(scoredCat, catDictionary, treshold)){

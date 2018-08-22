@@ -134,7 +134,7 @@ function MakeFancyCatModule(){
 
 
 	self.start = function(){
-		let timePerIteration = 400000;
+		let timePerIteration = 2000000;
 
 		if(parseInt(config.time_per_iteration,10) != 0){
 			timePerIteration = config.time_per_iteration;

@@ -107,7 +107,7 @@ module.exports = {
 		}
 		fs.writeFile(name + '.txt', output, (err) => {
 	  	if (err) throw err;
-	  	//console.log('It\'s saved!');
+	  	console.log('It\'s saved!');
 	});},
 		remove(array, element){
 		return array.filter(function(e) { 
