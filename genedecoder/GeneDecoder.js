@@ -104,7 +104,7 @@ function GeneDecoder(){
 
 		bodyGeneNames["Savannah"] = "1";
 		bodyGeneNames["Selkirk"] = "2";
-		bodyGeneNames["Non-rel_body_3"] = "3";
+		bodyGeneNames["Chantilly"] = "3";
 		bodyGeneNames["Birman"] = "4";
 		bodyGeneNames["Koladiviya"] = "5";
 		bodyGeneNames["Bobtail"] = "6";
@@ -119,18 +119,18 @@ function GeneDecoder(){
 		bodyGeneNames["Ragamuffin"] = "f";
 		bodyGeneNames["Ragdoll"] = "g";
 		bodyGeneNames["Norwegianforest"] = "h";
-		bodyGeneNames["Non-rel_body_i"] = "i";
+		bodyGeneNames["Mekong"] = "i";
 		bodyGeneNames["Highlander"] = "j";
 		bodyGeneNames["Balinese"] = "k";
 		bodyGeneNames["Non-rel_body_m"] = "m";
 		bodyGeneNames["Mainecoon"] = "n";
 		bodyGeneNames["Laperm"] = "o";
 		bodyGeneNames["Persian"] = "p";
-		bodyGeneNames["Non-rel_body_q"] = "q";
+		bodyGeneNames["Fox"] = "q";
 		bodyGeneNames["Kurilian"] = "r";
 		bodyGeneNames["Non-rel_body_s"] = "s";
 		bodyGeneNames["Manx"] = "t";
-		bodyGeneNames["Non-rel_body_u"] = "u";
+		bodyGeneNames["Lykoi"] = "u";
 		bodyGeneNames["Non-rel_body_v"] = "v";
 		bodyGeneNames["Non-rel_body_w"] = "w";
 

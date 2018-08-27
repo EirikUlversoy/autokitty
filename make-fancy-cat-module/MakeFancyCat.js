@@ -72,7 +72,7 @@ function MakeFancyCatModule(){
 		fancy_dict["New"] = ["Redvelvet","Patrickstarfish","Dragontail"];
 		fancy_dict["New2"] = ["Sphynx","Redvelvet","Dragontail"];
 		fancy_dict["New3"] = ["Sphynx","Patrickstarfish","Dragontail","Redvelvet"];
-
+		fancy_dict["Testy"] = ["Selkirk","Cloudwhite","Chronic","Cheeky"];
 		var targeted_traits = fancy_dict[args[6]]; 		
 		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount);
 		var stages = Fancyfier.mainStarter(gen_from, gen_to, cats);
@@ -134,7 +134,7 @@ function MakeFancyCatModule(){
 
 
 	self.start = function(){
-		let timePerIteration = 2000000;
+		let timePerIteration = 3600000;
 
 		if(parseInt(config.time_per_iteration,10) != 0){
 			timePerIteration = config.time_per_iteration;

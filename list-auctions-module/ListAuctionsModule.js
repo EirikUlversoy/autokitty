@@ -40,8 +40,9 @@ function ListAuctionsModule(){
 	args = process.argv;
 	//Where most of the script logic is.
 	function listCats(){
-		var price = String(args[4]);
-		var Auctioneer = require('../auctioneer')(config.upper_wallet_address,web3, ck_contract, price);
+		var price_from = String(args[4]);
+		var price_to = String(args[5]);
+		var Auctioneer = require('../auctioneer')(config.upper_wallet_address,web3, ck_contract, price_from, price_to);
 		for(var cat in cats){
 			catId = cats[cat].id;
 			console.log("Trying to list: " + catId);

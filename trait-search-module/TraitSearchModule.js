@@ -55,6 +55,16 @@ function TraitSearchModule(){
 		Utilities.saveKittenIds(cats, "t_search_results" + 0);
 	}
 
+	var fancy_list = [];
+	fancy_list.push(["Belch","Nachocheez","Buzzed","Sandalwood"]);
+	fancy_list.push(["Wiley","Cerulian","Rollercoaster","Ganado"]);
+	fancy_list.push(["Norwegianforest", "Thicccbrowz", "Orangesoda","Luckystripe"]);
+	fancy_list.push(["Rascal", "Wasntme","Peach"]);
+	fancy_list.push(["Salty","Verdigris","Turtleback","Cyan"]);
+	fancy_list.push(["Ragdoll", "Crazy", "Bananacream", "Chocolate", "Mintmacaron","Yokel"]);
+	fancy_list.push(["Googly","Beard","Royalpurple","Dippedcone"]);
+	fancy_list.push(["Redvelvet","Patrickstarfish","Dragontail","Sphynx"]);
+
 	function searchForMultipleTraits(){
 		var traitFileName = args[3];
 		//get traits here
@@ -68,7 +78,7 @@ function TraitSearchModule(){
 		cats = Utilities.separateByGeneration(cats, gen, gen);
 		cats = GeneDecoder.findCatsWithTraitCombination(cats, targetedTraits, cooldown, dominantOnlySet);
 		if(!includeFancySet){
-			cats = GeneDecoder.filterOutFancies(cats, fancyTraitCombinations);
+			cats = GeneDecoder.filterOutFancies(cats, fancy_list);
 		}
 		console.log("found: " + cats.length + "cats!");
 		Utilities.saveKittenIds(cats, "t_search_results_multiple" + 0);

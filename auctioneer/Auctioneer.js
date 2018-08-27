@@ -1,12 +1,14 @@
-function Auctioneer(upper_wallet_address, web3, ck_contract, price){
+function Auctioneer(upper_wallet_address, web3, ck_contract, price_from, price_to){
 	let self = {};
 	self.web3 = web3;
 	self.upper_wallet_address = upper_wallet_address;
 	self.ck_contract = ck_contract;
-	if(price != undefined){
-		self.price = price;
+	if(price_from != undefined){
+		self.price_from = price_from;
+		self.price_to = price_to;
 	} else {
-		self.price = "1";
+		self.price_from = "1";
+		self.price_to = "1";
 	}
 	self.check = function(id){
 		self.ck_contract.methods.isPregnant(id).call().then(z => self.secondCheck(id,z));
@@ -27,7 +29,7 @@ function Auctioneer(upper_wallet_address, web3, ck_contract, price){
 			console.log(address);
 
 		} else {
-			ck_contract.methods.createSaleAuction(id,web3.utils.toWei(self.price, "ether"),web3.utils.toWei(self.price, "ether"), 86400).send({from: web3.eth.defaultAccount, gas: 900000, gasPrice: web3.utils.toWei("0.000000005", "ether")});
+			ck_contract.methods.createSaleAuction(id,web3.utils.toWei(self.price_from, "ether"),web3.utils.toWei(self.price_to, "ether"), 864000).send({from: web3.eth.defaultAccount, gas: 900000, gasPrice: web3.utils.toWei("0.000000002", "ether")});
 			console.log("(((would have)))");
 			console.log("created auction for cat: %d", id);
 		}

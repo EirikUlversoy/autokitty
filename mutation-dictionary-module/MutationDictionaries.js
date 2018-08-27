@@ -81,25 +81,10 @@ function MutationDictionaries(){
 		PremierMutations["Samwise"] = ["Confuzzled","Impish"];
 		PremierMutations["Juju"] = ["Environment_5","Environment_6"];
 		PremierMutations["Littlefoot"] = ["Wild_1","Wild_2"];
-		PremierMutations["Combo1"] = ["Ruhroh","Dragontail"];
-		PremierMutations["Combo2"] = ["Ooze","Dioscuri"];
-		PremierMutations["Combo5"] = ["Ooze","Topoftheworld"];
 		PremierMutations["Combo3"] = ["Sully","Bornwithit"];
-		PremierMutations["Combo4"] = ["Onyx","Dragontail"];
 		PremierMutations["Peppermint"] = ["Ooze","Safetyvest"];
-		PremierMutations["Combo6"] = ["Dragontail","Dioscuri"];
-		PremierMutations["Combo7"] = ["Sully","Dragontail"];
-		PremierMutations["Combo8"] = ["Samwise","Lavender"];
-		PremierMutations["Combo9"] = ["Bornwithit","Dragontail"];
-		PremierMutations["Walrus"] = ["Yokel","Topoftheworld"];
-		PremierMutations["Combo10"] = ["Yokel", "Seafoam"];
 		PremierMutations["Inflatablepool"] = ["Peppermint","Universe"];
-		PremierMutations["Combo11"] = ["Universe","Dragontail"];
-		PremierMutations["Combo12"] = ["Dragontail","Walrus"];
-		PremierMutations["Combo13"] = ["Walrus","Selkirk"];
-		PremierMutations["Combo14"] = ["Sphynx","Walrus"];
-		PremierMutations["Combo15"] = ["Dragontail","Redvelvet"];
-		PremierMutations["Combo16"] = ["Sphynx","Patrickstarfish"];
+		PremierMutations["Mekong"] = ["Chantilly","Birman"];
 
 		let	SecondaryMutations = {}
 		SecondaryMutations["Babypuke"] = ["Pumpkin","Limegreen"];
@@ -145,7 +130,8 @@ function MutationDictionaries(){
 		SecondaryMutations["Scorpius"] = ["Splat","Thunderstruck"];
 		SecondaryMutations["Avatar"] = ["Scorpius","Razzledazzle"];
 		SecondaryMutations["Frozen"] = ["Juju","Tinybox"];
-
+		SecondaryMutations["Lykoi"] = ["Fox","Kurilian"];
+		SecondaryMutations["Fox"] = ["Mekong", "Norwegianforest"];
 
 
 		TierThreeMutations = {};
@@ -157,6 +143,7 @@ function MutationDictionaries(){
 		TierThreeMutations["Inflatablepool"] = ["Peppermint","Universe"];
 		TierThreeMutations["Avatar"] = ["Scorpius","Razzledazzle"];
 		TierThreeMutations["Shamrock"] = ["Hyacinth","Martian"];
+		TierThreeMutations["Lykoi"] = ["Fox","Kurilian"];
 
 
 		mutationDicts = [];
