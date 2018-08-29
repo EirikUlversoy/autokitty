@@ -210,6 +210,7 @@ function SimpleMutationModule(){
 
 	function mutate(){
 		cats = [];
+		allFilteredCats = [];
 		if(args[2] == "load-pairs"){
 			var kittenLoader = require("../kitten-loader")(args);
 			var pairs = kittenLoader.loadPairs();

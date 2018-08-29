@@ -18,8 +18,14 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	self.defaultDict[2] = 0.02;
 	self.defaultDict[3] = 0.03;
 	self.defaultDict[4] = 0.05;
-	self.defaultDict[5] = 0.08;
-	self.defaultDict[6] = 0.18;
+	self.defaultDict[5] = 0.20;
+	self.defaultDict[6] = 0.35;
+	self.defaultDict[7] = 0.55;
+	self.defaultDict[8] = 0.75;
+	self.defaultDict[9] = 0.85;
+	self.defaultDict[10] = 0.85;
+
+
 	self.longshotMutations = true;
 	//Needs to be global to avoid conflicts
 	self.usedCats = [];
@@ -33,8 +39,8 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 		for (var cat in cats){
 			self.catDict[cats[cat].id] = cats[cat];
 		}
-		//cats = GeneDecoder.filterByDominantCount(cats, self.total_targeted_traits, self.dominantCount);
-		cats = GeneDecoder.filterByR1Count(cats, self.total_targeted_traits, self.dominantCount);
+		cats = GeneDecoder.filterByDominantCount(cats, self.total_targeted_traits, self.dominantCount);
+		//cats = GeneDecoder.filterByR1Count(cats, self.total_targeted_traits, self.dominantCount);
 		main(gen_from, gen_to, cats);
 
 	}
@@ -70,7 +76,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	}
 	function main(gen_from, gen_to, cats){
 		cats = isReadyFilter(cats);
-		var stageList = designStages(gen_from, gen_to, cats, 1);
+		var stageList = designStages(gen_from, gen_to, cats, 2);
 
 		for(var stage in stageList){
 			stageNumber = stage;
@@ -103,7 +109,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 					new_breeding_list = filterBreedingListByPercentage(self.defaultDict[catA.generation], self.allBreedingPairLists[x]);
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				} else {
-					new_breeding_list = filterBreedingListByPercentage(0.10, self.allBreedingPairLists[x]);
+					new_breeding_list = filterBreedingListByPercentage(0.20, self.allBreedingPairLists[x]);
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				}
 			}
@@ -148,7 +154,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			}
 
 			//Multi threshold
-			var multiplicative_threshold = 0.20;//(0.005*counter);
+			var multiplicative_threshold = 0.95;//(0.005*counter);
 			
 			//One stage for each of the traitcombinations
 			for(var y = 0; y < listOfTargetedTraitCombinations.length; y++){
@@ -504,10 +510,10 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 				return this.breedingPairs;
 			}
 			//This is the final result of solving the stage
-			if(this.breedingPairs.length > 5 || this.multiplicative_threshold < 0.002){
+			if(this.breedingPairs.length > 100 || this.multiplicative_threshold < 0.002){
 				return this.breedingPairs;
 				this.stopOnNext = true;
-				let toReduce = (this.multiplicative_threshold * 0.20);
+				let toReduce = (this.multiplicative_threshold * 0.10);
 				console.log("Found a match, reducing further by "+ toReduce + " to find some more matches");
 				this.multiplicative_threshold -= toReduce;
 				this.threshold_modified -= 0.02;

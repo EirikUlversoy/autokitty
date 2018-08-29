@@ -132,6 +132,20 @@ function MutationDictionaries(){
 		SecondaryMutations["Frozen"] = ["Juju","Tinybox"];
 		SecondaryMutations["Lykoi"] = ["Fox","Kurilian"];
 		SecondaryMutations["Fox"] = ["Mekong", "Norwegianforest"];
+		SecondaryMutations["Shamrock"] = ["Hyacinth","Martian"];
+
+
+		//Project combos
+		SecondaryMutations["Project-combo-1"] = ["Walrus","Pearl"];
+		SecondaryMutations["Project-combo-2"] = ["Avatar","Dioscuri"];
+		SecondaryMutations["Project-combo-3"] = ["Bornwithit","Sully"];
+		SecondaryMutations["Project-combo-4"] = ["Shamrock","Lykoi"];
+
+		var keys = Object.keys(SecondaryMutations);
+		for(var key in keys){
+			realKey = keys[key];
+			SecondaryMutations[realKey+"ultra"] = [realKey, realKey];
+		}
 
 
 		TierThreeMutations = {};
