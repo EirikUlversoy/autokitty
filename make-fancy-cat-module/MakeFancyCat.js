@@ -69,9 +69,21 @@ function MakeFancyCatModule(){
 		fancy_dict["Lulu"] = ["Salty","Verdigris","Turtleback","Cyan"];
 		fancy_dict["Catbury"] = ["Ragdoll", "Spock" , "Mintgreen" ,"Crazy", "Bananacream", "Chocolate", "Mintmacaron","Yokel"];
 		fancy_dict["Purrspero"] = ["Googly","Beard","Royalpurple","Dippedcone"];
+		fancy_dict["New"] = ["Redvelvet","Patrickstarfish","Dragontail"];
+		fancy_dict["New2"] = ["Sphynx","Redvelvet","Dragontail"];
+		fancy_dict["New3"] = ["Sphynx","Patrickstarfish","Dragontail","Redvelvet"];
+		fancy_dict["Purrity"] = ["Selkirk","Cloudwhite","Chronic","Cheeky"];
+		fancy_dict["Fancy-project-1"] = ["Walrus","Pearl","Avatar","Dioscuri"];
+		fancy_dict["Fancy-project-2"] = ["Bornwithit","Sully","Shamrock","Lykoi"];
+
+		fancy_dict["Fancy-project-3"] = ["Walrus","Pearl","Avatar","Dioscuri","Bornwithit","Sully","Shamrock","Lykoi"];
+		fancy_dict["Meowstro"] = ["Onyx","Eclipse","Wowza"];
+		fancy_dict["Atlas"] = ["Highlander","Kittencream","Swarley","Topoftheworld"];
+		fancy_dict["Laafee-verte"] = ["Flapflap","Kurilian","Martian","Swampgreen","Seafoam","Pinefresh","Whixtensions","Buzzed","Highsociety"];
 		var targeted_traits = fancy_dict[args[6]]; 		
 		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount);
 		var stages = Fancyfier.mainStarter(gen_from, gen_to, cats);
+
 
 	}
 
@@ -116,6 +128,7 @@ function MakeFancyCatModule(){
 
 	function fancify(){
 		cats = [];
+		allFilteredCats = [];
 		var kittenLoader = require("kitten-loader")(args);
 		ck_contract.methods.totalSupply().call()
 		.then(kittenLoader.loadKittens)
@@ -128,7 +141,7 @@ function MakeFancyCatModule(){
 
 
 	self.start = function(){
-		let timePerIteration = 600000;
+		let timePerIteration = 1400000;
 
 		if(parseInt(config.time_per_iteration,10) != 0){
 			timePerIteration = config.time_per_iteration;

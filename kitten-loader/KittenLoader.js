@@ -9,7 +9,7 @@ function KittenLoader(args){
 		console.log(trait_filename);
 		let text = fs.readFileSync(__dirname + '/../traits/' + trait_filename + '.txt', 'utf8');
 		let splitText = text.split(",");
-
+		console.log(splitText);
 		return splitText;
 	}
 
@@ -73,7 +73,9 @@ function KittenLoader(args){
 			let to_gen = parseInt(args[4],10);
 
 			kittens = Utilities.readKittensFromDisk("kittensGeneration",from_gen,to_gen);
-			
+			if(args[7] == "X"){
+				kittens = Utilities.fancyReadKittensFromDisk("squid/kittensGeneration",from_gen,to_gen);
+			}
 
 			for(var x = totalCatCount-5000; x <totalCatCount; x++){
 			  kittens.push(x);
@@ -94,9 +96,12 @@ function KittenLoader(args){
 			return kittens;
 		}
 
-		if(args[2] == "trait-search"){
+		if(args[2] == "trait-search" || args[2] == "trait-search-multiple"){
 			let gen = parseInt(args[4],10);
 			let kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
+			for(var x = totalCatCount-10000; x <totalCatCount; x++){
+			  kittens.push(x);
+			}
 			return kittens;
 
 		}

@@ -104,7 +104,7 @@ function GeneDecoder(){
 
 		bodyGeneNames["Savannah"] = "1";
 		bodyGeneNames["Selkirk"] = "2";
-		bodyGeneNames["Non-rel_body_3"] = "3";
+		bodyGeneNames["Chantilly"] = "3";
 		bodyGeneNames["Birman"] = "4";
 		bodyGeneNames["Koladiviya"] = "5";
 		bodyGeneNames["Bobtail"] = "6";
@@ -119,18 +119,18 @@ function GeneDecoder(){
 		bodyGeneNames["Ragamuffin"] = "f";
 		bodyGeneNames["Ragdoll"] = "g";
 		bodyGeneNames["Norwegianforest"] = "h";
-		bodyGeneNames["Non-rel_body_i"] = "i";
+		bodyGeneNames["Mekong"] = "i";
 		bodyGeneNames["Highlander"] = "j";
 		bodyGeneNames["Balinese"] = "k";
 		bodyGeneNames["Non-rel_body_m"] = "m";
 		bodyGeneNames["Mainecoon"] = "n";
 		bodyGeneNames["Laperm"] = "o";
 		bodyGeneNames["Persian"] = "p";
-		bodyGeneNames["Non-rel_body_q"] = "q";
+		bodyGeneNames["Fox"] = "q";
 		bodyGeneNames["Kurilian"] = "r";
 		bodyGeneNames["Non-rel_body_s"] = "s";
 		bodyGeneNames["Manx"] = "t";
-		bodyGeneNames["Non-rel_body_u"] = "u";
+		bodyGeneNames["Lykoi"] = "u";
 		bodyGeneNames["Non-rel_body_v"] = "v";
 		bodyGeneNames["Non-rel_body_w"] = "w";
 
@@ -244,7 +244,7 @@ function GeneDecoder(){
 		colorPrimaryGeneNames["Harbourfog"] = "9";
 		colorPrimaryGeneNames["Cinderella"] = "a";
 		colorPrimaryGeneNames["Greymatter"] = "b";
-		colorPrimaryGeneNames["Non-rel_primarycolor_c"] = "c";
+		colorPrimaryGeneNames["Tundra"] = "c";
 		colorPrimaryGeneNames["Brownies"] = "d";
 		colorPrimaryGeneNames["Dragonfruit"] = "e";
 		colorPrimaryGeneNames["Hintomint"] = "f";
@@ -254,15 +254,15 @@ function GeneDecoder(){
 		colorPrimaryGeneNames["Oldlace"] = "j";
 		colorPrimaryGeneNames["Koala"] = "k";
 		colorPrimaryGeneNames["Lavender"] = "m";
-		colorPrimaryGeneNames["Non-rel_primarycolor_n"] = "n";
+		colorPrimaryGeneNames["Glacier"] = "n";
 		colorPrimaryGeneNames["Redvelvet"] = "o";
 		colorPrimaryGeneNames["Verdigris"] = "p";
 		colorPrimaryGeneNames["Non-rel_primarycolor_q"] = "q";
 		colorPrimaryGeneNames["Onyx"] = "r";
-		colorPrimaryGeneNames["Non-rel_primarycolor_s"] = "s";
+		colorPrimaryGeneNames["Hyacinth"] = "s";
 		colorPrimaryGeneNames["Martian"] = "t";
 		colorPrimaryGeneNames["Non-rel_primarycolor_u"] = "u";
-		colorPrimaryGeneNames["Non-rel_primarycolor_v"] = "v";
+		colorPrimaryGeneNames["Shamrock"] = "v";
 		colorPrimaryGeneNames["Non-rel_primarycolor_w"] = "w";
 
 
@@ -410,7 +410,7 @@ function GeneDecoder(){
 		environmentGeneNames["Environment_d"] = "d";
 		environmentGeneNames["Non-rel_environment_e"] = "e";
 		environmentGeneNames["Environment_f"] = "f";
-		environmentGeneNames["Non-rel_environment_g"] = "g";
+		environmentGeneNames["Enivonment_g"] = "g";
 		environmentGeneNames["Salty"] = "h";
 		environmentGeneNames["Non-rel_environment_i"] = "i";
 		environmentGeneNames["Juju"] = "j";
@@ -418,7 +418,7 @@ function GeneDecoder(){
 		environmentGeneNames["Non-rel_environment_m"] = "m";
 		environmentGeneNames["Finalfrontier"] = "n";
 		environmentGeneNames["Non-rel_environment_o"] = "o";
-		environmentGeneNames["Non-rel_environment_p"] = "p";
+		environmentGeneNames["Drift"] = "p";
 		environmentGeneNames["Non-rel_environment_q"] = "q";
 		environmentGeneNames["Frozen"] = "r";
 		environmentGeneNames["Non-rel_environment_s"] = "s";
@@ -642,15 +642,40 @@ function GeneDecoder(){
 			return false;
 		}
 	}
+	self.findCatsWithTraitCombination = function(cats, targetedTraits, cooldown, dominant){
+		var new_cats = [];
+		for(var cat in cats){
+			cat = cats[cat];
+			new_cat = self.simpleFilter(cat, targetedTraits);
+			let valid = true;
+			for(var trait in targetedTraits){
+				trait = targetedTraits[trait];
 
-	self.newDiamondPrototypeFunction = function(cats, targetedTraits, cooldown){
+				if(new_cat.chanceOfTrait[trait] != undefined){
+					if(dominant){
+						if(new_cat.chanceOfTrait[trait] > 0.30){
+						} else {
+							valid = false;
+						}
+					}
+				} else {
+					valid = false;
+				}
+			}
+			if(valid){
+				new_cats.push(cat);
+			}
+		}
+		return new_cats;
+	}
+	self.newDiamondPrototypeFunction = function(cats, targetedTrait, cooldown){
 		let new_cats = [];
 		console.log(cats);
 		for(var cat in cats){
 			cat = cats[cat];
-			new_cat = self.simpleFilter(cat, targetedTraits);
+			new_cat = self.simpleFilter(cat, targetedTrait);
 
-			if(new_cat.chanceOfTrait[targetedTraits] != undefined){
+			if(new_cat.chanceOfTrait[targetedTrait] != undefined){
 				
 					new_cats.push(new_cat);
 			}
@@ -668,7 +693,7 @@ function GeneDecoder(){
 		}
 
 		var RankingModule = require('../ranking-module')(); 
-		let scores = RankingModule.scoreCatsBasedOnTraits(new_cats, targetedTraits, targetedTraits);
+		let scores = RankingModule.scoreCatsBasedOnTraits(new_cats, targetedTrait, targetedTrait);
 		let sorted_scores = RankingModule.getSortedArrayOfScoredCatsFromDictionary(scores);
 
 		return sorted_scores;
@@ -1026,6 +1051,37 @@ function GeneDecoder(){
 		return filteredCats;
 	}
 
+	self.filterOutFancies = function(cats, fancyTraitCombinations){
+		var new_cats = [];
+		for(var cat in cats){
+			if(self._catIsFancy(cats[cat], fancyTraitCombinations)){
+
+			} else {
+				new_cats.push(cats[cat]);
+			}
+		}
+
+		return new_cats;
+
+	}
+
+	self._catIsFancy = function(cat, fancyTraitCombinations){
+		for(var traitCombo in fancyTraitCombinations){
+			var catCount = 0;
+			current_targeted_traits = fancyTraitCombinations[traitCombo];
+			for(var trait in current_targeted_traits){
+				trait = current_targeted_traits[trait];
+				if(cat.chanceOfTrait[trait] > 0.30){
+					catCount += 1;
+				}
+			}
+			if(catCount == fancyTraitCombinations[traitCombo].length){
+				return true;
+			}
+		}
+
+		return false;
+	}
 	self.findRarestTraitCombinations = function(cats){
 
 		var afterEasterTraits = ["Caffeine", "Daemonwings", "Parakeet", "Eclipse", "Shale", "Daemonhorns", "Salty", "Cinderella", "Lavender","Swarley", "Oceanid", "Chameleon", "Bornwithit", "Highlander", "Koladiviya", "Pearl", "Mertail", "Garnet", "Butterscotch", "Tinybox", "Razzledazzle", "Rorschach", "Highsociety", "Dahlia", "Palejade", "Autumnmoon", "Flapflap", "Unicorn", "Manul", "Balinese", "Kurilian", "Cobalt", "Cashewmilk", "Buttercup", "Finalfrontier", "Impish", "Wowza", "Tendertears", "Brownies", "Redvelvet", "Martian", "Universe", "Rosequartz", "Padparadscha", "Littlefoot", "Dragontail"];

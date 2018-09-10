@@ -107,7 +107,7 @@ module.exports = {
 		}
 		fs.writeFile(name + '.txt', output, (err) => {
 	  	if (err) throw err;
-	  	//console.log('It\'s saved!');
+	  	console.log('It\'s saved!');
 	});},
 		remove(array, element){
 		return array.filter(function(e) { 
@@ -191,6 +191,9 @@ module.exports = {
 		isRelated = isRelated || isRelatedB;
 		if(catA.generation == 0 && catB.generation == 0){
 			isRelated = false;
+		}
+		if(catA.id == catB.id){
+			isRelated = true;
 		}
 		return isRelated;
 	},

@@ -144,7 +144,12 @@ function RankingModule(){
 			cat_B = catDictionary[traitScoreList[cat_B].id];
 
 			var totalMutaScore = 0.0;
-			totalMutaScore += GeneDecoder.mutationMatcher(cat, cat_B);
+			
+			if(cat_B.generation == 0 || cat.generation == 0){
+				totalMutaScore += GeneDecoder.rareMutationMatcher(cat, cat_B);
+			} else {
+				totalMutaScore += GeneDecoder.mutationMatcher(cat, cat_B);
+			}
 			scoredDictionary[cat_B.id] = totalMutaScore;
 			//console.log("??")
 

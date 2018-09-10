@@ -52,7 +52,36 @@ function TraitSearchModule(){
 			console.log(cats[cat]);
 		}
 
-		Utilities.saveKittenIds(cats, "matching_cats" + 0);
+		Utilities.saveKittenIds(cats, "t_search_results" + 0);
+	}
+
+	var fancy_list = [];
+	fancy_list.push(["Belch","Nachocheez","Buzzed","Sandalwood"]);
+	fancy_list.push(["Wiley","Cerulian","Rollercoaster","Ganado"]);
+	fancy_list.push(["Norwegianforest", "Thicccbrowz", "Orangesoda","Luckystripe"]);
+	fancy_list.push(["Rascal", "Wasntme","Peach"]);
+	fancy_list.push(["Salty","Verdigris","Turtleback","Cyan"]);
+	fancy_list.push(["Ragdoll", "Crazy", "Bananacream", "Chocolate", "Mintmacaron","Yokel"]);
+	fancy_list.push(["Googly","Beard","Royalpurple","Dippedcone"]);
+	fancy_list.push(["Redvelvet","Patrickstarfish","Dragontail","Sphynx"]);
+
+	function searchForMultipleTraits(){
+		var traitFileName = args[3];
+		//get traits here
+		var kittenLoader = require("kitten-loader")(args);
+		targetedTraits = kittenLoader.loadTraits(traitFileName);
+		console.log(targetedTraits);
+		var gen = parseInt(args[4],10);
+		var cooldown = args[5];
+		var includeFancySet = (args[6] == 'true');
+		var dominantOnlySet = (args[7] == 'true');
+		cats = Utilities.separateByGeneration(cats, gen, gen);
+		cats = GeneDecoder.findCatsWithTraitCombination(cats, targetedTraits, cooldown, dominantOnlySet);
+		if(!includeFancySet){
+			cats = GeneDecoder.filterOutFancies(cats, fancy_list);
+		}
+		console.log("found: " + cats.length + "cats!");
+		Utilities.saveKittenIds(cats, "t_search_results_multiple" + 0);
 	}
 
 
@@ -95,12 +124,22 @@ function TraitSearchModule(){
 	}
 
 	function main(){
-		var kittenLoader = require("kitten-loader")(args);
-		ck_contract.methods.totalSupply().call()
-		.then(kittenLoader.loadKittens)
-		.then(getOwnershipOfCatsFromContract)
-		.then(getCatsFromContract)
-		.then(searchForTrait);
+		if(args[2] == "trait-search-multiple"){
+			var kittenLoader = require("kitten-loader")(args);
+			ck_contract.methods.totalSupply().call()
+			.then(kittenLoader.loadKittens)
+			.then(getOwnershipOfCatsFromContract)
+			.then(getCatsFromContract)
+			.then(searchForMultipleTraits);
+		} else {
+			var kittenLoader = require("kitten-loader")(args);
+			ck_contract.methods.totalSupply().call()
+			.then(kittenLoader.loadKittens)
+			.then(getOwnershipOfCatsFromContract)
+			.then(getCatsFromContract)
+			.then(searchForTrait);
+		}
+
 	}
 
 

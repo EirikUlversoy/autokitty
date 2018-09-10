@@ -197,7 +197,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 	self.isValidMatch = function(catA, catB){
 		if(!(Utilities.isRelated(catA, catB))){
 
-			if(!self.usedCats.includes(catB.id)){
+			if(!self.usedCats.includes(catB.id) && !self.usedCats.includes(catA.id)){
 
 				if(self._eitherCatIsBriskOrBetter(catA, catB)){
 				//if(self._bothCatsAreBriskOrBetter(catA, catB)){
@@ -275,7 +275,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		output = [];
 		for (var bp in self.breedingPairs){
 			bp = self.breedingPairs[bp];
-			if(bp.score >= 0.067){
+			if(bp.score >= 0.060){
 				output.push(bp.id1 + ',' + bp.id2 + ',' + bp.score + 'END' );
 			}
 		}
@@ -436,7 +436,18 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		traitScoreList = self.singleTraitScoreDictionary[targetTrait];
 
-		orderedTraitScoreList = RankingModule.unorderedDictionaryToOrderedArrayByScore(traitScoreList);
+		XorderedTraitScoreList = RankingModule.unorderedDictionaryToOrderedArrayByScore(traitScoreList);
+		orderedTraitScoreList = [];
+		if(parseInt(catDictionary[scoredCat.id].generation,10) > 0){
+			for(x in XorderedTraitScoreList){
+				if(XorderedTraitScoreList[x].score > 0.30){
+					orderedTraitScoreList.push(XorderedTraitScoreList[x]);
+				}
+			}
+		} else {
+			orderedTraitScoreList = XorderedTraitScoreList;
+		}
+
 		mutationUnordered = RankingModule.makeMutationScoreDictionarySingular(catDictionary[scoredCat.id],orderedTraitScoreList, catDictionary);
 		mutationOrdered = RankingModule.getSortedArrayOfScoredMutaCatsFromDictionary(mutationUnordered, self.cats);
 
@@ -607,16 +618,15 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		self.usedCats = [];
 		var treshold = 0.15;
-		if(self.targetedTraits[0] == "Rollercoaster"){
-			treshold = 0.05;
+		if(self.sixPercent || Utilities.contains(self.targetedTraits,"Cyborg")){
+			treshold = 0.015;
 		}
-		if(self.sixPercent){
-			treshold = 0.03;
+		if(Utilities.contains(self.targetedTraits,"Rollercoaster")){
+			treshold = 0.025;
 		}
 		for(var scoredCat in arrayOfScoredCats){
 			scoredCat = arrayOfScoredCats[scoredCat];
 			if(self._isSuitableCat(scoredCat, catDictionary, treshold)){
-
 				if(!(self.usedCats.includes(scoredCat.id))){
 					self._findMatch(scoredCat, catDictionary, scores, treshold);
 				}

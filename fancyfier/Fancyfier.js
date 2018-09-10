@@ -10,15 +10,29 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	self.current_targeted_traits = self.total_targeted_traits;
 	self.allBreedingPairLists = [];
 	self.catOutput = false;
-	self.fancyOnFancyBanned = true;
-	self.useDefaultDict = true;
+	self.fancyOnFancyBanned = false;
+	self.useDefaultDict = false;
 	self.defaultDict = {};
-	self.defaultDict[1] = 0.0001;
-	self.defaultDict[2] = 0.01;
-	self.defaultDict[3] = 0.02;
-	self.defaultDict[4] = 0.05;
-	self.defaultDict[5] = 0.10;
-	self.defaultDict[6] = 0.25;
+	self.defaultDict[0] = 0.02;
+	self.defaultDict[1] = 0.005;
+	self.defaultDict[2] = 0.02;
+	self.defaultDict[3] = 0.04;
+	self.defaultDict[4] = 0.04;
+	self.defaultDict[5] = 0.05;
+	self.defaultDict[6] = 0.08;
+	self.defaultDict[7] = 0.10;
+	self.defaultDict[8] = 0.15;
+	self.defaultDict[9] = 0.20;
+	self.defaultDict[10] = 0.20;
+	self.defaultDict[11] = 0.20;
+	self.defaultDict[12] = 0.30;
+	self.defaultDict[13] = 0.40;
+	self.defaultDict[14] = 0.50;
+	self.defaultDict[15] = 0.60;
+
+
+
+	self.longshotMutations = true;
 	//Needs to be global to avoid conflicts
 	self.usedCats = [];
 	var Breeder = require("../breeder")(upper_wallet_address, web3, ck_contract);
@@ -31,8 +45,8 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 		for (var cat in cats){
 			self.catDict[cats[cat].id] = cats[cat];
 		}
-		//cats = GeneDecoder.filterByDominantCount(cats, self.total_targeted_traits, self.dominantCount);
-		cats = GeneDecoder.filterByR1Count(cats, self.total_targeted_traits, self.dominantCount);
+		cats = GeneDecoder.filterByDominantCount(cats, self.total_targeted_traits, self.dominantCount);
+		//cats = GeneDecoder.filterByR1Count(cats, self.total_targeted_traits, self.dominantCount);
 		main(gen_from, gen_to, cats);
 
 	}
@@ -68,7 +82,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	}
 	function main(gen_from, gen_to, cats){
 		cats = isReadyFilter(cats);
-		var stageList = designStages(gen_from, gen_to, cats, self.total_targeted_traits-2);
+		var stageList = designStages(gen_from, gen_to, cats, 2);
 
 		for(var stage in stageList){
 			stageNumber = stage;
@@ -96,12 +110,12 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			} else {
 				console.log("No sample cat ");
 			}
-			if(catAmount < 200){
+			if(catAmount < 2000){
 				if(self.useDefaultDict && self.allBreedingPairLists[x].length > 0){
 					new_breeding_list = filterBreedingListByPercentage(self.defaultDict[catA.generation], self.allBreedingPairLists[x]);
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				} else {
-					new_breeding_list = filterBreedingListByPercentage(0.03, self.allBreedingPairLists[x]);
+					new_breeding_list = filterBreedingListByPercentage(0.70, self.allBreedingPairLists[x]);
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				}
 			}
@@ -146,11 +160,12 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			}
 
 			//Multi threshold
-			var multiplicative_threshold = 0.50;//(0.005*counter);
+			var multiplicative_threshold = 0.10;//(0.005*counter);
 			
 			//One stage for each of the traitcombinations
 			for(var y = 0; y < listOfTargetedTraitCombinations.length; y++){
 				var generationFilteredCats = catGenerationFilter(cats, x);
+				//generationFilteredCats = cats;
 				var stage = new Stage(x, generationFilteredCats, listOfTargetedTraitCombinations[y], threshold, self.total_targeted_traits, multiplicative_threshold);
 				stageList.push(stage);
 
@@ -163,7 +178,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			}
 
 			//Only increase the trait level if we are not at the max level (hardcoded for now)
-			if(traitLevel != self.total_targeted_traits-2){
+			if(traitLevel != self.total_targeted_traits.length-2){
 				traitLevel += 1;
 			}
 			//counter += 1;
@@ -220,7 +235,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			const listOfScoredCats = scoreAllCats(this.cats, this.threshold_modified, this.total_targeted_traits);
 			
 			//Only used to save kitten IDs, does not need to run often
-			//Utilities.saveKittenIdsSpecific(listOfScoredCats, this.generation);
+			Utilities.saveKittenIdsSpecific(listOfScoredCats, this.generation);
 
 
 			//Making a copy of the scored cat list
@@ -235,9 +250,6 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 
 					//This calls a function that provides an arrayList of missingtraits(by name)
 					missingTraits = getMissingTraits(cat.cat, this.current_targeted_traits);  
-					if(String(cat.id) == "713586"){
-						console.log(missingTraits);
-					}  
 					//Here the first missing trait is used to make a toplist of the copy of the cat list that we made earlier. For now it picks the first one, optimally it should choose the best missing trait or
 					//account for both.
 					var reagentLists = [];
@@ -253,25 +265,24 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 						for(var mTrait in missingTraits){
 							topList = createSingleTopList(potentialCatPartners, missingTraits[mTrait]);
 							topLists.push(topList);
-							let mutationDicts = require('../mutation-dictionary-module')().setupDictionaries();
+							if(self.longshotMutations){
+								let mutationDicts = require('../mutation-dictionary-module')().setupDictionaries();
 
-							for(let m in mutationDicts){
-								dictionary = mutationDicts[m];
-								if(dictionary[missingTraits[mTrait]] != undefined){
-									firstReagents.push(dictionary[missingTraits[mTrait]][0]);
-									secondReagents.push(dictionary[missingTraits[mTrait]][1]);
-									mutations.push(missingTraits[mTrait]);
-									
+								for(let m in mutationDicts){
+									dictionary = mutationDicts[m];
+									if(dictionary[missingTraits[mTrait]] != undefined){
+										firstReagents.push(dictionary[missingTraits[mTrait]][0]);
+										secondReagents.push(dictionary[missingTraits[mTrait]][1]);
+										mutations.push(missingTraits[mTrait]);
+										
+									}
+
 								}
-
 							}
+							
 						}
-						if(String(cat.id) == "713586"){
-							console.log(mutations);
-							console.log(firstReagents);
-							console.log(secondReagents);
-						}
-						for(var mutationNr in mutations){
+						if(self.longshotMutations){
+							for(var mutationNr in mutations){
 							if(firstReagents[mutationNr] != undefined && secondReagents[mutationNr] != undefined){
 								targeted_traits = [];
 								targeted_traits = this.current_targeted_traits.slice();
@@ -324,9 +335,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 								}
 							}
 						}
-						if(String(cat.id) == "713586"){
-							console.log(reagentLists.length);
-							console.log(mutations);
+						
 						}
 						
 						
@@ -353,7 +362,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							if(traitRequirementsMet(cat.cat, partnerCat, this.current_targeted_traits, this.threshold_modified) && noFancyOnFancyRequirement(cat.cat, partnerCat, this.total_targeted_traits, this.threshold_modified)){
 								
 								//This function call does three checks, for speed, relation and whether either cat is already used. Lots of cats are filtered out here.
-								let swift = false;
+								let swift = true;
 								var specific_fancy = ["Ganado","Wiley","Cerulian","Rollercoaster"];
 								if(isValidMatch(cat.cat, partnerCat, self.usedCats, swift) && notSpecificFancyCheck(cat.cat, partnerCat, specific_fancy)){
 
@@ -399,7 +408,8 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							
 						}
 					}
-					self.reagentLoop = function(reagentList, firstReagent, secondReagent, mutation, ca, multiplicative_threshold){
+					if(self.longshotMutations){
+						self.reagentLoop = function(reagentList, firstReagent, secondReagent, mutation, ca, multiplicative_threshold){
 						if(String(cat.id) == "713586"){
 							console.log(mutation);
 							console.log("^ current mutation");
@@ -440,7 +450,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							//Second check is a check for whether each cat has at least two dominant traits of the targeted traits
 							if(traitRequirementsMet(cat.cat, partnerCat, targeted_traits, 0) && noFancyOnFancyRequirement(cat.cat, partnerCat, self.total_targeted_traits, 0)){
 								//This function call does three checks, for speed, relation and whether either cat is already used. Lots of cats are filtered out here.
-								let swift = false;
+								let swift = true;
 								var specific_fancy = ["Ganado","Wiley","Cerulian","Rollercoaster"];
 								if(isValidMatch(cat.cat, partnerCat, self.usedCats, swift) && notSpecificFancyCheck(cat.cat, partnerCat, specific_fancy)){
 
@@ -484,12 +494,17 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 							}
 						}
 					}
-					for(var rList in reagentLists){
-						var breedingPair = self.reagentLoop(reagentLists[rList], finalFirstReagents[rList], finalSecondReagents[rList], finalMutations[rList], cat, this.multiplicative_threshold);
-						if(breedingPair != undefined){
-							this.breedingPairs.push(breedingPair);
+					
+					}
+					if(self.longshotMutations){
+						for(var rList in reagentLists){
+							var breedingPair = self.reagentLoop(reagentLists[rList], finalFirstReagents[rList], finalSecondReagents[rList], finalMutations[rList], cat, this.multiplicative_threshold);
+							if(breedingPair != undefined){
+								this.breedingPairs.push(breedingPair);
+							}
 						}
 					}
+
 
 				}
 
@@ -501,10 +516,10 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 				return this.breedingPairs;
 			}
 			//This is the final result of solving the stage
-			if(this.breedingPairs.length > 0 || this.multiplicative_threshold < 0.002){
+			if(this.breedingPairs.length > 1000 || this.multiplicative_threshold < 0.40){
 				return this.breedingPairs;
 				this.stopOnNext = true;
-				let toReduce = (this.multiplicative_threshold * 0.20);
+				let toReduce = (this.multiplicative_threshold * 0.10);
 				console.log("Found a match, reducing further by "+ toReduce + " to find some more matches");
 				this.multiplicative_threshold -= toReduce;
 				this.threshold_modified -= 0.02;
@@ -529,7 +544,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 		if(parseInt(catA.generation,10) > 20){
 			return true;
 		} else {
-			return ((parseInt(catA.cooldownIndex,10) <= 5) || (parseInt(catB.cooldownIndex,10) <= 5));
+			return ((parseInt(catA.cooldownIndex,10) <= 9) || (parseInt(catB.cooldownIndex,10) <= 9));
 		}
 	}
 
@@ -767,7 +782,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	//Checks if a cat has a brisk cooldown or better
 	function eitherCatIsBriskOrBetter(catA, catB){
 		if(self.brisk){
-			return ((parseInt(catA.cooldownIndex,10) <= 9) || (parseInt(catB.cooldownIndex,10) <= 9));
+			return ((parseInt(catA.cooldownIndex,10) <= 7) || (parseInt(catB.cooldownIndex,10) <= 7));
 
 		} else {
 			return true;

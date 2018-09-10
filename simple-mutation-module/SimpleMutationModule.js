@@ -68,7 +68,14 @@ function SimpleMutationModule(){
 			MutationMappings = mutationDicts[1];
 		}
 
+
 		delete MutationMappings['Manx'];
+		delete MutationMappings['Unicorn'];
+		delete MutationMappings['Neckbeard'];
+		delete MutationMappings['Babypuke'];
+		delete MutationMappings['Buzzed'];
+		
+
 		console.log(MutationMappings);
 		targeted_traits = ["Jaguar","Lemonade"];
 
@@ -209,6 +216,7 @@ function SimpleMutationModule(){
 
 	function mutate(){
 		cats = [];
+		allFilteredCats = [];
 		if(args[2] == "load-pairs"){
 			var kittenLoader = require("../kitten-loader")(args);
 			var pairs = kittenLoader.loadPairs();
