@@ -2,3 +2,4 @@ node_modules/
 interactivepage/node_modules
 fancyfier/node_modules
 web-interface-autokitty/node_modules
+*.txt
