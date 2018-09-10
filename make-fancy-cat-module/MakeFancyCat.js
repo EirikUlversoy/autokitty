@@ -77,6 +77,8 @@ function MakeFancyCatModule(){
 		fancy_dict["Fancy-project-2"] = ["Bornwithit","Sully","Shamrock","Lykoi"];
 
 		fancy_dict["Fancy-project-3"] = ["Walrus","Pearl","Avatar","Dioscuri","Bornwithit","Sully","Shamrock","Lykoi"];
+		fancy_dict["Meowstro"] = ["Onyx","Eclipse","Wowza"];
+		fancy_dict["Atlas"] = ["Highlander","Kittencream","Swarley","Topoftheworld"];
 		fancy_dict["Laafee-verte"] = ["Flapflap","Kurilian","Martian","Swampgreen","Seafoam","Pinefresh","Whixtensions","Buzzed","Highsociety"];
 		var targeted_traits = fancy_dict[args[6]]; 		
 		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount);

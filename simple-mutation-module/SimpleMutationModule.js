@@ -70,6 +70,12 @@ function SimpleMutationModule(){
 
 
 		delete MutationMappings['Manx'];
+		delete MutationMappings['Unicorn'];
+		delete MutationMappings['Neckbeard'];
+		delete MutationMappings['Babypuke'];
+		delete MutationMappings['Buzzed'];
+		
+
 		console.log(MutationMappings);
 		targeted_traits = ["Jaguar","Lemonade"];
 
