@@ -75,7 +75,9 @@ function TraitSearchModule(){
 		var cooldown = args[5];
 		var includeFancySet = (args[6] == 'true');
 		var dominantOnlySet = (args[7] == 'true');
-		cats = Utilities.separateByGeneration(cats, gen, gen);
+		if(gen != 99){
+			cats = Utilities.separateByGeneration(cats, gen, gen);
+		}
 		cats = GeneDecoder.findCatsWithTraitCombination(cats, targetedTraits, cooldown, dominantOnlySet);
 		if(!includeFancySet){
 			cats = GeneDecoder.filterOutFancies(cats, fancy_list);
@@ -131,6 +133,14 @@ function TraitSearchModule(){
 			.then(getOwnershipOfCatsFromContract)
 			.then(getCatsFromContract)
 			.then(searchForMultipleTraits);
+		} else if (args[2] == "trait-search-multipleAUCTION"){
+
+			var kittenLoader = require("kitten-loader")(args)
+			ck_contract.methods.totalSupply().call()
+			.then(kittenLoader.loadKittens)
+			.then(getOwnershipOfCatsFromContract)
+			.then(getCatsFromContract)
+			.then(searchForMultipleTraits)
 		} else {
 			var kittenLoader = require("kitten-loader")(args);
 			ck_contract.methods.totalSupply().call()

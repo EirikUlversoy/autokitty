@@ -85,6 +85,8 @@ function MutationDictionaries(){
 		PremierMutations["Peppermint"] = ["Ooze","Safetyvest"];
 		PremierMutations["Inflatablepool"] = ["Peppermint","Universe"];
 		PremierMutations["Mekong"] = ["Chantilly","Birman"];
+		PremierMutations["Hacker"] = ["Asif","Baddate"];
+		PremierMutations["Ducky"] = ["Wild_5","Wild_6"];
 
 		let	SecondaryMutations = {}
 		SecondaryMutations["Babypuke"] = ["Pumpkin","Limegreen"];
@@ -109,6 +111,8 @@ function MutationDictionaries(){
 		SecondaryMutations["Mertail"] = ["Skyblue","Garnet"];
 		SecondaryMutations["Mintmacaron"] = ["Periwinkle","Patrickstarfish"];
 		SecondaryMutations["Unicorn"] = ["Flapflap","Daemonhorns"];
+		SecondaryMutations["Aflutter"] = ["Ducky","Trioculus"];
+		SecondaryMutations["Dragonwings"] = ["Dragontail","Aflutter"];
 
 		SecondaryMutations["Bornwithit"] = ["Oceanid","Wingtips"];
 		SecondaryMutations["Pearl"] = ["Royalblue","Mertail"];
@@ -133,7 +137,9 @@ function MutationDictionaries(){
 		SecondaryMutations["Lykoi"] = ["Fox","Kurilian"];
 		SecondaryMutations["Fox"] = ["Mekong", "Norwegianforest"];
 		SecondaryMutations["Shamrock"] = ["Hyacinth","Martian"];
-
+		SecondaryMutations["Firedup"] = ["Hacker","Tendertears"];
+		SecondaryMutations["Candyshoppe"] = ["Firedup","Buzzed"];
+		SecondaryMutations["Drama"] = ["Bornwithit","Candyshoppe"];
 
 		//Project combos
 		SecondaryMutations["Project-combo-1"] = ["Walrus","Pearl"];
@@ -158,6 +164,8 @@ function MutationDictionaries(){
 		TierThreeMutations["Avatar"] = ["Scorpius","Razzledazzle"];
 		TierThreeMutations["Shamrock"] = ["Hyacinth","Martian"];
 		TierThreeMutations["Lykoi"] = ["Fox","Kurilian"];
+		TierThreeMutations["Candyshoppe"] = ["Firedup","Buzzed"];
+		TierThreeMutations["Dragonwings"] = ["Dragontail","Aflutter"];
 
 
 		mutationDicts = [];

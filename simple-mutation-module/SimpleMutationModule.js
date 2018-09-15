@@ -68,7 +68,7 @@ function SimpleMutationModule(){
 			MutationMappings = mutationDicts[1];
 		}
 
-
+		
 		delete MutationMappings['Manx'];
 		delete MutationMappings['Unicorn'];
 		delete MutationMappings['Neckbeard'];
@@ -93,7 +93,7 @@ function SimpleMutationModule(){
 		listOfSecondaryMutations = [];
 		for(var mutaKey in mutaKeys){
 			key = mutaKeys[mutaKey];
-			if(mutaDict[key] > 0 && mutaDict[key] < 30){
+			if(mutaDict[key] > 0 && mutaDict[key] < 45){
 				listOfSecondaryMutations.push([key,mutaDict[key]]);
 			}
 		}
@@ -234,6 +234,7 @@ function SimpleMutationModule(){
 
 	function breedOnly(pairs){
 		var Breeder = require("../breeder")(config.upper_wallet_address, web3,ck_contract);
+		console.log(pairs.length);
 		Breeder.directBreedFromInput(pairs);
 	}
 

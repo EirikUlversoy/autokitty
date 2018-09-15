@@ -45,8 +45,8 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 		for (var cat in cats){
 			self.catDict[cats[cat].id] = cats[cat];
 		}
-		cats = GeneDecoder.filterByDominantCount(cats, self.total_targeted_traits, self.dominantCount);
-		//cats = GeneDecoder.filterByR1Count(cats, self.total_targeted_traits, self.dominantCount);
+		//cats = GeneDecoder.filterByDominantCount(cats, self.total_targeted_traits, self.dominantCount);
+		cats = GeneDecoder.filterByR1Count(cats, self.total_targeted_traits, self.dominantCount);
 		main(gen_from, gen_to, cats);
 
 	}
@@ -82,7 +82,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	}
 	function main(gen_from, gen_to, cats){
 		cats = isReadyFilter(cats);
-		var stageList = designStages(gen_from, gen_to, cats, 2);
+		var stageList = designStages(gen_from, gen_to, cats, 1);
 
 		for(var stage in stageList){
 			stageNumber = stage;
@@ -110,12 +110,12 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			} else {
 				console.log("No sample cat ");
 			}
-			if(catAmount < 2000){
+			if(catAmount < 5000){
 				if(self.useDefaultDict && self.allBreedingPairLists[x].length > 0){
 					new_breeding_list = filterBreedingListByPercentage(self.defaultDict[catA.generation], self.allBreedingPairLists[x]);
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				} else {
-					new_breeding_list = filterBreedingListByPercentage(0.70, self.allBreedingPairLists[x]);
+					new_breeding_list = filterBreedingListByPercentage(0.0001, self.allBreedingPairLists[x]);
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				}
 			}
@@ -516,7 +516,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 				return this.breedingPairs;
 			}
 			//This is the final result of solving the stage
-			if(this.breedingPairs.length > 1000 || this.multiplicative_threshold < 0.40){
+			if(this.breedingPairs.length > 1000 || this.multiplicative_threshold < 0.001){
 				return this.breedingPairs;
 				this.stopOnNext = true;
 				let toReduce = (this.multiplicative_threshold * 0.10);
@@ -544,7 +544,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 		if(parseInt(catA.generation,10) > 20){
 			return true;
 		} else {
-			return ((parseInt(catA.cooldownIndex,10) <= 9) || (parseInt(catB.cooldownIndex,10) <= 9));
+			return ((parseInt(catA.cooldownIndex,10) <= 6) || (parseInt(catB.cooldownIndex,10) <= 6));
 		}
 	}
 

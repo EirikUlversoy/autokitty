@@ -210,7 +210,7 @@ function GeneDecoder(){
 		eyesGeneNames["Caffeine"] = "9";
 		eyesGeneNames["Wowza"] = "a";
 		eyesGeneNames["Baddate"] = "b";
-		eyesGeneNames["Non-rel_eyeshape_c"] = "c";
+		eyesGeneNames["Asif"] = "c";
 		eyesGeneNames["Chronic"] = "d";
 		eyesGeneNames["Slyboots"] = "e";
 		eyesGeneNames["Wiley"] = "f";
@@ -220,16 +220,16 @@ function GeneDecoder(){
 		eyesGeneNames["Fabulous"] = "j";
 		eyesGeneNames["Raisedbrow"] = "k";
 		eyesGeneNames["Tendertears"] = "m";
-		eyesGeneNames["Non-rel_eyeshape_n"] = "n";
+		eyesGeneNames["Hacker"] = "n";
 		eyesGeneNames["Sass"] = "o";
 		eyesGeneNames["Sweetmeloncakes"] = "p";
 		eyesGeneNames["Oceanid"] = "q";
 		eyesGeneNames["Wingtips"] = "r";
-		eyesGeneNames["Non-rel_eyeshape_s"] = "s";
+		eyesGeneNames["Firedup"] = "s";
 		eyesGeneNames["Buzzed"] = "t";
 		eyesGeneNames["Bornwithit"] = "u";
-		eyesGeneNames["Non-rel_eyeshape_v"] = "v";
-		eyesGeneNames["Non-rel_eyeshape_w"] = "w";
+		eyesGeneNames["Candyshoppe"] = "v";
+		eyesGeneNames["Drama"] = "w";
 
 
 
@@ -335,7 +335,7 @@ function GeneDecoder(){
 		wildGeneNames["Wild_2"] = "2";
 		wildGeneNames["Wild_3"] = "3";
 		wildGeneNames["Wild_4"] = "4";
-		wildGeneNames["Non-rel_wild_5"] = "5";
+		wildGeneNames["Wild_5"] = "5";
 		wildGeneNames["Wild_6"] = "6";
 		wildGeneNames["Wild_7"] = "7";
 		wildGeneNames["Wild_8"] = "8";
@@ -349,17 +349,17 @@ function GeneDecoder(){
 		wildGeneNames["Wild_g"] = "g";
 		wildGeneNames["Littlefoot"] = "h";
 		wildGeneNames["Elk"] = "i";
-		wildGeneNames["Non-rel_wild_j"] = "j";
+		wildGeneNames["Ducky"] = "j";
 		wildGeneNames["Trioculus"] = "k";
 		wildGeneNames["Daemonwings"] = "m";
 		wildGeneNames["Non-rel_wild_n"] = "n";
 		wildGeneNames["Flapflap"] = "o";
 		wildGeneNames["Daemonhorns"] = "p";
 		wildGeneNames["Dragontail"] = "q";
-		wildGeneNames["Non-rel_wild_r"] = "r";
+		wildGeneNames["Aflutter"] = "r";
 		wildGeneNames["Non-rel_wild_s"] = "s";
 		wildGeneNames["Unicorn"] = "t";
-		wildGeneNames["Non-rel_wild_u"] = "u";
+		wildGeneNames["Dragonwings"] = "u";
 		wildGeneNames["Non-rel_wild_v"] = "v";
 		wildGeneNames["Non-rel_wild_w"] = "w";
 

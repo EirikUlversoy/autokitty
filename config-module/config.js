@@ -9,6 +9,9 @@ config.cryptokitties_contract_address = "0x06012c8cf97BEaD5deAe237070F9587f8E7A2
 
 config.owner_wallet_address = "0x68b42e44079d1d0a4a037e8c6ecd62c48967e69f";
 config.upper_wallet_address = "0x68b42e44079D1d0A4a037e8c6eCd62c48967e69f";
+//config.owner_wallet_address = "0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C";
+//config.upper_wallet_address = "0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C";
+
 
 config.sale_contract_address = "0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C";
 config.send_cats_address = "0xa18108b96859914b4e1809233ae60d4377067da9";

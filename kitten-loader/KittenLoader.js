@@ -98,7 +98,12 @@ function KittenLoader(args){
 
 		if(args[2] == "trait-search" || args[2] == "trait-search-multiple"){
 			let gen = parseInt(args[4],10);
-			let kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
+			let kittens = [];
+			if(gen == 99){
+				kittens = Utilities.readKittensFromDisk("kittensGeneration",1,15);
+			} else {
+				kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
+			}
 			for(var x = totalCatCount-10000; x <totalCatCount; x++){
 			  kittens.push(x);
 			}

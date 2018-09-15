@@ -116,7 +116,9 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		}
 
 		console.log("Full breeding pairs list: ");
-		console.log(self.breedingPairs);
+		//console.log(self.breedingPairs);
+		console.log(self.breedingPairs.length);
+		//self._sortBreedingPairsNPM(self.breedingPairs);
 		self._triggerBreedingPairs(self.breedingPairs);
 	}
 
@@ -137,7 +139,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 
 		//This is a sanity limit just in case. It also puts good limits on pure mutation runs, where there are a lot of
 		//breeding pairs because there is no duplication removal (hard to do when using threads)
-		if(breedingPairs.length > 3000){
+		if(breedingPairs.length > 300000){
 			let threshold = float2int(breedingPairs.length * 0.25);
 			breedingPairs = breedingPairs.slice(0,threshold);
 		}
@@ -151,7 +153,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			if(usedBreedIds.includes(String(bp.id1)) || usedBreedIds.includes(String(bp.id2))){
 
 			} else {
-				setTimeout(TransactVerify.readyToBreedCheckA,300*count, bp.id1, bp.id2);
+				setTimeout(TransactVerify.readyToBreedCheckA,50*count, bp.id1, bp.id2);
 				usedBreedIds.push(String(bp.id1));
 				usedBreedIds.push(String(bp.id2));
 			}
@@ -286,6 +288,25 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		
 	}
 
+	self._sortBreedingPairsNPM  = function(breedingPairs){
+		breedingPairs.sort(Comparators.keyComparator("score"));
+
+//		let threshold = Utilities.float2int(breedingPairs.length * 0.10);
+		let threshold = Utilities.float2int(breedingPairs.length * 1);
+
+		self.breedingPairs = breedingPairs.slice(0,threshold);
+
+		output = [];
+		for (var bp in self.breedingPairs){
+			bp = self.breedingPairs[bp];
+			output.push(bp.id1 + ',' + bp.id2 + ',' + bp.score + 'END' );
+		}
+		fs.writeFile('kitten_pairs/saved_breeding_pairs.txt', output, (err) => {
+	  	if (err) throw err;
+		})
+		console.log(self.breedingPairs);
+		
+	}
 	self._pureMutationChaser = function(catDictionary){
 		var partner = undefined;
 
@@ -617,7 +638,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		self.potentialPartners = arrayOfScoredCats.slice();
 
 		self.usedCats = [];
-		var treshold = 0.15;
+		var treshold = 0.01;
 		if(self.sixPercent || Utilities.contains(self.targetedTraits,"Cyborg")){
 			treshold = 0.015;
 		}
