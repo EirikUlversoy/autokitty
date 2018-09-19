@@ -115,7 +115,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 					new_breeding_list = filterBreedingListByPercentage(self.defaultDict[catA.generation], self.allBreedingPairLists[x]);
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				} else {
-					new_breeding_list = filterBreedingListByPercentage(0.0001, self.allBreedingPairLists[x]);
+					new_breeding_list = filterBreedingListByPercentage(0.02, self.allBreedingPairLists[x]);
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				}
 			}
@@ -290,17 +290,8 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 								targeted_traits.push(secondReagents[mutationNr]);
 								targeted_traits = Utilities.remove(targeted_traits, mutations[mutationNr]);
 
-								if(String(cat.id) == "713586"){
-									console.log(targeted_traits);
-								}
 								var reagentOneScoredCats = createSingleTopList(potentialCatPartners, firstReagents[mutationNr]);
 								var reagentTwoScoredCats = createSingleTopList(potentialCatPartners, secondReagents[mutationNr]);
-								//reagentOneScoredCats = [];
-								//reagentTwoScoredCats = [];
-								//var scoreOne = scoreCat(cat.cat, 0.30, [firstReagents[mTrait]]);
-								//var scoreTwo = scoreCat(cat.cat, 0.30, [secondReagents[mTrait]]);
-								//scoreOne = 1;
-								//scoreTwo = 1;
 								var scoreOne = 0;
 								var scoreTwo = 0;
 								if(cat.cat.chanceOfTrait[firstReagents[mutationNr]] != undefined){
@@ -312,21 +303,11 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 								}
 								if( scoreOne > 0.30 || scoreTwo > 0.30){
 									if(scoreOne > scoreTwo){
-										if(String(cat.id) == "713586"){
-											console.log("Pushing a reagent list for " + mutations[mutationNr]);
-											console.log(firstReagents[mutationNr]);
-											console.log(secondReagents[mutationNr]);
-										}
 										finalFirstReagents.push(firstReagents[mutationNr]);
 										finalSecondReagents.push(secondReagents[mutationNr]);
 										finalMutations.push(mutations[mutationNr]);
 										reagentLists.push(reagentTwoScoredCats);
 									} else {
-										if(String(cat.id) == "713586"){
-											console.log("Pushing a reagent list for " + mutations[mutationNr]);
-											console.log(firstReagents[mutationNr]);
-											console.log(secondReagents[mutationNr]);
-										}
 										reagentLists.push(reagentOneScoredCats);
 										finalFirstReagents.push(firstReagents[mutationNr]);
 										finalSecondReagents.push(secondReagents[mutationNr]);
@@ -516,7 +497,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 				return this.breedingPairs;
 			}
 			//This is the final result of solving the stage
-			if(this.breedingPairs.length > 1000 || this.multiplicative_threshold < 0.001){
+			if(this.breedingPairs.length > 1000 || this.multiplicative_threshold < 0.005){
 				return this.breedingPairs;
 				this.stopOnNext = true;
 				let toReduce = (this.multiplicative_threshold * 0.10);

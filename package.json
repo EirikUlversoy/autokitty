@@ -25,6 +25,7 @@
     "show-available-mutations-module": "file:show-available-mutations-module",
     "simple-mutation-module": "file:simple-mutation-module",
     "trait-search-module": "file:trait-search-module",
+    "search-auctions-module": "file:search-auctions-module",
     "utilities": "file:utilities",
     "web3": "^1.0.0-beta.33"
   },

@@ -47,7 +47,7 @@ function SendCatsModule(){
 		}
 		for(var catToSend in cats){
 			catToSend = cats[catToSend].id;
-			gas_in_gwei = 10;
+			gas_in_gwei = 13;
 			console.log("trying to send: " + catToSend);
 	    	ck_contract.methods.transfer(config.send_cats_address, parseInt(catToSend)).send({from: web3.eth.defaultAccount, gas: 100000, gasPrice: gas_in_gwei*1000000000});
 		}

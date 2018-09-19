@@ -47,5 +47,8 @@ switch (args[2]) {
 	case "trait-search-multiple":
 		var TraitSearchModule = require('trait-search-module')();
 		TraitSearchModule.start();
+	case "search-auctions":
+		var SearchAuctionsModule = require('search-auctions-module')();
+		SearchAuctionsModule.start();
 
 }
