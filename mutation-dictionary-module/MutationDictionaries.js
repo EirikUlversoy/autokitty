@@ -95,7 +95,7 @@ function MutationDictionaries(){
 		SecondaryMutations["Yokel"] = ["Cheeky","Starstruck"];
 		SecondaryMutations["Hyacinth"] = ["Glacier","Lavender"];
 		SecondaryMutations["Razzledazzle"] = ["Dippedcone","Highsociety"];
-		SecondaryMutations["Wingtips"] = ["Fabulous","Raisedbrow"]
+		SecondaryMutations["Wingtips"] = ["Fabulous","Raisedbrow"];
 		SecondaryMutations["Onyx"] = ["Oldlace","Koala"];
 		SecondaryMutations["Secret_r"] = ["Secret_j","Secret_k"];
 		SecondaryMutations["Kurilian"] = ["Highlander","Balinese"];

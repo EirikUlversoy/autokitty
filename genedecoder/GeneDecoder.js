@@ -561,9 +561,13 @@ function GeneDecoder(){
 	}
 
 	self.translateGenesToKai = function (genes){
-		var hexGenes = web3.utils.toHex(genes).replace("0x","");
+		var hexGenes = web3.utils.toHex(web3.utils.toBN(genes)).replace("0x","");
 		var binaryString = hexToBinary(hexGenes);
-
+		
+		var difference = 240-binaryString.length
+		for(x = 0; x < difference; x++){
+			binaryString = "0"+binaryString
+		}
 		var numberSequence = [];
 		for (var x = 0; x<binaryString.length/5; x++){
 			var nextInteger = fiveBitToInteger(binaryString.substring(x*5,(x+1)*5));
@@ -1488,7 +1492,6 @@ function GeneDecoder(){
 	self.readKitten = function (kitten){
 		var testKaiSequence = "9ac9558524a2f4fad8185144f97c17513483441qdgdagegg";
 		var KAISequence = self.translateGenesToKai(kitten.genes);
-
 		//KAISequence = testKaiSequence;
 		var KaiGroups = [];
 		for(var x = 0; x<KAISequence.length/4; x++){

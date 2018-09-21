@@ -303,9 +303,9 @@ function BuyClockCatsModule(){
 
 		var price_roof = String(args[3]);
 
-		if(price_roof > 0.25){
-			console.log("Safety value hit, resetting price to 0.25");
-			price_roof = String(0.25);
+		if(price_roof > 0.50){
+			console.log("Safety value hit, resetting price to 0.50");
+			price_roof = String(0.50);
 		}
 
 		console.log(catIdsToBuy);

@@ -277,7 +277,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		output = [];
 		for (var bp in self.breedingPairs){
 			bp = self.breedingPairs[bp];
-			if(bp.score >= 0.060){
+			if(bp.score >= 0.030){
 				output.push(bp.id1 + ',' + bp.id2 + ',' + bp.score + 'END' );
 			}
 		}
@@ -645,6 +645,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		if(Utilities.contains(self.targetedTraits,"Rollercoaster")){
 			treshold = 0.025;
 		}
+
 		for(var scoredCat in arrayOfScoredCats){
 			scoredCat = arrayOfScoredCats[scoredCat];
 			if(self._isSuitableCat(scoredCat, catDictionary, treshold)){
