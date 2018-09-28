@@ -2,8 +2,11 @@ var Utilities = require('../utilities');
 var fs = require('fs');
 function KittenLoader(args){
 	var self = {};
-	var args = args;
-	args = process.argv;
+	if(args != undefined){
+		var args = args;
+	} else {
+		args = process.argv;
+	}
 	self.loadTraits = function(trait_filename){
 		console.log("Loading the file called:");
 		console.log(trait_filename);
@@ -73,11 +76,11 @@ function KittenLoader(args){
 			let to_gen = parseInt(args[4],10);
 
 			kittens = Utilities.readKittensFromDisk("kittensGeneration",from_gen,to_gen);
-			if(args[7] == "X"){
-				kittens = Utilities.fancyReadKittensFromDisk("squid/kittensGeneration",from_gen,to_gen);
+			if(args[7] == "SHORTLIST"){
+				kittens = Utilities.fancyReadKittensFromDisk(args[6],from_gen,to_gen);
 			}
 
-			for(var x = totalCatCount-5000; x <totalCatCount; x++){
+			for(var x = totalCatCount-10000; x <totalCatCount; x++){
 			  kittens.push(x);
 			}
 
@@ -96,7 +99,7 @@ function KittenLoader(args){
 			return kittens;
 		}
 
-		if(args[2] == "trait-search" || args[2] == "trait-search-multiple"){
+		if(args[2] == "trait-search" || args[2] == "trait-search-multiple" || args[2] == "fancy-filtering"){
 			let gen = parseInt(args[4],10);
 			let kittens = [];
 			if(gen == 99){

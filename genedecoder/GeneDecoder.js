@@ -310,7 +310,7 @@ function GeneDecoder(){
 		colorTertiaryGeneNames["Kalahari"] = "9";
 		colorTertiaryGeneNames["Shale"] = "a";
 		colorTertiaryGeneNames["Purplehaze"] = "b";
-		colorTertiaryGeneNames["Non-rel_tertiarycolor_c"] = "c";
+		colorTertiaryGeneNames["Hanauma"] = "c";
 		colorTertiaryGeneNames["Azaleablush"] = "d";
 		colorTertiaryGeneNames["Missmuffett"] = "e";
 		colorTertiaryGeneNames["Morningglory"] = "f";
@@ -320,16 +320,16 @@ function GeneDecoder(){
 		colorTertiaryGeneNames["Buttercup"] = "j";
 		colorTertiaryGeneNames["Bloodred"] = "k";
 		colorTertiaryGeneNames["Atlantis"] = "m";
-		colorTertiaryGeneNames["Non-rel_tertiarycolor_n"] = "n";
+		colorTertiaryGeneNames["Summerbonnet"] = "n";
 		colorTertiaryGeneNames["Periwinkle"] = "o";
 		colorTertiaryGeneNames["Patrickstarfish"] = "p";
 		colorTertiaryGeneNames["Seafoam"] = "q";
 		colorTertiaryGeneNames["Cobalt"] = "r";
-		colorTertiaryGeneNames["Non-rel_tertiarycolor_s"] = "s";
+		colorTertiaryGeneNames["Mallowflower"] = "s";
 		colorTertiaryGeneNames["Mintmacaron"] = "t";
 		colorTertiaryGeneNames["Sully"] = "u";
-		colorTertiaryGeneNames["Non-rel_tertiarycolor_v"] = "v";
-		colorTertiaryGeneNames["Non-rel_tertiarycolor_w"] = "w";
+		colorTertiaryGeneNames["Fallspice"] = "v";
+		colorTertiaryGeneNames["Dreamboat"] = "w";
 
 		wildGeneNames["Wild_1"] = "1";
 		wildGeneNames["Wild_2"] = "2";
@@ -485,7 +485,7 @@ function GeneDecoder(){
 		unknownGeneNames["Non-rel_unknown_p"] = "p";
 		unknownGeneNames["Non-rel_unknown_q"] = "q";
 		unknownGeneNames["Non-rel_unknown_r"] = "r";
-		unknownGeneNames["Non-rel_unknown_s"] = "s";
+		unknownGeneNames["Unknown_s"] = "s";
 		unknownGeneNames["Non-rel_unknown_t"] = "t";
 		unknownGeneNames["Non-rel_unknown_u"] = "u";
 		unknownGeneNames["Non-rel_unknown_v"] = "v";

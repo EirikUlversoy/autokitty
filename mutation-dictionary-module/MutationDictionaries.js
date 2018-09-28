@@ -65,7 +65,7 @@ function MutationDictionaries(){
 		PremierMutations["Skyblue"] = ["Coffee","Lemonade"];
 		PremierMutations["Periwinkle"] = ["Azaleablush","Missmuffett"];
 		PremierMutations["Flapflap"] = ["Wild_d","Wild_e"];
-
+		PremierMutations["Atlantis"] = ["Kalahari","Shale"];
 		PremierMutations["Persian"] = ["Ragamuffin","Ragdoll"];
 		PremierMutations["Totesbasic_p"] = ["Totesbasic_f","Totesbasic_g"];
 		PremierMutations["Eclipse"] = ["Parakeet","Cyan"];
@@ -87,6 +87,7 @@ function MutationDictionaries(){
 		PremierMutations["Mekong"] = ["Chantilly","Birman"];
 		PremierMutations["Hacker"] = ["Asif","Baddate"];
 		PremierMutations["Ducky"] = ["Wild_5","Wild_6"];
+		PremierMutations["Summerbonnet"] = ["Purplehaze","Hanauma"]
 
 		let	SecondaryMutations = {}
 		SecondaryMutations["Babypuke"] = ["Pumpkin","Limegreen"];
@@ -100,7 +101,7 @@ function MutationDictionaries(){
 		SecondaryMutations["Secret_r"] = ["Secret_j","Secret_k"];
 		SecondaryMutations["Kurilian"] = ["Highlander","Balinese"];
 		SecondaryMutations["Cobalt"] = ["Buttercup","Bloodred"];
-
+		SecondaryMutations["Mallowflower"] = ["Atlantis","Summerbonnet"]
 		SecondaryMutations["Hotrod"] = ["Tigerpunk","Henna"];
 		SecondaryMutations["Royalblue"] = ["Wolfgrey","Cerulian"];
 		SecondaryMutations["Neckbeard"] = ["Dali","Grimace"];
@@ -140,6 +141,7 @@ function MutationDictionaries(){
 		SecondaryMutations["Firedup"] = ["Hacker","Tendertears"];
 		SecondaryMutations["Candyshoppe"] = ["Firedup","Buzzed"];
 		SecondaryMutations["Drama"] = ["Bornwithit","Candyshoppe"];
+		SecondaryMutations["Fallspice"] = ["Mintmacaron","Mallowflower"]
 
 		//Project combos
 		SecondaryMutations["Project-combo-1"] = ["Walrus","Pearl"];
@@ -166,7 +168,12 @@ function MutationDictionaries(){
 		TierThreeMutations["Lykoi"] = ["Fox","Kurilian"];
 		TierThreeMutations["Candyshoppe"] = ["Firedup","Buzzed"];
 		TierThreeMutations["Dragonwings"] = ["Dragontail","Aflutter"];
+		TierThreeMutations["Fallspice"] = ["Mintmacaron","Mallowflower"]
 
+		TierFourMutations = {};
+		TierFourMutations["Drama"] = ["Bornwithit","Candyshoppe"]
+		TierFourMutations["Prairierose"] = ["Inflatablepool","Pearl"]
+		TierFourMutations["Dreamboat"] = ["Sully","Fallspice"]
 
 		mutationDicts = [];
 		mutationDicts.push(PremierMutations);

@@ -7,7 +7,7 @@ var mutationDicts = require("../mutation-dictionary-module")().setupDictionaries
 //Other modules from this repository
 var GeneDecoder = require("../genedecoder")();
 
-function TraitSearchModule(){
+function TraitSearchModule(optional_arguments){
 	var config = require('../config-module');
 	self = {};
 
@@ -40,7 +40,12 @@ function TraitSearchModule(){
 		return kitten;
 
 	}
-	args = process.argv;
+	if(optional_arguments != undefined){
+		args = optional_arguments
+	} else {
+		args = process.argv;
+	}
+	console.log(optional_arguments)
 	//Where most of the script logic is.
 	function searchForTrait(){
 		console.log(cats);
@@ -65,6 +70,41 @@ function TraitSearchModule(){
 	fancy_list.push(["Googly","Beard","Royalpurple","Dippedcone"]);
 	fancy_list.push(["Redvelvet","Patrickstarfish","Dragontail","Sphynx"]);
 
+	function searchForAnyOfMultipleTraitsFancy(){
+		var traitFileName = args[3]
+		var kittenLoader = require("kitten-loader")(args);
+		targetedTraits = kittenLoader.loadTraits(traitFileName);
+		console.log(targetedTraits)
+		var gen = parseInt(args[4],10);
+		var cooldown = args[5];
+		var includeFancySet = (args[6] == 'true')
+		var dominantOnlySet = (args[7] == 'true')
+		if(gen != 99){
+			cats = Utilities.separateByGeneration(cats, gen, gen)
+		}
+		var all_cats = []
+		console.log(cats)
+		for(var trait in targetedTraits){
+			trait = targetedTraits[trait];
+			cats = GeneDecoder.findCatsWithTraitCombination(cats, [trait], cooldown, dominantOnlySet);
+			console.log(cats)
+			all_cats = all_cats.concat(cats)
+		}
+
+		function saveKittenIds(kittens, name){
+			output = [];
+			for (var kitten in kittens){
+				output.push(kittens[kitten].id);
+			}
+			fs.writeFile(__dirname + '/../fancids/'+traitFileName + kittens[0].generation + '.txt', output, (err) => {
+		  	if (err) throw err;
+		  	console.log('It\'s saved!');
+		});}
+		console.log(all_cats)
+		saveKittenIds(all_cats, "")
+
+
+	}
 	function searchForMultipleTraits(){
 		var traitFileName = args[3];
 		//get traits here
@@ -75,6 +115,10 @@ function TraitSearchModule(){
 		var cooldown = args[5];
 		var includeFancySet = (args[6] == 'true');
 		var dominantOnlySet = (args[7] == 'true');
+		var top_hundred_id = parseInt(args[8],10)
+		var max_amount = parseInt(args[9],10)
+		var ending_id = parseInt(args[10],10)
+
 		if(gen != 99){
 			cats = Utilities.separateByGeneration(cats, gen, gen);
 		}
@@ -82,8 +126,22 @@ function TraitSearchModule(){
 		if(!includeFancySet){
 			cats = GeneDecoder.filterOutFancies(cats, fancy_list);
 		}
-		console.log("found: " + cats.length + "cats!");
-		Utilities.saveKittenIds(cats, "t_search_results_multiple" + 0);
+		new_cats = []
+		console.log("top hundred id is: " + top_hundred_id)
+		if(top_hundred_id > 0){
+			for(var cat in cats){
+				if(cats[cat].id > top_hundred_id && cats[cat].id <= ending_id){
+					new_cats.push(cats[cat])
+				}
+				if(new_cats.length >= max_amount){
+					break;
+				}
+			}
+		} else {
+			new_cats = cats
+		}
+		console.log("found: " + new_cats.length + "cats!");
+		Utilities.saveKittenIds(new_cats, process.cwd() + '/pricing_searches/' + traitFileName +'OUT' + String(gen));
 	}
 
 
@@ -125,7 +183,12 @@ function TraitSearchModule(){
 		this.score = score;
 	}
 
-	function main(){
+	function main(optional_arguments){
+		if(optional_arguments != undefined){
+			args = optional_arguments
+		} else {
+
+		}
 		if(args[2] == "trait-search-multiple"){
 			var kittenLoader = require("kitten-loader")(args);
 			ck_contract.methods.totalSupply().call()
@@ -138,9 +201,17 @@ function TraitSearchModule(){
 			var kittenLoader = require("kitten-loader")(args)
 			ck_contract.methods.totalSupply().call()
 			.then(kittenLoader.loadKittens)
+
 			.then(getOwnershipOfCatsFromContract)
 			.then(getCatsFromContract)
 			.then(searchForMultipleTraits)
+		} else if (args[2] == "fancy-filtering"){
+			var kittenLoader = require("kitten-loader")(args);
+			ck_contract.methods.totalSupply().call()
+			.then(kittenLoader.loadKittens)
+			.then(getOwnershipOfCatsFromContract)
+			.then(getCatsFromContract)
+			.then(searchForAnyOfMultipleTraitsFancy);
 		} else {
 			var kittenLoader = require("kitten-loader")(args);
 			ck_contract.methods.totalSupply().call()
@@ -155,8 +226,8 @@ function TraitSearchModule(){
 
 
 
-	self.start = function(){
-		main();
+	self.start = function(optional_arguments){
+		main(optional_arguments);
 	}
 
 

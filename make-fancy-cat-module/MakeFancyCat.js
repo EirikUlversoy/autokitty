@@ -59,7 +59,6 @@ function MakeFancyCatModule(){
 		var gen_from = parseInt(args[3],10);
 		var gen_to = parseInt(args[4],10);
 		var dominantCount = parseInt(args[5],10);
-
 		//Add fancy combos here, todo: database?
 		var fancy_dict = {};
 		fancy_dict["Raspoutine"] = ["Belch","Nachocheez","Buzzed","Sandalwood"];
@@ -80,6 +79,8 @@ function MakeFancyCatModule(){
 		fancy_dict["Meowstro"] = ["Onyx","Eclipse","Wowza"];
 		fancy_dict["Atlas"] = ["Highlander","Kittencream","Swarley","Topoftheworld"];
 		fancy_dict["Laafee-verte"] = ["Flapflap","Kurilian","Martian","Swampgreen","Seafoam","Pinefresh","Whixtensions","Buzzed","Highsociety"];
+		fancy_dict["Furrball"] = ["Unknown_s","Norwegianforest","Totesbasic_f"]
+		fancy_dict["Pawzilla"] = ["Jaguar","Littlefoot","Universe","Atlantis"]
 		var targeted_traits = fancy_dict[args[6]]; 		
 		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount);
 		var stages = Fancyfier.mainStarter(gen_from, gen_to, cats);
@@ -135,13 +136,14 @@ function MakeFancyCatModule(){
 		.then(getOwnershipOfCatsFromContract)
 		.then(getCatsFromContract)
 		.then(startFancyCatProcess);
+		
 	}
 
 
 
 
 	self.start = function(){
-		let timePerIteration = 1100000;
+		let timePerIteration = 600000;
 
 		if(parseInt(config.time_per_iteration,10) != 0){
 			timePerIteration = config.time_per_iteration;

@@ -15,6 +15,8 @@ config.upper_wallet_address = "0x68b42e44079D1d0A4a037e8c6eCd62c48967e69f";
 
 config.sale_contract_address = "0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C";
 config.send_cats_address = "0xa18108b96859914b4e1809233ae60d4377067da9";
+//config.send_cats_address = "0xb9d0bfc02c54a710edb180e1faff6779008093cd";
+//config.send_cats_address = "0x9fe19203888a330c1ef9c0e9ba1791f85bb5984c";
 //config.send_cats_address = "0xFd64b67Fa8CFaa8fCb65Aa74F973938A55755b13";
 //config.send_cats_address = "0x8e668a4582d0465accf66b4e4ab6d817f6c5b2dc";
 //config.send_cats_address = "0x12b353d1a2842d2272ab5a18c6814d69f4296873";

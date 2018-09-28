@@ -47,8 +47,13 @@ switch (args[2]) {
 	case "trait-search-multiple":
 		var TraitSearchModule = require('trait-search-module')();
 		TraitSearchModule.start();
+		break;
 	case "search-auctions":
 		var SearchAuctionsModule = require('search-auctions-module')();
 		SearchAuctionsModule.start();
-
+		break;
+	case "fancy-filtering":
+		var TraitSearchModule = require('trait-search-module')();
+		TraitSearchModule.start();
+		break;
 }
