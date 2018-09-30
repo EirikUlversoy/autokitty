@@ -61,6 +61,10 @@ switch (args[2]) {
 		var TraitSorter = require(__dirname +'/trait-sorter/TraitSorter.js')();
 		TraitSorter.start();
 		break;
+	case "generation-outputter":
+		var TraitSorter = require(__dirname +'/trait-sorter/TraitSorter.js')();
+		TraitSorter.start();
+		break;
 	case "make-fancy-catX":
 		var MakeFancyCatModule = require('make-fancy-cat-module')();
 		MakeFancyCatModule.start();

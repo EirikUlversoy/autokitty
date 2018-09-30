@@ -139,7 +139,19 @@ function KittenLoader(args){
 				trait = traits[trait]
 				kittens = kittens.concat(Utilities.fancyReadKittensFromDiskX(trait,gen,gen_max))
 			}
+			for(var x = totalCatCount-4000; x <totalCatCount; x++){
+				kittens.push(x);
+			}
 			console.log("Amount of kittens: " + kittens.length);
+			return kittens;
+		}
+
+		if(args[2] == "generation-outputter"){
+			let kittens = []
+
+			for(var x = 800000; x < totalCatCount; x++){
+				kittens.push(x)
+			}
 			return kittens;
 		}
 
