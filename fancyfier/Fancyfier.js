@@ -67,7 +67,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	}
 	function main(gen_from, gen_to, cats){
 		cats = isReadyFilter(cats);
-		var stageList = designStages(gen_from, gen_to, cats, 2);
+		var stageList = designStages(gen_from, gen_to, cats, 1);
 
 		for(var stage in stageList){
 			stageNumber = stage;
@@ -101,7 +101,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				} else {
 					//new_breeding_list = filterBreedingListByPercentage(0.10, self.allBreedingPairLists[x]);
-					new_breeding_list = filterBreedingListByPercentage(0.10, self.allBreedingPairLists[x]);
+					new_breeding_list = filterBreedingListByPercentage(0.01, self.allBreedingPairLists[x]);
 //						new_breeding_list = filterBreedingListByPercentage(0.01, self.allBreedingPairLists[x]);
 					}
 					Breeder._triggerBreedingPairs(new_breeding_list);					

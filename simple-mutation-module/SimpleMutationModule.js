@@ -63,9 +63,12 @@ function SimpleMutationModule(){
 			MutationMappings = mutationDicts[1];
 		} else if(gen == 2){
 			MutationMappings = mutationDicts[2];
+		} else if(gen == 3){
+			MutationMappings = mutationDicts[3];
 		} else {
 			//Default as tier 2 mutations
 			MutationMappings = mutationDicts[1];
+
 		}
 
 		

@@ -80,6 +80,7 @@ function MakeFancyCatModule(){
 		fancy_dict["Atlas"] = ["Highlander","Kittencream","Swarley","Topoftheworld"];
 		fancy_dict["Laafee-verte"] = ["Flapflap","Kurilian","Martian","Swampgreen","Seafoam","Pinefresh","Whixtensions","Buzzed","Highsociety"];
 		fancy_dict["Furrball"] = ["Unknown_s","Norwegianforest","Totesbasic_f"]
+		fancy_dict["Prune"] = ["Unknown_r","Norwegianforest","Totesbasic_f"]
 		fancy_dict["Pawzilla"] = ["Jaguar","Littlefoot","Universe","Atlantis"]
 		var targeted_traits = fancy_dict[args[6]]; 		
 		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount);
@@ -143,7 +144,7 @@ function MakeFancyCatModule(){
 
 
 	self.start = function(){
-		let timePerIteration = 600000;
+		let timePerIteration = 800000;
 
 		if(parseInt(config.time_per_iteration,10) != 0){
 			timePerIteration = config.time_per_iteration;

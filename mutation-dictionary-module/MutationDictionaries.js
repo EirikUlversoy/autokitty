@@ -174,12 +174,11 @@ function MutationDictionaries(){
 		TierFourMutations["Drama"] = ["Bornwithit","Candyshoppe"]
 		TierFourMutations["Prairierose"] = ["Inflatablepool","Pearl"]
 		TierFourMutations["Dreamboat"] = ["Sully","Fallspice"]
-
 		mutationDicts = [];
 		mutationDicts.push(PremierMutations);
 		mutationDicts.push(SecondaryMutations);
 		mutationDicts.push(TierThreeMutations);
-
+		mutationDicts.push(TierFourMutations);
 		return mutationDicts;
 	}
 
