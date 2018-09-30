@@ -20,9 +20,6 @@ function MakeFancyCatModule(){
 
 	var Utilities = require("utilities");
 
-
-
-
 	var ck_contract = new web3.eth.Contract(config.kitty_core_abi,config.cryptokitties_contract_address);
 
 	//Breeder module import
@@ -79,7 +76,7 @@ function MakeFancyCatModule(){
 		fancy_dict["Meowstro"] = ["Onyx","Eclipse","Wowza"];
 		fancy_dict["Atlas"] = ["Highlander","Kittencream","Swarley","Topoftheworld"];
 		fancy_dict["Laafee-verte"] = ["Flapflap","Kurilian","Martian","Swampgreen","Seafoam","Pinefresh","Whixtensions","Buzzed","Highsociety"];
-		fancy_dict["Furrball"] = ["Unknown_s","Norwegianforest","Totesbasic_f"]
+		fancy_dict["Furrball"] = ["Unknown_s","Norwegianforest","Totesbasic_f","Walrus","Littlefoot"]
 		fancy_dict["Prune"] = ["Unknown_r","Norwegianforest","Totesbasic_f"]
 		fancy_dict["Pawzilla"] = ["Jaguar","Littlefoot","Universe","Atlantis"]
 		var targeted_traits = fancy_dict[args[6]]; 		

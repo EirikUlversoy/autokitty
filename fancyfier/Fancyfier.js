@@ -67,7 +67,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	}
 	function main(gen_from, gen_to, cats){
 		cats = isReadyFilter(cats);
-		var stageList = designStages(gen_from, gen_to, cats, 1);
+		var stageList = designStages(gen_from, gen_to, cats, 2);
 
 		for(var stage in stageList){
 			stageNumber = stage;

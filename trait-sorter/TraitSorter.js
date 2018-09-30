@@ -52,7 +52,7 @@ function TraitSorter(optional_arguments){
 			for (var kitten in kittens){
 				output.push(kittens[kitten].id);
 			}
-			fs.writeFile(__dirname + '/../traitsorted_kittens/' + name + '.txt', output, (err) => {
+			fs.writeFile(__dirname + '/../traitsorted_kittensv2/' + name + '.txt', output, (err) => {
 		  	if (err) throw err;
 		  	console.log('Saved R1+ of trait: ' + name + '!');
 		});
@@ -62,16 +62,23 @@ function TraitSorter(optional_arguments){
 		var kittenLoader = require("kitten-loader")(args);
 		
 		cats_dictionary = {}
-
+		traitList = []
 		for (let [key, value] of Object.entries(GeneDecoder.allGeneGroups)){
+			console.log("Going through the " + key + " category!")
 			for(let [sKey, sValue] of Object.entries(GeneDecoder.allGeneGroups[key])){
-				traitCats = GeneDecoder.filterByR1Count(cats, [sKey], 1)
-				cats_dictionary[sKey] = traitCats  
+				console.log("Looking at the " + sKey + " trait!")
+				traitList.push(sKey)
+ 
 			}
 		}
 
-		for (let [key, value] of Object.entries(cats_dictionary)){
-			saveKittenIds(value, key)
+		traitCats = GeneDecoder.filterAllTraitsR1(cats, traitList)
+
+		for (let [key, value] of Object.entries(traitCats)){
+			for(let x = 0; x<26; x++){
+				genfiltered_cats = Utilities.separateByGeneration(value, x, x)
+				saveKittenIds(genfiltered_cats, key+x)
+			}
 		}
 	}
 
@@ -80,6 +87,7 @@ function TraitSorter(optional_arguments){
 	//Pushes cats that match the user address into the filtered cats list. Needs to use the bind method in order to keep both cat ID and the address.
 	function doFilterWork(cat,address){
 		if(address == config.upper_wallet_address){
+
 			allFilteredCats.push(cat);
 			console.log(cat);
 		}

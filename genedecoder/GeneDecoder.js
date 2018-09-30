@@ -970,6 +970,48 @@ function GeneDecoder(){
 		return filteredCats;
 	}
 
+	self.filterAllTraitsR1 = function(cats, targetedTraits){
+		var filteredCats = {};
+		var nameLookup = {};
+		nameLookup[0] = unknownGeneNames;
+		nameLookup[1] = secretGeneNames;
+		nameLookup[2] = environmentGeneNames;
+		nameLookup[3] = mouthGeneNames;
+		nameLookup[4] = wildGeneNames;
+		nameLookup[5] = colorTertiaryGeneNames;
+		nameLookup[6] = colorSecondaryGeneNames;
+		nameLookup[7] = colorPrimaryGeneNames;
+		nameLookup[8] = eyesGeneNames;
+		nameLookup[9] = colorEyesGeneNames;
+		nameLookup[10] = patternGeneNames;
+		nameLookup[11] = bodyGeneNames;
+
+		for(var cat in cats){
+			KaiGroups = self.getKaiGroups(cats[cat]);
+			for(var KaiGroupNumber in KaiGroups){
+				KaiGroup = KaiGroups[KaiGroupNumber];
+				gene = KaiGroup[2];
+				geneD = KaiGroup[3];
+				geneArray = self.outputGroupAttribute(KaiGroup, nameLookup[KaiGroupNumber]);
+
+				for(var targetedTrait in targetedTraits){
+					trait = targetedTraits[targetedTrait]
+					if(trait == geneArray[2] || trait == geneArray[3]){
+						if(filteredCats.hasOwnProperty(trait)){
+							filteredCats[trait].push(cats[cat])
+						} else {
+							filteredCats[trait] = []
+							filteredCats[trait].push(cats[cat])
+						}
+					}
+				}
+			}
+			console.log("At cat: " + cat)
+		}
+
+		return filteredCats;
+	}
+
 	self.filterByR2Count = function(cats, targetedTraits, dominantCount){
 		var filteredCats = [];
 		var nameLookup = {};
