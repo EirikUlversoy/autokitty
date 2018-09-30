@@ -129,6 +129,20 @@ function KittenLoader(args){
 			return kittens;
 		}
 
+		if(args[2] == "make-fancy-catX"){
+			let filename = args[3]
+			let gen = parseInt(args[4],10)
+			let gen_max = parseInt(args[5],10)
+			traits = self.loadTraits(filename)
+			kittens = []
+			for(let trait in traits){
+				trait = traits[trait]
+				kittens = kittens.concat(Utilities.fancyReadKittensFromDiskX(trait,gen,gen_max))
+			}
+			console.log("Amount of kittens: " + kittens.length);
+			return kittens;
+		}
+
 		return splitText;
 	}
 	function BreedingPair(id1, id2, score){

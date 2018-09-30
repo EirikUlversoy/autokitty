@@ -51,6 +51,17 @@ function MakeFancyCatModule(){
 	}
 	args = process.argv;
 	//Where most of the script logic is.
+	function startFancyCatProcessX(){
+		var gen_from = parseInt(args[4],10)
+		var gen_to = parseInt(args[5],10)
+		var dominantCount = parseInt(args[6],10);
+		var kittenLoader = require("kitten-loader")(args);
+		traits = kittenLoader.loadTraits(args[3]);
+		var targeted_traits = traits;
+		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount);
+		var stages = Fancyfier.mainStarter(gen_from, gen_to, cats);
+
+	}
 	function startFancyCatProcess(){
 
 		var gen_from = parseInt(args[3],10);
@@ -127,13 +138,25 @@ function MakeFancyCatModule(){
 
 	function fancify(){
 		cats = [];
-		allFilteredCats = [];
-		var kittenLoader = require("kitten-loader")(args);
-		ck_contract.methods.totalSupply().call()
-		.then(kittenLoader.loadKittens)
-		.then(getOwnershipOfCatsFromContract)
-		.then(getCatsFromContract)
-		.then(startFancyCatProcess);
+
+		if(args[2] == "make-fancy-catX"){
+			allFilteredCats = [];
+			var kittenLoader = require("kitten-loader")(args);
+			ck_contract.methods.totalSupply().call()
+			.then(kittenLoader.loadKittens)
+			.then(getOwnershipOfCatsFromContract)
+			.then(getCatsFromContract)
+			.then(startFancyCatProcessX);
+		} else {
+			allFilteredCats = [];
+			var kittenLoader = require("kitten-loader")(args);
+			ck_contract.methods.totalSupply().call()
+			.then(kittenLoader.loadKittens)
+			.then(getOwnershipOfCatsFromContract)
+			.then(getCatsFromContract)
+			.then(startFancyCatProcess);
+		}
+
 		
 	}
 

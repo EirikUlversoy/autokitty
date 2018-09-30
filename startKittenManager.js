@@ -16,6 +16,7 @@ switch (args[2]) {
 	case "load-pairs":
 		var SimpleMutationModule = require('simple-mutation-module')();
 		SimpleMutationModule.start();
+		break;
 	case "pure-mutation":
 		var PureMutationModule = require('pure-mutation-module')();
 		PureMutationModule.start();
@@ -59,5 +60,9 @@ switch (args[2]) {
 	case "trait-sorter":
 		var TraitSorter = require(__dirname +'/trait-sorter/TraitSorter.js')();
 		TraitSorter.start();
+		break;
+	case "make-fancy-catX":
+		var MakeFancyCatModule = require('make-fancy-cat-module')();
+		MakeFancyCatModule.start();
 		break;
 }
