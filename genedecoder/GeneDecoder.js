@@ -90,8 +90,8 @@ function GeneDecoder(){
 
 	function setup(){
 		geneGroupNames[0] = "Unknown";
-		geneGroupNames[1] = "Unknown";
-		geneGroupNames[2] = "Unknown";
+		geneGroupNames[1] = "Secret";
+		geneGroupNames[2] = "Environment";
 		geneGroupNames[3] = "Mouth";
 		geneGroupNames[4] = "Wild";
 		geneGroupNames[5] = "Color";
@@ -498,20 +498,20 @@ function GeneDecoder(){
 		geneNames[3] = "Dominant";
 	}
 
-	self.geneGroupNames = {};
-	self.bodyGeneNames = {};
-	self.patternGeneNames = {};
-	self.colorEyesGeneNames = {};
-	self.eyesGeneNames = {};
-	self.colorPrimaryGeneNames = {};
-	self.colorSecondaryGeneNames = {};
-	self.colorTertiaryGeneNames = {};
-	self.wildGeneNames = {};
-	self.mouthGeneNames = {};
-	self.environmentGeneNames = {};
-	self.secretGeneNames = {};
-	self.unknownGeneNames = {};
-	self.geneNames = {};
+	geneGroupNames = {};
+	bodyGeneNames = {};
+	patternGeneNames = {};
+	colorEyesGeneNames = {};
+	eyesGeneNames = {};
+	colorPrimaryGeneNames = {};
+	colorSecondaryGeneNames = {};
+	colorTertiaryGeneNames = {};
+	wildGeneNames = {};
+	mouthGeneNames = {};
+	environmentGeneNames = {};
+	secretGeneNames = {};
+	unknownGeneNames = {};
+	geneNames = {};
 
 
 
@@ -523,7 +523,22 @@ function GeneDecoder(){
 	genePercentages[1] = 0.0313;
 	genePercentages[2] = 0.1250;
 	genePercentages[3] = 0.3359;
-	setup();	
+	setup()
+	self.geneGroupNames = geneGroupNames;
+	self.bodyGeneNames = bodyGeneNames;
+	self.patternGeneNames = patternGeneNames;
+	self.colorEyesGeneNames = colorEyesGeneNames;
+	self.eyesGeneNames = eyesGeneNames;
+	self.colorPrimaryGeneNames = colorPrimaryGeneNames;
+	self.colorSecondaryGeneNames = colorSecondaryGeneNames;
+	self.colorTertiaryGeneNames = colorTertiaryGeneNames;
+	self.wildGeneNames = wildGeneNames;
+	self.mouthGeneNames = mouthGeneNames;
+	self.environmentGeneNames = environmentGeneNames;
+	self.secretGeneNames = secretGeneNames;
+	self.unknownGeneNames = unknownGeneNames;
+	self.geneNames = geneNames;
+
 	self.allGeneGroups = {};
 	self.allGeneGroups[geneGroupNames[0]] = unknownGeneNames;
 	self.allGeneGroups[geneGroupNames[1]] = secretGeneNames;
@@ -817,7 +832,7 @@ function GeneDecoder(){
 	self.rareMutationMatcher = function(kitten_1, kitten_2){
 
 		//var noPointers = ["Happygokitty","Soserious","Chronic","Slyboots","Cottoncandy","Mauveover","Crazy","Thicccbrowz","Wild_f","Wild_g"];
-		var rThrees = ["Environment_6","Environment_8","Wasntme","Wild_7","Wild_a","Butterscotch","Harbourfog","Hintomint","Otaku","Chartreux","Wowza","Vigilante","Dragonfruit"];
+		var rThrees = ["Hanauma","Environment_6","Environment_8","Wasntme","Wild_7","Wild_a","Butterscotch","Harbourfog","Hintomint","Otaku","Chartreux","Wowza","Vigilante","Dragonfruit","Cyborg"];
 		var rTwos = ["Environment_b","Belch","Beard","Peach","Emeraldgreen","Missmuffett","Springcrocus","Violet",
 		"Nachocheez","Serpent","Caffeine","Baddate","Forgetmenot","Camo","Calicool","Manul","Wild_2"];
 		var noPointers = [];

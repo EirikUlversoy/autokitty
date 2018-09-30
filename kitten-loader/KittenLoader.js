@@ -114,6 +114,21 @@ function KittenLoader(args){
 
 		}
 
+		if(args[2] == "trait-sorter"){
+			let gen = parseInt(args[3],10);
+			let kittens = [];
+
+			if(gen == 99){
+				kittens = Utilities.readKittensFromDisk("kittensGeneration",0,21);
+			} else {
+				kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
+			}
+			for(var x = totalCatCount-10000; x <totalCatCount; x++){
+				kittens.push(x);
+			}
+			return kittens;
+		}
+
 		return splitText;
 	}
 	function BreedingPair(id1, id2, score){

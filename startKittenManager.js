@@ -56,4 +56,8 @@ switch (args[2]) {
 		var TraitSearchModule = require('trait-search-module')();
 		TraitSearchModule.start();
 		break;
+	case "trait-sorter":
+		var TraitSorter = require(__dirname +'/trait-sorter/TraitSorter.js')();
+		TraitSorter.start();
+		break;
 }
