@@ -3,12 +3,12 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../mutation-dictionary-module")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
-var GeneDecoder = require("../genedecoder")();
+var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
 
 function ListAuctionsModule(){
-	var config = require('../config-module');
+	var config = require('../helpers/config/config');
 	self = {};
 
 	//Different IPC location on linux and Windows
@@ -18,25 +18,12 @@ function ListAuctionsModule(){
 		var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 	}
 
-	var Utilities = require("../utilities");
+	var Utilities = require("../helpers/utilities/Utility");
 
 	var ck_contract = new web3.eth.Contract(config.kitty_core_abi,config.cryptokitties_contract_address);
 
 	web3.eth.defaultAccount = config.owner_wallet_address;
-	//List of cats
-	var cats = [];
-
-	function doWork(id, kitten){
-		kitten.id = id;
-		kitten.chanceOfTrait = {};
-		if(kitten.genes){
-			if(!Utilities.contains(cats, kitten)){
-				cats.push(kitten);
-			}
-		}
-		return kitten;
-
-	}
+	
 	args = process.argv;
 	//Where most of the script logic is.
 	function listCats(){
@@ -52,44 +39,12 @@ function ListAuctionsModule(){
 
 
 
-	//Pushes cats that match the user address into the filtered cats list. Needs to use the bind method in order to keep both cat ID and the address.
-	function doFilterWork(cat,address){
-		if(address == config.upper_wallet_address){
-			allFilteredCats.push(cat);
-			console.log(cat);
-		}
-
-	}
-
-	//Loop that checks for ownership of the cat
-	function getOwnershipOfCatsFromContract(cats){
-		return cats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.ownerOf(cat).call().then(doFilterWork.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-
-
-
-	var allFilteredCats = [];
-
-	function getCatsFromContract(no_catArray){
-		return allFilteredCats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.getKitty(cat).call().then(doWork.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
+	
 
 	function main(){
-		var kittenLoader = require("kitten-loader")(args);
-		ck_contract.methods.totalSupply().call()
-		.then(kittenLoader.loadKittens)
-		.then(getOwnershipOfCatsFromContract)
-		.then(getCatsFromContract)
-		.then(listCats);
+		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
+		let cats = kittenLoader.loadKittens()
+		listCats(cats)
 	}
 
 
@@ -103,4 +58,4 @@ function ListAuctionsModule(){
 	return self;
 }
 
-module.exports = ListAuctionsModule;
+module.exports = { listAuctions }

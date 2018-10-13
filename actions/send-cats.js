@@ -3,12 +3,12 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../mutation-dictionary-module")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary-module")().setupDictionaries();
 //Other modules from this repository
-var GeneDecoder = require("../genedecoder")();
+var GeneDecoder = require("../core-modules/genedecoder")();
 
-function SendCatsModule(){
-	var config = require('../config-module');
+function sendCats(){
+	var config = require('../helpers/config-module');
 	self = {};
 
 	//Different IPC location on linux and Windows
@@ -23,25 +23,10 @@ function SendCatsModule(){
 	var ck_contract = new web3.eth.Contract(config.kitty_core_abi,config.cryptokitties_contract_address);
 
 	web3.eth.defaultAccount = config.owner_wallet_address;
-	//List of cats
-	var cats = [];
-	var allFilteredCats = [];
 
-	function doWork(id, kitten){
-		console.log(kitten);
-		kitten.id = id;
-		kitten.chanceOfTrait = {};
-		if(kitten.genes){
-			if(!Utilities.contains(cats, kitten)){
-				cats.push(kitten);
-			}
-		}
-		return kitten;
-
-	}
 	args = process.argv;
 
-	function sendCats(){
+	function startSendingCats(){
 		if(args[4] != undefined){
 			config.send_cats_address = args[4];
 		}
@@ -53,45 +38,11 @@ function SendCatsModule(){
 		}
 	}
 
-	//Pushes cats that match the user address into the filtered cats list. Needs to use the bind method in order to keep both cat ID and the address.
-	function doFilterWork(cat,address){
-		
-		if(address == config.upper_wallet_address){
-			allFilteredCats.push(cat);
-		}
-
-	}
-
-	//Loop that checks for ownership of the cat
-	function getOwnershipOfCatsFromContract(cats){
-		console.log(cats);
-		return cats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.ownerOf(cat).call().then(doFilterWork.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-
-
-
-	var allFilteredCats = [];
-
-	function getCatsFromContract(no_catArray){
-		return allFilteredCats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.getKitty(cat).call().then(doWork.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-	function main(){
-		var kittenLoader = require("kitten-loader")(args);
-		ck_contract.methods.totalSupply().call()
-		.then(kittenLoader.loadKittens)
-		.then(getOwnershipOfCatsFromContract)
-		.then(getCatsFromContract)
-		.then(sendCats);
+	async function main(){
+		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args)
+		let supply = await ck_contract.methods.totalSupply().call()
+		let kittens = await kittenLoader.loadKittens()
+		startSendingCats()
 	}
 
 
@@ -105,4 +56,4 @@ function SendCatsModule(){
 	return self;
 }
 
-module.exports = SendCatsModule;
+module.exports = {sendCats}

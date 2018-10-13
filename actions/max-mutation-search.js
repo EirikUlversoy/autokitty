@@ -3,13 +3,13 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../mutation-dictionary-module")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
-var GeneDecoder = require("../genedecoder")();
-var Utilities = require("../utilities");
-var config = require("../config-module");
+var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
+var Utilities = require("../helpers/utilities/Utility");
+var config = require("../helpers/config/config");
 
-function PureMutationModule(){
+function maxMutationSearch(){
 	self = {};
 
 	function BreedingPair(id1, id2, score){
@@ -32,18 +32,12 @@ function PureMutationModule(){
 
 	web3.eth.defaultAccount = config.owner_wallet_address;
 
-	//List of cats
-	var cats = [];
-
-
-
-
 	//Read in arguments. The script takes up to 3 arguments. Typically "mode" "generation" "-brisk"(true/false)
 	const args = process.argv;
 	console.log(args);
 
 	//Where most of the script logic is.
-	function startPureMutationProcess () {
+	function startPureMutationProcess (cats) {
 		let PremierMutations = mutationDicts[0];
 		let SecondaryMutations = mutationDicts[1];
 		console.log("is in main");
@@ -75,61 +69,17 @@ function PureMutationModule(){
 	}
 
 	var allFilteredCats = [];
-
-
-	//Loop that checks for ownership of the cat
-	function getOwnershipOfCatsFromContract(cats){
-		//Pushes cats that match the user address into the filtered cats list. Needs to use the bind method in order to keep both cat ID and the address.
-		function addCatToList(cat,address){
-			if(address == config.upper_wallet_address){
-				allFilteredCats.push(cat);
-				console.log(cat);
-			}
-
-		}
-
-		return cats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.ownerOf(cat).call().then(addCatToList.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-
-	function getCatsFromContract(no_catArray){
-		function addCatToList(id, kitten){
-			kitten.id = id;
-			kitten.chanceOfTrait = {};
-			if(kitten.genes){
-				if(!Utilities.contains(cats, kitten)){
-					cats.push(kitten);
-				}
-			}
-			return kitten;
-
-		}
-		return allFilteredCats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.getKitty(cat).call().then(addCatToList.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
 	
-
 	self.start = function (){
 		mutate();
 
 	}
 
-	function mutate(){
+	async function mutate(){
 
-		var kittenLoader = require("kitten-loader")(args);
-		ck_contract.methods.totalSupply().call()
-		.then(kittenLoader.loadKittens)
-		.then(getOwnershipOfCatsFromContract)
-		.then(getCatsFromContract)
-		.then(startPureMutationProcess);
+		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
+		let cats = await kittenLoader.loadKittens()
+		startPureMutationProcess(cats)
 		
 	}
 
@@ -137,6 +87,6 @@ function PureMutationModule(){
 
 }
 
-module.exports = PureMutationModule;
+module.exports = { maxMutationSearch };
 
 

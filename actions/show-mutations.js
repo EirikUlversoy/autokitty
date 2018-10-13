@@ -5,13 +5,13 @@ var fs = require("fs");
 var Promise = require("bluebird");
 
 //Other modules from this repository
-var GeneDecoder = require("../genedecoder")();
-var Utilities = require("../utilities");
-var mutationDicts = require("../mutation-dictionary-module")().setupDictionaries();
-var config = require('../config-module');
+var GeneDecoder = require("../core-modules/genedecoder")();
+var Utilities = require("../helpers/utilities");
+var mutationDicts = require("../core-modules/mutation-dictionary-module")().setupDictionaries();
+var config = require('../helpers/config-module');
 var generations_breeding_upper_limit = 25;
 
-function ShowAvailableMutationsModule(){
+function showMutations(){
 	//BreedingPair "class"
 	self = {};
 	function BreedingPair(id1, id2, score){
@@ -35,27 +35,12 @@ function ShowAvailableMutationsModule(){
 
 	web3.eth.defaultAccount = config.owner_wallet_address;
 
-	//List of cats
-	var cats = [];
-
-	function addKittenToCatsList(id, kitten){
-		kitten.id = id;
-		console.log(kitten.id);
-		kitten.chanceOfTrait = {};
-		if(kitten.genes){
-			if(!Utilities.contains(cats, kitten)){
-				cats.push(kitten);
-			}
-		}
-		return kitten;
-
-	}
 
 	args = process.argv;
 	console.log(args)
 
 	//Performs all mutations of a given generation. (Typically all gen 2 mutations from gen 1)
-	function analyzePossibleMutations(){
+	function analyzePossibleMutations(cats){
 		gen = parseInt(args[3],10);
 		excludeReady = args[4] || false
 		//var Breeder = require("../breeder")(config.upper_wallet_address, web3,ck_contract);
@@ -91,43 +76,10 @@ function ShowAvailableMutationsModule(){
 		}
 	};
 
-	var allFilteredCats = [];
-	//Pushes cats that match the user address into the filtered cats list. Needs to use the bind method in order to keep both cat ID and the address.
-	function addKittenToOwnedCatsList(cat,address){
-		if(address == config.upper_wallet_address){
-			allFilteredCats.push(cat);
-		}
-
-	}
-
-	//Loop that checks for ownership of the cat
-	function getOwnershipOfCatsFromContract(cats){
-		return cats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.ownerOf(cat).call().then(addKittenToOwnedCatsList.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-
-	function getCatsFromContract(no_catArray){
-		return allFilteredCats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.getKitty(cat).call().then(addKittenToCatsList.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-
-
-
-	function analyze(){
+	async function analyze(){
 		var kittenLoader = require("kitten-loader")(args);
-		ck_contract.methods.totalSupply().call()
-		.then(kittenLoader.loadKittens)
-		.then(getOwnershipOfCatsFromContract)
-		.then(getCatsFromContract)
-		.then(analyzePossibleMutations);
+		kittens = await kittenLoader.loadKittens()
+		analyzePossibleMutations(kittens)
 	}
 
 	self.start = function(){
@@ -139,4 +91,4 @@ function ShowAvailableMutationsModule(){
 
 }
 
-module.exports = ShowAvailableMutationsModule;
+module.exports = { showMutations }

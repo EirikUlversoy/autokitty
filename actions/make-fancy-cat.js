@@ -3,12 +3,12 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../mutation-dictionary-module")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
-var GeneDecoder = require("../genedecoder")();
+var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
 
-function MakeFancyCatModule(){
-	var config = require('../config-module');
+function makeFancyCat(){
+	var config = require('../helpers/config/config');
 	self = {};
 
 	//Different IPC location on linux and Windows
@@ -27,31 +27,11 @@ function MakeFancyCatModule(){
 
 	web3.eth.defaultAccount = config.owner_wallet_address;
 	//List of cats
-	var cats = [];
 
-	function handleKittensWithContract(kittens){
-		var promiseArray = [];
-		for (kitten in kittens){
-			promiseArray[kitten] = ck_contract.methods.getKitty(kittens[kitten].id).call().then(doWork.bind(null, kittens[kitten].id));
-		}
 
-		return Promise.all(promiseArray);
-	}
-
-	function doWork(id, kitten){
-		kitten.id = id;
-		kitten.chanceOfTrait = {};
-		if(kitten.genes){
-			if(!Utilities.contains(cats, kitten)){
-				cats.push(kitten);
-			}
-		}
-		return kitten;
-
-	}
 	args = process.argv;
 	//Where most of the script logic is.
-	function startFancyCatProcessX(){
+	function startFancyCatProcessX(cats){
 		var gen_from = parseInt(args[4],10)
 		var gen_to = parseInt(args[5],10)
 		var dominantCount = parseInt(args[6],10);
@@ -62,7 +42,7 @@ function MakeFancyCatModule(){
 		var stages = Fancyfier.mainStarter(gen_from, gen_to, cats);
 
 	}
-	function startFancyCatProcess(){
+	function startFancyCatProcess(cats){
 
 		var gen_from = parseInt(args[3],10);
 		var gen_to = parseInt(args[4],10);
@@ -93,43 +73,10 @@ function MakeFancyCatModule(){
 		fancy_dict["Sheila"] = ["Icy","Fangtastic","Mauveover","Wingtips"]
 		var targeted_traits = fancy_dict[args[6]];
 		var bottleneckTrait = args[7] 		
-		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount, bottleneckTrait);
+		var Fancyfier = require("../core-modules/fancyfier/Fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount, bottleneckTrait);
 		var stages = Fancyfier.mainStarter(gen_from, gen_to, cats);
 
 
-	}
-
-
-
-	//Pushes cats that match the user address into the filtered cats list. Needs to use the bind method in order to keep both cat ID and the address.
-	function doFilterWork(cat,address){
-		if(address == config.upper_wallet_address){
-			allFilteredCats.push(cat);
-			console.log(cat);
-		}
-
-	}
-
-	//Loop that checks for ownership of the cat
-	function getOwnershipOfCatsFromContract(cats){
-		return cats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.ownerOf(cat).call().then(doFilterWork.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-
-
-
-	var allFilteredCats = [];
-
-	function getCatsFromContract(no_catArray){
-		return allFilteredCats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.getKitty(cat).call().then(doWork.bind(null, cat));
-			});
-		}, Promise.resolve());
 	}
 
 	function BreedingPair(id1, id2, score){
@@ -138,25 +85,14 @@ function MakeFancyCatModule(){
 		this.score = score;
 	}
 
-	function fancify(){
-		cats = [];
-
+	async function fancify(){
+		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
 		if(args[2] == "make-fancy-catX"){
-			allFilteredCats = [];
-			var kittenLoader = require("kitten-loader")(args);
-			ck_contract.methods.totalSupply().call()
-			.then(kittenLoader.loadKittens)
-			.then(getOwnershipOfCatsFromContract)
-			.then(getCatsFromContract)
-			.then(startFancyCatProcessX);
+			let cats = await kittenLoader.loadKittens()
+			startFancyCatProcessX(cats)
 		} else {
-			allFilteredCats = [];
-			var kittenLoader = require("kitten-loader")(args);
-			ck_contract.methods.totalSupply().call()
-			.then(kittenLoader.loadKittens)
-			.then(getOwnershipOfCatsFromContract)
-			.then(getCatsFromContract)
-			.then(startFancyCatProcess);
+			let cats = kittenLoader.loadKittens()
+			startFancyCatProcess(cats)
 		}
 
 		
@@ -183,4 +119,4 @@ function MakeFancyCatModule(){
 	return self;
 }
 
-module.exports = MakeFancyCatModule;
+module.exports = { makeFancyCat }

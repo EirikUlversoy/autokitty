@@ -1,72 +1,73 @@
 
 var args = process.argv;
 console.log(args);
-var config = require('./config-module');
+var config = require('./helpers/config/config');
 
 switch (args[2]) {
 
-	case "one-mutation":
-		var SimpleMutationModule = require('simple-mutation-module')();
-		SimpleMutationModule.start();
+	case "mutate-one":
+		var { mutateOne } = require('./actions/mutate-one');
+		var starter = mutateOne()
+		starter.start()
 		break;
-	case "all-mutations":
-		var SimpleMutationModule = require('simple-mutation-module')();
-		SimpleMutationModule.start();
+	case "mutate-all":
+		var mutateAll = require('./actions/mutate-all')();
+		mutateAll.start();
 		break;
 	case "load-pairs":
-		var SimpleMutationModule = require('simple-mutation-module')();
-		SimpleMutationModule.start();
+		var loadPairs = require('./actions/load-pairs')();
+		loadPairs.start();
 		break;
-	case "pure-mutation":
-		var PureMutationModule = require('pure-mutation-module')();
-		PureMutationModule.start();
+	case "max-mutation-search":
+		var maxMutationSearch = require('./actions/max-mutation-search')();
+		maxMutationSearch.start();
 		break;
 	case "buy-clock-cats":
-		var BuyClockCatsModule = require('buy-clock-cats-module')();
-		BuyClockCatsModule.start();
+		var buyClockCats = require('./actions/buy-clock-cats')();
+		buyClockCats.start();
 		break;
 	case "make-fancy-cat":
-		var MakeFancyCatModule = require('make-fancy-cat-module')();
-		MakeFancyCatModule.start();
+		var makeFancyCat = require('./actions/make-fancy-cat')();
+		makeFancyCat.start();
 		break;
-	case "show-available-mutations":
-		var ShowAvailableMutationsModule = require('show-available-mutations-module')();
-		ShowAvailableMutationsModule.start();
+	case "show-mutations":
+		var showMutations = require('./actions/show-mutations')();
+		showMutations.start();
 		break;
 	case "send-cats":
-		var SendCatsModule = require('send-cats-module')();
-		SendCatsModule.start();
+		var sendCats = require('./actions/send-cats')();
+		sendCats.start();
 		break;
 	case "list-auctions":
-		var ListAuctionsModule = require('list-auctions-module')();
-		ListAuctionsModule.start();
+		var listAuctions = require('./actions/list-auctions')();
+		listAuctions.start();
 		break;
 	case "trait-search":
-		var TraitSearchModule = require('trait-search-module')();
-		TraitSearchModule.start();
+		var traitSearch = require('./actions/trait-search')();
+		traitSearch.start();
 		break;
 	case "trait-search-multiple":
-		var TraitSearchModule = require('trait-search-module')();
-		TraitSearchModule.start();
+		var traitSearch = require('./actions/trait-search')();
+		traitSearch.start();
 		break;
 	case "search-auctions":
-		var SearchAuctionsModule = require('search-auctions-module')();
-		SearchAuctionsModule.start();
+		var searchAuctions = require('./actions/search-auctions')();
+		searchAuctions.start();
 		break;
 	case "fancy-filtering":
-		var TraitSearchModule = require('trait-search-module')();
+		var fancyFiltering = require('./actions/trait-search')();
 		TraitSearchModule.start();
 		break;
 	case "trait-sorter":
-		var TraitSorter = require(__dirname +'/trait-sorter/TraitSorter.js')();
+		var TraitSorter = require(__dirname +'helpers/trait-sorter/TraitSorter.js')();
 		TraitSorter.start();
 		break;
 	case "generation-outputter":
-		var TraitSorter = require(__dirname +'/trait-sorter/TraitSorter.js')();
+		var TraitSorter = require(__dirname +'helpers/trait-sorter/TraitSorter.js')();
 		TraitSorter.start();
 		break;
 	case "make-fancy-catX":
-		var MakeFancyCatModule = require('make-fancy-cat-module')();
-		MakeFancyCatModule.start();
+		var makeFancyCatX = require('./actions/make-fancy-cat')();
+		makeFancyCatX.start();
 		break;
 }

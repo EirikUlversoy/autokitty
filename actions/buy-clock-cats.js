@@ -3,13 +3,13 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../mutation-dictionary-module")().setupDictionaries();
+var mutationDicts = require("../mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
-var GeneDecoder = require("../genedecoder")();
-var Utilities = require("../utilities");
-var config = require("../config-module");
+var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
+var Utilities = require("../helpers/utilities/Utility");
+var config = require("../helpers/config/config");
 
-function BuyClockCatsModule(){
+function buyClockCats(){
 	self = {};
 	var args = process.argv;
 	//Different IPC location on linux and Windows
@@ -362,4 +362,4 @@ function BuyClockCatsModule(){
 	return self;
 }
 
-module.exports = BuyClockCatsModule;
+module.exports = { buyClockCats }

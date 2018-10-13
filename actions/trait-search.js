@@ -3,12 +3,12 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../mutation-dictionary-module")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
-var GeneDecoder = require("../genedecoder")();
+var GeneDecoder = require("../core-modules/genedecoder/Genedecoder")();
 
-function TraitSearchModule(optional_arguments){
-	var config = require('../config-module');
+function traitSearch(optional_arguments){
+	var config = require('../helpers/config-module');
 	self = {};
 
 	//Different IPC location on linux and Windows
@@ -18,7 +18,7 @@ function TraitSearchModule(optional_arguments){
 		var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 	}
 
-	var Utilities = require("utilities");
+	var Utilities = require("../helpers/utilities/Utility");
 
 
 
@@ -27,19 +27,6 @@ function TraitSearchModule(optional_arguments){
 
 	web3.eth.defaultAccount = config.owner_wallet_address;
 	//List of cats
-	var cats = [];
-
-	function doWork(id, kitten){
-		kitten.id = id;
-		kitten.chanceOfTrait = {};
-		if(kitten.genes){
-			if(!Utilities.contains(cats, kitten)){
-				cats.push(kitten);
-			}
-		}
-		return kitten;
-
-	}
 	if(optional_arguments != undefined){
 		args = optional_arguments
 	} else {
@@ -144,39 +131,6 @@ function TraitSearchModule(optional_arguments){
 		Utilities.saveKittenIds(new_cats, process.cwd() + '/pricing_searches/' + traitFileName +'OUT' + String(gen));
 	}
 
-
-
-	//Pushes cats that match the user address into the filtered cats list. Needs to use the bind method in order to keep both cat ID and the address.
-	function doFilterWork(cat,address){
-		if(address == config.upper_wallet_address){
-			allFilteredCats.push(cat);
-			console.log(cat);
-		}
-
-	}
-
-	//Loop that checks for ownership of the cat
-	function getOwnershipOfCatsFromContract(cats){
-		return cats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.ownerOf(cat).call().then(doFilterWork.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-
-
-
-	var allFilteredCats = [];
-
-	function getCatsFromContract(no_catArray){
-		return allFilteredCats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.getKitty(cat).call().then(doWork.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
 	function BreedingPair(id1, id2, score){
 		this.id1 = id1;
 		this.id2 = id2;
@@ -234,4 +188,4 @@ function TraitSearchModule(optional_arguments){
 	return self;
 }
 
-module.exports = TraitSearchModule;
+module.exports = { traitSearch }
