@@ -7,8 +7,8 @@ var Promise = require("bluebird");
 //Other modules from this repository
 var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
 var Utilities = require("../helpers/utilities/Utility");
-var mutationDicts = require("../core-modules/mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
-var config = require('../helpers/config-module/config');
+var mutationDicts = require("../core-modules/mutation-dictionary/MutationDictionaries")().setupDictionaries();
+var config = require('../helpers/config/config');
 var generations_breeding_upper_limit = 25;
 
 function loadPairs(){
@@ -40,12 +40,12 @@ function loadPairs(){
 
 	async function loadPairsAndBreed(){
 		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
-		var pairs = kittenLoader.loadPairs()
+		var pairs = await kittenLoader.loadPairs()
 		breedOnly(pairs);
 	}
 
 	function breedOnly(pairs){
-		var Breeder = require("../breeder")(config.upper_wallet_address, web3,ck_contract)
+		var Breeder = require("../core-modules/breeder/Breeder")(config.upper_wallet_address, web3,ck_contract)
 		Breeder.directBreedFromInput(pairs)
 		console.log("bred " + pairs.length + "pairs")
 

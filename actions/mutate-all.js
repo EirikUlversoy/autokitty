@@ -73,7 +73,7 @@ function mutateAll(){
 		targeted_traits = ["Jaguar","Lemonade"];
 
 		console.log("Performing: ALL mutations");
-		var Breeder = require("../breeder")(config.upper_wallet_address, web3,ck_contract);
+		var Breeder = require("../core-modules/breeder/Breeder")(config.upper_wallet_address, web3,ck_contract);
 		var unchained = undefined;
 		var sixPercent = undefined;
 		Breeder.setupBreedingOptions(totalCats, targeted_traits, unchained, sixPercent, gen, gen);
@@ -141,22 +141,9 @@ function mutateAll(){
 
 	async function mutate(){
 		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
-		if(args[2] == "load-pairs"){
-			var pairs = kittenLoader.loadPairs()
-			breedOnly(pairs);
-		} else {
-			var kittens = kittenLoader.loadKittens(ck_contract)
-			startMutationProcess(kittens)
-		}
+		var kittens = await kittenLoader.loadKittens(ck_contract)
+		startMutationProcess(kittens)
 	}
-
-	function breedOnly(pairs){
-		var Breeder = require("../breeder")(config.upper_wallet_address, web3,ck_contract)
-		Breeder.directBreedFromInput(pairs)
-		console.log("bred " + pairs.length + "pairs")
-
-	}
-
 	
 	//Amount of iterations and time inbetween. 10m often works well.
 	

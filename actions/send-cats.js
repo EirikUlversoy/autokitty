@@ -40,9 +40,8 @@ function sendCats(){
 
 	async function main(){
 		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args)
-		let supply = await ck_contract.methods.totalSupply().call()
-		let kittens = await kittenLoader.loadKittens()
-		startSendingCats()
+		let cats = await kittenLoader.loadKittens(ck_contract)
+		startSendingCats(cats)
 	}
 
 

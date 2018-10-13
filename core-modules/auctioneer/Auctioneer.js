@@ -7,8 +7,8 @@ function Auctioneer(upper_wallet_address, web3, ck_contract, price_from, price_t
 		self.price_from = price_from;
 		self.price_to = price_to;
 	} else {
-		self.price_from = "1";
-		self.price_to = "1";
+		self.price_from = '1';
+		self.price_to = '1';
 	}
 	self.check = function(id){
 		self.ck_contract.methods.isPregnant(id).call().then(z => self.secondCheck(id,z));

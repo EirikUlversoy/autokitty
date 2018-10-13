@@ -67,13 +67,13 @@ module.exports = {
 	    return true;
 	},
 	fancyReadKittensFromDiskX(filename, numberFrom, numberTo){
-		let text = fs.readFileSync(__dirname + '/../traitsorted_kittensv2/' + filename + numberFrom + '.txt', 'utf8');
+		let text = fs.readFileSync(__dirname + '/../../traitsorted_kittensv2/' + filename + numberFrom + '.txt', 'utf8');
 		let splitText = text.split(",");
 		if(splitText[0] === ''){
 			splitText = []
 		}
 		for(let filenumber = numberFrom+1; filenumber <= numberTo; filenumber++){
-			let secondText = fs.readFileSync(__dirname + '/../traitsorted_kittensv2/' + filename +filenumber+'.txt','utf8');
+			let secondText = fs.readFileSync(__dirname + '/../../traitsorted_kittensv2/' + filename +filenumber+'.txt','utf8');
 			let secondSplitText = secondText.split(",");
 			for(let kittenID in secondSplitText){
 				kittenID = secondSplitText[kittenID];
@@ -88,11 +88,11 @@ module.exports = {
 		return splitText;
 	},
 	fancyReadKittensFromDisk(filename, numberFrom, numberTo){
-		let text = fs.readFileSync(__dirname + '/../fancids/' + filename + numberFrom + '.txt', 'utf8');
+		let text = fs.readFileSync(__dirname + '/../../fancids/' + filename + numberFrom + '.txt', 'utf8');
 		let splitText = text.split(",");
 
 		for(let filenumber = numberFrom+1; filenumber <= numberTo; filenumber++){
-			let secondText = fs.readFileSync(__dirname + '/../fancids/' + filename +filenumber+'.txt','utf8');
+			let secondText = fs.readFileSync(__dirname + '/../../fancids/' + filename +filenumber+'.txt','utf8');
 			let secondSplitText = secondText.split(",");
 			for(let kittenID in secondSplitText){
 				kittenID = secondSplitText[kittenID];
@@ -105,11 +105,12 @@ module.exports = {
 		return splitText;
 	},
 	readKittensFromDisk(filename, numberFrom, numberTo){
-		let text = fs.readFileSync(__dirname + '/../kittens/' + filename + numberFrom + '.txt', 'utf8');
+		let text = fs.readFileSync(__dirname + '/../../kittens/' + filename + numberFrom + '.txt', 'utf8');
+		console.log("loading cats from: " + __dirname + '/../../kittens/' + filename + numberFrom + '.txt')
 		let splitText = text.split(",");
 
 		for(let filenumber = numberFrom+1; filenumber <= numberTo; filenumber++){
-			let secondText = fs.readFileSync(__dirname + '/../kittens/' + filename +filenumber+'.txt','utf8');
+			let secondText = fs.readFileSync(__dirname + '/../../kittens/' + filename +filenumber+'.txt','utf8');
 			let secondSplitText = secondText.split(",");
 			for(let kittenID in secondSplitText){
 				kittenID = secondSplitText[kittenID];

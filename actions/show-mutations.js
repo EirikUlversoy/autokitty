@@ -78,8 +78,8 @@ function showMutations(){
 
 	async function analyze(){
 		var kittenLoader = require("kitten-loader")(args);
-		kittens = await kittenLoader.loadKittens()
-		analyzePossibleMutations(kittens)
+		cats = await kittenLoader.loadKittens(ck_contract)
+		analyzePossibleMutations(cats)
 	}
 
 	self.start = function(){

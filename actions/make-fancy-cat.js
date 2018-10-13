@@ -88,10 +88,10 @@ function makeFancyCat(){
 	async function fancify(){
 		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
 		if(args[2] == "make-fancy-catX"){
-			let cats = await kittenLoader.loadKittens()
+			let cats = await kittenLoader.loadKittens(ck_contract)
 			startFancyCatProcessX(cats)
 		} else {
-			let cats = kittenLoader.loadKittens()
+			let cats = await kittenLoader.loadKittens(ck_contract)
 			startFancyCatProcess(cats)
 		}
 

@@ -78,7 +78,7 @@ function maxMutationSearch(){
 	async function mutate(){
 
 		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
-		let cats = await kittenLoader.loadKittens()
+		let cats = await kittenLoader.loadKittens(ck_contract)
 		startPureMutationProcess(cats)
 		
 	}

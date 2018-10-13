@@ -97,7 +97,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		console.log('Fitting kittens found: %d', catsWithAnyTargetedTraits.length);
 		console.log("Account used to breed: " + self.web3.eth.defaultAccount);
 
-		var RankingModule = require('../ranking-module')(self.targetedTraits, self.cats);
+		var RankingModule = require('../ranking/RankingModule')(self.targetedTraits, self.cats);
 
 		//Scoring functions are needed for the breeding algorithm that follows
 		var topLists = RankingModule.createTopLists(catsWithAnyTargetedTraits);
@@ -108,7 +108,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 			self.cats = readyFilteredCatList;
 			//self.cats = filteredCatList;
 			self.cats = GeneDecoder.filterByMutaCount(self.cats, self.mutaCount);
-			RankingModule = require('../ranking-module')(self.targetedTraits, self.cats);
+			RankingModule = require('../ranking/RankingModule')(self.targetedTraits, self.cats);
 
 			self.breedingPairs = self._simpleMutaBreedingAlgorithm();
 		} else {

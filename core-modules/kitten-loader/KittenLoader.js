@@ -1,5 +1,6 @@
 var Utilities = require('../../helpers/utilities/Utility');
 var fs = require('fs');
+var config = require('../../helpers/config/config')
 function KittenLoader(args){
 	var self = {};
 	if(args != undefined){
@@ -10,7 +11,7 @@ function KittenLoader(args){
 	self.loadTraits = function(trait_filename){
 		console.log("Loading the file called:");
 		console.log(trait_filename);
-		let text = fs.readFileSync(__dirname + '/../traits/' + trait_filename + '.txt', 'utf8');
+		let text = fs.readFileSync(__dirname + '/../../traits/' + trait_filename + '.txt', 'utf8');
 		let splitText = text.split(",");
 		console.log(splitText);
 		return splitText;
@@ -74,7 +75,12 @@ function KittenLoader(args){
 
 		const supply = await ck_contract.methods.totalSupply().call()
 		const kittens = await self.loadKittenIDs(supply)
-		const portionedCats = await Utilities.chunkify(kittens, kittens.length/5000);
+		console.log(kittens.length)
+		if(kittens.length > 5000){
+			const portionedCats = await Utilities.chunkify(kittens, kittens.length/5000);
+		} else {
+			portionedCats = [kittens]
+		}
 		let totalCats = []
 		for(let portionedCat in portionedCats){
 			portionedCat = portionedCats[portionedCat]
@@ -83,6 +89,7 @@ function KittenLoader(args){
 			totalCats = totalCats.concat(actualCats)
 		}
 
+		console.log('returning cats, they have length', totalCats.length)
 		return totalCats
 		
 	}
@@ -90,7 +97,7 @@ function KittenLoader(args){
 		console.log("total supply is: " + totalCatCount);
 		var lowGenCatsOnly = false;
 		var splitText = [];
-		if(args[2] == "all-mutations"){
+		if(args[2] == "mutate-all"){
 			let gen = parseInt(args[3],10);
 			let kittens =  Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
 			for(var x = totalCatCount-5000; x < totalCatCount; x++){
@@ -100,7 +107,7 @@ function KittenLoader(args){
 			return kittens;
 		}
 
-		if(args[2] == "pure-mutation"){
+		if(args[2] == "max-mutation-search"){
 			let gen = parseInt(args[3],10);
 			let kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
 			for(var x = totalCatCount-5000; x < totalCatCount; x++){
@@ -110,7 +117,7 @@ function KittenLoader(args){
 			return kittens;
 		}
 
-		if(args[2] == "find_sire"){
+		if(args[2] == "find-sires"){
 			var kittens = Utilities.readKittensFromDisk("kittensGeneration",0,0);
 
 			for(var x = totalCatCount - 2000; x < totalCatCount; x++){
@@ -119,7 +126,7 @@ function KittenLoader(args){
 
 			return kittens;
 		}
-		if(args[2] == "one-mutation"){
+		if(args[2] == "mutate-one"){
 			let gen = parseInt(args[4],10);
 			let kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
 			for(var x = totalCatCount-5000; x < totalCatCount; x++){
@@ -129,7 +136,7 @@ function KittenLoader(args){
 			return kittens;
 		}
 
-		if(args[2] == "show-available-mutations"){
+		if(args[2] == "show-mutations"){
 			let gen = parseInt(args[3],10);
 			if(gen != 99) {
 				var kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
@@ -165,13 +172,13 @@ function KittenLoader(args){
 
 		if(args[2] == "list-auctions"){
 			let name = args[3];
-			let kittens = Utilities.readKittensFromDisk('/cats_to_auction/' + name, 0, 0);
+			let kittens = Utilities.readKittensFromDisk('cats_to_auction/' + name, 0, 0);
 			return kittens;
 		}
 
 		if(args[2] == "send-cats"){
 			let name = args[3];
-			let kittens = Utilities.readKittensFromDisk('/send_cats/' + name, 0, 0);
+			let kittens = Utilities.readKittensFromDisk('send_cats/' + name, 0, 0);
 			return kittens;
 		}
 
@@ -239,7 +246,7 @@ function KittenLoader(args){
 		this.score = score;
 	}
 	self.loadPairs = function(){
-		let text = fs.readFileSync(__dirname + '/../kitten_pairs/saved_breeding_pairs.txt', 'utf8');
+		let text = fs.readFileSync(__dirname + '/../../kitten_pairs/saved_breeding_pairs.txt', 'utf8');
 			let splitText = text.split("END,");
 			var pairs = [];
 			for(var textEntry in splitText){

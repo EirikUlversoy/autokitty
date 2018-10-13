@@ -62,7 +62,7 @@ function RankingModule(){
 			}
 
 		}
-		Comparators = require('../ak-comparators');
+		Comparators = require('../../helpers/ak-comparators/Comparators');
 		topList.sort(Comparators.traitScoreComparator(trait));
 		return topList;
 	}

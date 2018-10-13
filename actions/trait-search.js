@@ -137,42 +137,25 @@ function traitSearch(optional_arguments){
 		this.score = score;
 	}
 
-	function main(optional_arguments){
+	async function main(optional_arguments){
 		if(optional_arguments != undefined){
 			args = optional_arguments
 		} else {
 
 		}
+		var kittenLoader = require("kitten-loader")(args);
 		if(args[2] == "trait-search-multiple"){
-			var kittenLoader = require("kitten-loader")(args);
-			ck_contract.methods.totalSupply().call()
-			.then(kittenLoader.loadKittens)
-			.then(getOwnershipOfCatsFromContract)
-			.then(getCatsFromContract)
-			.then(searchForMultipleTraits);
+			var cats = await kittenLoader.loadKittens(ck_contract)
+			searchForMultipleTraits(cats)
 		} else if (args[2] == "trait-search-multipleAUCTION"){
-
-			var kittenLoader = require("kitten-loader")(args)
-			ck_contract.methods.totalSupply().call()
-			.then(kittenLoader.loadKittens)
-
-			.then(getOwnershipOfCatsFromContract)
-			.then(getCatsFromContract)
-			.then(searchForMultipleTraits)
+			var cats = await kittenLoader.loadKittens(ck_contract)
+			searchForMultipleTraits(cats)
 		} else if (args[2] == "fancy-filtering"){
-			var kittenLoader = require("kitten-loader")(args);
-			ck_contract.methods.totalSupply().call()
-			.then(kittenLoader.loadKittens)
-			.then(getOwnershipOfCatsFromContract)
-			.then(getCatsFromContract)
-			.then(searchForAnyOfMultipleTraitsFancy);
+			var cats = await kittenLoader.loadKittens(ck_contract)
+			searchForAnyOfMultipleTraitsFancy(cats)
 		} else {
-			var kittenLoader = require("kitten-loader")(args);
-			ck_contract.methods.totalSupply().call()
-			.then(kittenLoader.loadKittens)
-			.then(getOwnershipOfCatsFromContract)
-			.then(getCatsFromContract)
-			.then(searchForTrait);
+			var cats = await kittenLoader.loadKittens(ck_contract)
+			searchForTrait(cats)
 		}
 
 	}
