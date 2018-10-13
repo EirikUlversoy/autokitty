@@ -3,7 +3,7 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../core-modules/mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
 var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
 var Utilities = require("../helpers/utilities/Utility");
@@ -61,7 +61,7 @@ function maxMutationSearch(){
 		//Avoids conflicts
 		targeted_traits = ["Jaguar","Lemonade"];
 		console.log("In gen "+ gen + " pure muta");
-		var Breeder = require("../breeder")(config.upper_wallet_address, web3,ck_contract);
+		var Breeder = require("../core-modules/breeder/Breeder")(config.upper_wallet_address, web3,ck_contract);
 		Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, gen, gen);
 		Breeder.togglePureMuta(mutaCount);
 		Breeder.advancedBreedingLoop();

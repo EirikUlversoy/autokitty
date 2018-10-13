@@ -230,7 +230,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		const { fork } = require('child_process');
 
 		for (var catPortion in portionedCats){
-			const process = fork('breeder/processCats.js');
+			const process = fork('core-modules/breeder/processCats.js');
 
 			process.on('message', (message) => {
 			  console.log('BP from child');

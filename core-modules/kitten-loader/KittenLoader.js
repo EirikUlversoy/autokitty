@@ -76,11 +76,7 @@ function KittenLoader(args){
 		const supply = await ck_contract.methods.totalSupply().call()
 		const kittens = await self.loadKittenIDs(supply)
 		console.log(kittens.length)
-		if(kittens.length > 5000){
-			const portionedCats = await Utilities.chunkify(kittens, kittens.length/5000);
-		} else {
-			portionedCats = [kittens]
-		}
+		const portionedCats = await Utilities.chunkify(kittens, kittens.length/5000);
 		let totalCats = []
 		for(let portionedCat in portionedCats){
 			portionedCat = portionedCats[portionedCat]
