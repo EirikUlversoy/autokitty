@@ -60,7 +60,7 @@ function TraitSorter(optional_arguments){
 			for (var kitten in kittens){
 				output.push(kittens[kitten].id);
 			}
-			fs.writeFile(__dirname + '/../traitsorted_kittensv2/' + name + '.txt', output, (err) => {
+			fs.writeFile(__dirname + '/../traitsorted_kittensv3/' + name + '.txt', output, (err) => {
 		  	if (err) throw err;
 		  	console.log('Saved R1+ of trait: ' + name + '!');
 		});

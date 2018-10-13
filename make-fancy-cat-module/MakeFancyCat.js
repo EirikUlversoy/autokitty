@@ -90,8 +90,10 @@ function MakeFancyCatModule(){
 		fancy_dict["Furrball"] = ["Unknown_s","Norwegianforest","Totesbasic_f","Walrus","Littlefoot"]
 		fancy_dict["Prune"] = ["Unknown_r","Norwegianforest","Totesbasic_f"]
 		fancy_dict["Pawzilla"] = ["Jaguar","Littlefoot","Universe","Atlantis"]
-		var targeted_traits = fancy_dict[args[6]]; 		
-		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount);
+		fancy_dict["Sheila"] = ["Icy","Fangtastic","Mauveover","Wingtips"]
+		var targeted_traits = fancy_dict[args[6]];
+		var bottleneckTrait = args[7] 		
+		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount, bottleneckTrait);
 		var stages = Fancyfier.mainStarter(gen_from, gen_to, cats);
 
 
@@ -164,12 +166,12 @@ function MakeFancyCatModule(){
 
 
 	self.start = function(){
-		let timePerIteration = 800000;
+		let timePerIteration = 1200000;
 
 		if(parseInt(config.time_per_iteration,10) != 0){
 			timePerIteration = config.time_per_iteration;
 		}
-		for(v = 0; v <=400; v++){
+		for(v = 0; v <=50; v++){
 			setTimeout(fancify,timePerIteration*v);
 
 			console.log("Scheduling: " + v);

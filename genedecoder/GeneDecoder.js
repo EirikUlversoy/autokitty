@@ -1535,6 +1535,14 @@ function GeneDecoder(){
 	}
 	self.statistics = function(cats, place){
 		statsDictionary = {};
+		for (let [key, value] of Object.entries(self.allGeneGroups)){
+			console.log("Going through the " + key + " category!")
+			for(let [sKey, sValue] of Object.entries(self.allGeneGroups[key])){
+				console.log("Looking at the " + sKey + " trait!")
+				statsDictionary[sKey] = 0
+			}
+		}
+
 		for(var cat in cats){
 			cat = cats[cat];
 			geneArrays = self.readKitten(cat);

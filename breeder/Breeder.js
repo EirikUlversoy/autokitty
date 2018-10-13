@@ -277,7 +277,7 @@ function Breeder(upper_wallet_address, web3, ck_contract){
 		output = [];
 		for (var bp in self.breedingPairs){
 			bp = self.breedingPairs[bp];
-			if(bp.score >= 0.030){
+			if(bp.score >= 0.061){
 				output.push(bp.id1 + ',' + bp.id2 + ',' + bp.score + 'END' );
 			}
 		}

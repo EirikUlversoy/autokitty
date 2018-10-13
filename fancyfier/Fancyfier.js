@@ -3,7 +3,7 @@ var Comparators = require("../ak-comparators");
 var Utilities = require("../utilities");
 var Combinatorics = require("js-combinatorics");
 
-function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount){
+function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount, bottleneckTrait){
 	self = {};
 	self.dominantCount = dominantCount;
 	self.total_targeted_traits = targeted_traits;
@@ -11,13 +11,11 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	self.allBreedingPairLists = [];
 	self.catOutput = false;
 	self.fancyOnFancyBanned = false;
-	self.useDefaultDict = false;
-	self.defaultDict = {};
-	self.defaultDict[0] = 0.02;
-	self.defaultDict[1] = 0.005;
-	self.defaultDict[2] = 0.02;
+	self.useDefaultDict = true;
+	self.defaultDict = {0: 0.005, 1: 0.005, 2: 0.01, 3: 0.02, 4: 0.03, 5: 0.04, 6: 0.06, 7: 0.10, 8: 0.12, 9: 0.12, 10: 0.15, 11: 0.25, 12: 0.40};
 
-	self.longshotMutations = true;
+	self.bottleneckTrait = bottleneckTrait;
+	self.longshotMutations = false;
 	//Needs to be global to avoid conflicts
 	self.usedCats = [];
 	var Breeder = require("../breeder")(upper_wallet_address, web3, ck_contract);
@@ -67,8 +65,8 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	}
 	function main(gen_from, gen_to, cats){
 		cats = isReadyFilter(cats);
-		var stageList = designStages(gen_from, gen_to, cats, 3);
-
+		var stageList = designStages(gen_from, gen_to, cats, 2);
+		console.log(stageList.length)
 		for(var stage in stageList){
 			stageNumber = stage;
 			stage = stageList[stage];
@@ -98,12 +96,11 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 			if(catAmount < 5000){
 				if(self.useDefaultDict && self.allBreedingPairLists[x].length > 0){
 					new_breeding_list = filterBreedingListByPercentage(self.defaultDict[catA.generation], self.allBreedingPairLists[x]);
-					Breeder._triggerBreedingPairs(new_breeding_list);					
 				} else {
 					//new_breeding_list = filterBreedingListByPercentage(0.10, self.allBreedingPairLists[x]);
 					new_breeding_list = filterBreedingListByPercentage(0.01, self.allBreedingPairLists[x]);
 //						new_breeding_list = filterBreedingListByPercentage(0.01, self.allBreedingPairLists[x]);
-					}
+				}
 					Breeder._triggerBreedingPairs(new_breeding_list);					
 				}
 			}
@@ -135,7 +132,29 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 
 			//Gets the traitcombinations in a list, used in the next step
 			var listOfTargetedTraitCombinations = selectTargetTraits(traitLevel+2);
-			
+			var newListOfTargetedTraitCombinations = []
+			let toReplace = 0
+			if(self.bottleneckTrait){
+				console.log(self.bottleneckTrait)
+				for(let targetTraits in listOfTargetedTraitCombinations){
+					var number = targetTraits
+					var add = false					
+					listOfTargetedTraitCombinations[targetTraits].forEach((trait, index) => {
+						if(trait === bottleneckTrait){
+							add = true
+						}
+					})
+					if(add){
+						newListOfTargetedTraitCombinations.push(listOfTargetedTraitCombinations[targetTraits])
+					}
+
+				}
+
+				listOfTargetedTraitCombinations = newListOfTargetedTraitCombinations
+			}
+			console.log(listOfTargetedTraitCombinations)
+			console.log(newListOfTargetedTraitCombinations)
+
 			//Threshold, increases with gen number. 
 			var threshold = 0.10;
 			console.log(x);
@@ -485,7 +504,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 				return this.breedingPairs;
 			}
 			//This is the final result of solving the stage
-			if(this.breedingPairs.length > 1000 || this.multiplicative_threshold < 0.0001){
+			if(this.breedingPairs.length > 1000 || this.multiplicative_threshold < 0.001){
 				return this.breedingPairs;
 				this.stopOnNext = true;
 				let toReduce = (this.multiplicative_threshold * 0.10);
@@ -513,7 +532,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 		if(parseInt(catA.generation,10) > 20){
 			return true;
 		} else {
-			return ((parseInt(catA.cooldownIndex,10) <= 6) || (parseInt(catB.cooldownIndex,10) <= 6));
+			return ((parseInt(catA.cooldownIndex,10) <= 7) || (parseInt(catB.cooldownIndex,10) <= 7));
 		}
 	}
 

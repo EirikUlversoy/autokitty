@@ -61,10 +61,16 @@ function KittenLoader(args){
 
 		if(args[2] == "show-available-mutations"){
 			let gen = parseInt(args[3],10);
-			var kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
-					for(var x = totalCatCount-5000; x < totalCatCount; x++){
-
-				kittens.push(x);
+			if(gen != 99) {
+				var kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
+				for(var x = totalCatCount-5000; x < totalCatCount; x++){
+					kittens.push(x);
+				}
+			} else {
+				var kittens = Utilities.readKittensFromDisk("kittensGeneration",1,4);
+				for(var x = totalCatCount-5000; x < totalCatCount; x++){
+					kittens.push(x);
+				}
 			}
 
 			return kittens;
@@ -119,7 +125,7 @@ function KittenLoader(args){
 			let kittens = [];
 
 			if(gen == 99){
-				kittens = Utilities.readKittensFromDisk("kittensGeneration",0,21);
+				kittens = Utilities.readKittensFromDisk("kittensGeneration",3,7);
 			} else {
 				kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
 			}

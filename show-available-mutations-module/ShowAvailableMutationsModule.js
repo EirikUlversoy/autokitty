@@ -40,6 +40,7 @@ function ShowAvailableMutationsModule(){
 
 	function addKittenToCatsList(id, kitten){
 		kitten.id = id;
+		console.log(kitten.id);
 		kitten.chanceOfTrait = {};
 		if(kitten.genes){
 			if(!Utilities.contains(cats, kitten)){
@@ -51,14 +52,21 @@ function ShowAvailableMutationsModule(){
 	}
 
 	args = process.argv;
+	console.log(args)
 
 	//Performs all mutations of a given generation. (Typically all gen 2 mutations from gen 1)
 	function analyzePossibleMutations(){
 		gen = parseInt(args[3],10);
+		excludeReady = args[4] || false
 		//var Breeder = require("../breeder")(config.upper_wallet_address, web3,ck_contract);
 		//Breeder.setupBreedingOptions(cats, targeted_traits, unchained, sixPercent, cats[0].generation, cats[0].generation);
-		cats = Utilities.separateByGeneration(cats, gen, gen);
-		cats = Utilities.isReadyFilter(cats);
+		if(gen != 99){
+			cats = Utilities.separateByGeneration(cats, gen, gen);
+		}
+		if(!excludeReady){
+			cats = Utilities.isReadyFilter(cats);
+		}
+
 		if(gen == 0){
 			console.log("Dominant:");
 			var mutaDict = GeneDecoder.analyzePossibleMutations(cats, mutationDicts[0], 3);
@@ -123,17 +131,7 @@ function ShowAvailableMutationsModule(){
 	}
 
 	self.start = function(){
-		let timePerIteration = 600000;
-
-		if(parseInt(config.time_per_iteration,10) != 0){
-			timePerIteration = config.time_per_iteration;
-		}
-		for(v = 0; v <=400; v++){
-			setTimeout(analyze,timePerIteration*v);
-
-			console.log("Scheduling: " + v);
-		}
-
+		analyze()
 	}
 
 
