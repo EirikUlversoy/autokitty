@@ -727,7 +727,7 @@ function GeneDecoder(){
 			new_cats = new_cats_fast;
 		}
 
-		var RankingModule = require('../ranking-module')(); 
+		var RankingModule = require('../ranking/RankingModule')(); 
 		let scores = RankingModule.scoreCatsBasedOnTraits(new_cats, targetedTrait, targetedTrait);
 		let sorted_scores = RankingModule.getSortedArrayOfScoredCatsFromDictionary(scores);
 
