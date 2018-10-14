@@ -5,10 +5,10 @@ var fs = require("fs");
 var Promise = require("bluebird");
 
 //Other modules from this repository
-var GeneDecoder = require("../core-modules/genedecoder")();
-var Utilities = require("../helpers/utilities");
-var mutationDicts = require("../core-modules/mutation-dictionary-module")().setupDictionaries();
-var config = require('../helpers/config-module');
+var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
+var Utilities = require("../helpers/utilities/Utility");
+var mutationDicts = require("../core-modules/mutation-dictionary/MutationDictionaries")().setupDictionaries();
+var config = require('../helpers/config/config');
 var generations_breeding_upper_limit = 25;
 
 function showMutations(){
@@ -31,7 +31,7 @@ function showMutations(){
 	var ck_contract = new web3.eth.Contract(config.kitty_core_abi,config.cryptokitties_contract_address);
 
 	//Breeder module import
-	var Breeder = require("../breeder")(config.upper_wallet_address, web3,ck_contract);
+	var Breeder = require("../core-modules/breeder/Breeder")(config.upper_wallet_address, web3,ck_contract);
 
 	web3.eth.defaultAccount = config.owner_wallet_address;
 
@@ -77,7 +77,7 @@ function showMutations(){
 	};
 
 	async function analyze(){
-		var kittenLoader = require("kitten-loader")(args);
+		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
 		cats = await kittenLoader.loadKittens(ck_contract)
 		analyzePossibleMutations(cats)
 	}
