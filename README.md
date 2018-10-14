@@ -1,6 +1,6 @@
 AutoKitty/KittenManager
 
-This repository has 8 different functionality modules, and 5 feature modules that are used by them in the background. The syntax for use is: "node startKittenManager.js "functionality to use" "module specific parameters" "
+The syntax for use is: "node startKittenManager.js "functionality to use" "module specific parameters" "
 
 It uses 16 gas by default (changeable in code, later on maybe it can be set in the config file/module). Uses a breeding fee of 0.008 by default, this needs to change if the fee is raised, or the transactions will be rejected(!).
 
