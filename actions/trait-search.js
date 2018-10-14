@@ -3,12 +3,12 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../core-modules/mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
 var GeneDecoder = require("../core-modules/genedecoder/Genedecoder")();
 
 function traitSearch(optional_arguments){
-	var config = require('../helpers/config-module');
+	var config = require('../helpers/config/config');
 	self = {};
 
 	//Different IPC location on linux and Windows
@@ -34,7 +34,7 @@ function traitSearch(optional_arguments){
 	}
 	console.log(optional_arguments)
 	//Where most of the script logic is.
-	function searchForTrait(){
+	function searchForTrait(cats){
 		console.log(cats);
 		var trait = args[3];
 		var gen = parseInt(args[4],10);
@@ -57,9 +57,9 @@ function traitSearch(optional_arguments){
 	fancy_list.push(["Googly","Beard","Royalpurple","Dippedcone"]);
 	fancy_list.push(["Redvelvet","Patrickstarfish","Dragontail","Sphynx"]);
 
-	function searchForAnyOfMultipleTraitsFancy(){
+	function searchForAnyOfMultipleTraitsFancy(cats){
 		var traitFileName = args[3]
-		var kittenLoader = require("kitten-loader")(args);
+		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
 		targetedTraits = kittenLoader.loadTraits(traitFileName);
 		console.log(targetedTraits)
 		var gen = parseInt(args[4],10);
@@ -92,10 +92,10 @@ function traitSearch(optional_arguments){
 
 
 	}
-	function searchForMultipleTraits(){
+	function searchForMultipleTraits(cats){
 		var traitFileName = args[3];
 		//get traits here
-		var kittenLoader = require("kitten-loader")(args);
+		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
 		targetedTraits = kittenLoader.loadTraits(traitFileName);
 		console.log(targetedTraits);
 		var gen = parseInt(args[4],10);
@@ -143,7 +143,7 @@ function traitSearch(optional_arguments){
 		} else {
 
 		}
-		var kittenLoader = require("kitten-loader")(args);
+		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
 		if(args[2] == "trait-search-multiple"){
 			var cats = await kittenLoader.loadKittens(ck_contract)
 			searchForMultipleTraits(cats)

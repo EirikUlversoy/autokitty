@@ -3,7 +3,7 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../core-modules/mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
 var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
 
@@ -18,12 +18,12 @@ function makeFancyCat(){
 		var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 	}
 
-	var Utilities = require("utilities");
+	var Utilities = require("../helpers/utilities/Utility");
 
 	var ck_contract = new web3.eth.Contract(config.kitty_core_abi,config.cryptokitties_contract_address);
 
 	//Breeder module import
-	var Breeder = require("../breeder")(config.upper_wallet_address, web3,ck_contract);
+	var Breeder = require("../core-modules/breeder/Breeder")(config.upper_wallet_address, web3,ck_contract);
 
 	web3.eth.defaultAccount = config.owner_wallet_address;
 	//List of cats
@@ -35,10 +35,10 @@ function makeFancyCat(){
 		var gen_from = parseInt(args[4],10)
 		var gen_to = parseInt(args[5],10)
 		var dominantCount = parseInt(args[6],10);
-		var kittenLoader = require("kitten-loader")(args);
+		var kittenLoader = require("../core-modules/kitten-loader/KittenLoader")(args);
 		traits = kittenLoader.loadTraits(args[3]);
 		var targeted_traits = traits;
-		var Fancyfier = require("../fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount);
+		var Fancyfier = require("../core-modules/fancyfier/Fancyfier")(config.upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount);
 		var stages = Fancyfier.mainStarter(gen_from, gen_to, cats);
 
 	}

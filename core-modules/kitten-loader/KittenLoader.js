@@ -198,7 +198,7 @@ function KittenLoader(args){
 			let kittens = [];
 
 			if(gen == 99){
-				kittens = Utilities.readKittensFromDisk("kittensGeneration",3,7);
+				kittens = Utilities.readKittensFromDisk("kittensGeneration",0,21);
 			} else {
 				kittens = Utilities.readKittensFromDisk("kittensGeneration",gen,gen);
 			}
@@ -228,7 +228,7 @@ function KittenLoader(args){
 		if(args[2] == "generation-outputter"){
 			let kittens = []
 
-			for(var x = 800000; x < totalCatCount; x++){
+			for(var x = 1; x < totalCatCount; x++){
 				kittens.push(x)
 			}
 			return kittens;

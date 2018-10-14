@@ -3,12 +3,12 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../mutation-dictionary-module")().setupDictionaries();
+var mutationDicts = require("../../core-modules/mutation-dictionary/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
-var GeneDecoder = require("../genedecoder")();
+var GeneDecoder = require("../../core-modules/genedecoder/GeneDecoder")();
 
 function TraitSorter(optional_arguments){
-	var config = require('../config-module');
+	var config = require('../config/config');
 	self = {};
 
 	//Different IPC location on linux and Windows
@@ -18,7 +18,7 @@ function TraitSorter(optional_arguments){
 		var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 	}
 
-	var Utilities = require("utilities");
+	var Utilities = require("../utilities/Utility");
 
 
 
@@ -26,27 +26,6 @@ function TraitSorter(optional_arguments){
 	var ck_contract = new web3.eth.Contract(config.kitty_core_abi,config.cryptokitties_contract_address);
 
 	web3.eth.defaultAccount = config.owner_wallet_address;
-	//List of cats
-	var cats = [];
-	var dictCats = {}
-	function doWork(id, kitten){
-		kitten.id = id;
-		kitten.chanceOfTrait = {};
-		if(kitten.genes){
-			if(!Utilities.contains(cats, kitten)){
-				cats.push(kitten);
-			}
-		}
-		return kitten;
-
-	}
-
-	function doWorkGEN(id, kitten){
-		kitten.id = id;
-		console.log(kitten.id)
-		cats.push(kitten)
-		return kitten;
-	}
 
 	if(optional_arguments != undefined){
 		args = optional_arguments
@@ -77,17 +56,14 @@ function TraitSorter(optional_arguments){
 		});
 	}
 
-	function outputAllGenerations(){
+	function outputAllGenerations(cats){
 		let cats_dictionary = {}
-		console.log(dictCats)
 		for(let x = 0; x < 26; x++){
 			genfiltered_cats = Utilities.separateByGeneration(cats, x, x)
 			saveKittenIdsGEN(genfiltered_cats, x)
 		}
 	}
-	function sortAllTraits(){
-		var kittenLoader = require("kitten-loader")(args);
-		
+	function sortAllTraits(cats){
 		cats_dictionary = {}
 		traitList = []
 		for (let [key, value] of Object.entries(GeneDecoder.allGeneGroups)){
@@ -109,67 +85,19 @@ function TraitSorter(optional_arguments){
 		}
 	}
 
-
-
-	//Pushes cats that match the user address into the filtered cats list. Needs to use the bind method in order to keep both cat ID and the address.
-	function doFilterWork(cat,address){
-		if(address == config.upper_wallet_address){
-
-			allFilteredCats.push(cat);
-			console.log(cat);
-		}
-
-	}
-
-	//Loop that checks for ownership of the cat
-	function getOwnershipOfCatsFromContract(cats){
-		return cats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.ownerOf(cat).call().then(doFilterWork.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-
-
-
-	var allFilteredCats = [];
-
-	function getCatsFromContract(no_catArray){
-		return allFilteredCats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.getKitty(cat).call().then(doWork.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-	function getCatsFromContractGEN(initialCats){
-		return initialCats.reduce(function(promise, cat) {
-			return promise.then(function(){
-				return ck_contract.methods.getKitty(cat).call().then(doWorkGEN.bind(null, cat));
-			});
-		}, Promise.resolve());
-	}
-
-
-	function main(optional_arguments){
+	async function main(optional_arguments){
 		if(optional_arguments != undefined){
 			args = optional_arguments
 		}
-		var kittenLoader = require("kitten-loader")(args);
+		var kittenLoader = require("../../core-modules/kitten-loader/KittenLoader")(args);
 
 		if(args[2] == "trait-sorter"){
-			ck_contract.methods.totalSupply().call()
-			.then(kittenLoader.loadKittens)
-			.then(getOwnershipOfCatsFromContract)
-			.then(getCatsFromContract)
-			.then(sortAllTraits);
+			var cats = await kittenLoader.loadKittens(ck_contract)
+			sortAllTraits(cats)
 
 		} else if (args[2] == "generation-outputter"){
-			ck_contract.methods.totalSupply().call()
-			.then(kittenLoader.loadKittens)
-			.then(getCatsFromContractGEN)
-			.then(outputAllGenerations)
+			var cats = await kittenLoader.loadKittens(ck_contract)			
+			outputAllGenerations(cats)
 		}
 	}
 

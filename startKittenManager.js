@@ -66,21 +66,21 @@ switch (args[2]) {
 		starter.start()
 		break;
 	case "fancy-filtering":
-		var { fancyFiltering } = require('./actions/trait-search');
-		var starter = fancyFiltering()
+		var { traitSearch } = require('./actions/trait-search');
+		var starter = traitSearch()
 		starter.start()
 		break;
 	case "trait-sorter":
-		var TraitSorter = require(__dirname +'helpers/trait-sorter/TraitSorter.js')();
+		var TraitSorter = require('./helpers/trait-sorter/TraitSorter.js')();
 		TraitSorter.start()
 		break;
 	case "generation-outputter":
-		var TraitSorter = require(__dirname +'helpers/trait-sorter/TraitSorter.js')();
+		var TraitSorter = require('./helpers/trait-sorter/TraitSorter.js')();
 		TraitSorter.start()
 		break;
 	case "make-fancy-catX":
-		var { makeFancyCatX } = require('./actions/make-fancy-cat');
-		var starter = makeFancyCatX()
+		var { makeFancyCat } = require('./actions/make-fancy-cat');
+		var starter = makeFancyCat()
 		starter.start()
 		break;
 }

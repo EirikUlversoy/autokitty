@@ -1,6 +1,6 @@
-var GeneDecoder = require("../genedecoder")();
-var Comparators = require("../ak-comparators");
-var Utilities = require("../utilities");
+var GeneDecoder = require("../genedecoder/GeneDecoder")();
+var Comparators = require("../../helpers/ak-comparators/Comparators");
+var Utilities = require("../../helpers/utilities/Utility");
 var Combinatorics = require("js-combinatorics");
 
 function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dominantCount, bottleneckTrait){
@@ -18,7 +18,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 	self.longshotMutations = false;
 	//Needs to be global to avoid conflicts
 	self.usedCats = [];
-	var Breeder = require("../breeder")(upper_wallet_address, web3, ck_contract);
+	var Breeder = require("../breeder/Breeder")(upper_wallet_address, web3, ck_contract);
 
 	self.catDict = {};
 
@@ -504,7 +504,7 @@ function Fancyfier(upper_wallet_address, web3, ck_contract, targeted_traits, dom
 				return this.breedingPairs;
 			}
 			//This is the final result of solving the stage
-			if(this.breedingPairs.length > 1000 || this.multiplicative_threshold < 0.001){
+			if(this.breedingPairs.length > 1000 || this.multiplicative_threshold < 0.05){
 				return this.breedingPairs;
 				this.stopOnNext = true;
 				let toReduce = (this.multiplicative_threshold * 0.10);
