@@ -3,12 +3,12 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../core-modules/mutation-dictionary-module")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
-var GeneDecoder = require("../core-modules/genedecoder")();
+var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
 
 function sendCats(){
-	var config = require('../helpers/config-module');
+	var config = require('../helpers/config/config');
 	self = {};
 
 	//Different IPC location on linux and Windows
@@ -18,7 +18,7 @@ function sendCats(){
 		var web3 = new Web3(new Web3.providers.IpcProvider('\\\\.\\pipe\\geth.ipc', net));
 	}
 
-	var Utilities = require("../utilities");
+	var Utilities = require("../helpers/utilities/Utility");
 
 	var ck_contract = new web3.eth.Contract(config.kitty_core_abi,config.cryptokitties_contract_address);
 
@@ -26,7 +26,7 @@ function sendCats(){
 
 	args = process.argv;
 
-	function startSendingCats(){
+	function startSendingCats(cats){
 		if(args[4] != undefined){
 			config.send_cats_address = args[4];
 		}
