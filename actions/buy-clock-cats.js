@@ -3,7 +3,7 @@ const os = require('os');
 var Web3 = require("web3");
 var fs = require("fs");
 var Promise = require("bluebird");
-var mutationDicts = require("../mutation-dictionary-module/MutationDictionaries")().setupDictionaries();
+var mutationDicts = require("../core-modules/mutation-dictionary/MutationDictionaries")().setupDictionaries();
 //Other modules from this repository
 var GeneDecoder = require("../core-modules/genedecoder/GeneDecoder")();
 var Utilities = require("../helpers/utilities/Utility");
@@ -181,7 +181,7 @@ function buyClockCats(){
 
 		var traits_filename = args[6];
 		if(traits_filename != undefined){
-			KittenLoader = require('kitten-loader')();
+			KittenLoader = require('../core-modules/kitten-loader/KittenLoader')();
 			traits = KittenLoader.loadTraits(traits_filename);
 			
 
@@ -303,9 +303,9 @@ function buyClockCats(){
 
 		var price_roof = String(args[3]);
 
-		if(price_roof > 12.00){
+		if(price_roof > 0.50){
 			console.log("Safety value hit, resetting price to 0.50");
-			price_roof = String(12.00);
+			price_roof = String(0.50);
 		}
 
 		console.log(catIdsToBuy);
